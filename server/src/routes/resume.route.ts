@@ -9,10 +9,18 @@ import {
   archiveResume,
   restoreResume,
   toggleFavorite,
+  updatePersonal,
+  updateSummary,
 } from '../controllers/resume.controller';
 import { protect } from '../middlewares/auth.middleware';
 import { validate } from '../middlewares/validate.middleware';
-import { createResumeSchema, updateResumeSchema, getResumesQuerySchema } from '../validators/resume.validator';
+import { 
+  createResumeSchema, 
+  updateResumeSchema, 
+  getResumesQuerySchema,
+  updatePersonalSchema,
+  updateSummarySchema
+} from '../validators/resume.validator';
 
 const router = Router();
 
@@ -33,5 +41,7 @@ router.post('/:id/duplicate', duplicateResume);
 router.post('/:id/archive', archiveResume);
 router.post('/:id/restore', restoreResume);
 router.post('/:id/favorite', toggleFavorite);
+router.put('/:id/personal', validate(updatePersonalSchema), updatePersonal);
+router.put('/:id/summary', validate(updateSummarySchema), updateSummary);
 
 export default router;

@@ -103,7 +103,7 @@ export const getResumeById = async (req: Request, res: Response, next: NextFunct
 
     const resume = await prisma.resume.findFirst({
       where: { id: id as string, userId, deletedAt: null },
-      include: { template: true },
+      include: { template: true, personal: true, summary: true },
     });
 
     if (!resume) {
@@ -433,6 +433,94 @@ export const toggleFavorite = async (req: Request, res: Response, next: NextFunc
       statusCode: 200,
       message: resume.isFavorite ? 'Resume added to favorites' : 'Resume removed from favorites',
       data: resume,
+      errors: null,
+      timestamp: new Date().toISOString(),
+      requestId: (req as any).id || '',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updatePersonal = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    
+    const existingResume = await prisma.resume.findFirst({
+      where: { id: id as string, userId, deletedAt: null },
+    });
+
+    if (!existingResume) {
+      return res.status(404).json({
+        success: false,
+        statusCode: 404,
+        message: 'Resume not found',
+        data: null,
+        errors: null,
+        timestamp: new Date().toISOString(),
+        requestId: (req as any).id || '',
+      });
+    }
+
+    const personal = await prisma.resumePersonal.upsert({
+      where: { resumeId: id as string },
+      update: req.body,
+      create: {
+        resumeId: id as string,
+        ...req.body,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: 'Personal information updated',
+      data: personal,
+      errors: null,
+      timestamp: new Date().toISOString(),
+      requestId: (req as any).id || '',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateSummary = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    
+    const existingResume = await prisma.resume.findFirst({
+      where: { id: id as string, userId, deletedAt: null },
+    });
+
+    if (!existingResume) {
+      return res.status(404).json({
+        success: false,
+        statusCode: 404,
+        message: 'Resume not found',
+        data: null,
+        errors: null,
+        timestamp: new Date().toISOString(),
+        requestId: (req as any).id || '',
+      });
+    }
+
+    const summary = await prisma.resumeSummary.upsert({
+      where: { resumeId: id as string },
+      update: req.body,
+      create: {
+        resumeId: id as string,
+        ...req.body,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: 'Summary updated',
+      data: summary,
       errors: null,
       timestamp: new Date().toISOString(),
       requestId: (req as any).id || '',

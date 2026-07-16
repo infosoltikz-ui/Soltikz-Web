@@ -9,7 +9,11 @@ import {
   archiveResume,
   restoreResume,
   toggleFavoriteResume,
+  updatePersonalInfo,
+  updateSummary,
   GetResumesParams,
+  ResumePersonal,
+  ResumeSummary,
 } from '../services/resume.api';
 import { useUIStore } from '@store/useUIStore';
 
@@ -139,6 +143,40 @@ export const useToggleFavoriteResume = () => {
     },
     onError: (error: any) => {
       useUIStore.getState().toast.error(error.response?.data?.message || 'Failed to update favorites status');
+    },
+  });
+};
+
+export const useUpdatePersonal = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: ResumePersonal }) => updatePersonalInfo(id, data),
+    onSuccess: (data, variables) => {
+      queryClient.setQueryData(resumeKeys.detail(variables.id), (old: any) => {
+        if (!old) return old;
+        return { ...old, personal: data, updatedAt: new Date().toISOString() };
+      });
+    },
+    onError: (error: any) => {
+      useUIStore.getState().toast.error(error.response?.data?.message || 'Failed to save personal information');
+    },
+  });
+};
+
+export const useUpdateSummary = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: ResumeSummary }) => updateSummary(id, data),
+    onSuccess: (data, variables) => {
+      queryClient.setQueryData(resumeKeys.detail(variables.id), (old: any) => {
+        if (!old) return old;
+        return { ...old, summary: data, updatedAt: new Date().toISOString() };
+      });
+    },
+    onError: (error: any) => {
+      useUIStore.getState().toast.error(error.response?.data?.message || 'Failed to save professional summary');
     },
   });
 };

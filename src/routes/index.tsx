@@ -20,7 +20,7 @@ const TemplatesPage    = lazy(() => import('@features/home/TemplatesPage'))
 const LoginPage        = lazy(() => import('@features/auth/LoginPage'))
 const RegisterPage     = lazy(() => import('@features/auth/RegisterPage'))
 const DashboardPage    = lazy(() => import('@features/resume/pages/ResumeDashboardPage').then(module => ({ default: module.ResumeDashboardPage })))
-const ResumeEditorPage = lazy(() => import('@features/resume/pages/ResumeEditorPlaceholderPage').then(module => ({ default: module.ResumeEditorPlaceholderPage })))
+const ResumeEditorPage = lazy(() => import('@features/resume/pages/ResumeBuilderPage').then(module => ({ default: module.ResumeBuilderPage })))
 const NotFoundPage     = lazy(() => import('@features/home/NotFoundPage'))
 
 // ── Suspense wrapper ──────────────────────────────────────────

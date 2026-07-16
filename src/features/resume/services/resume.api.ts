@@ -20,6 +20,31 @@ export interface Resume {
     name: string;
     thumbnail: string | null;
   };
+  personal?: ResumePersonal | null;
+  summary?: ResumeSummary | null;
+}
+
+export interface ResumePersonal {
+  firstName?: string;
+  lastName?: string;
+  title?: string;
+  email?: string;
+  phone?: string;
+  countryCode?: string;
+  location?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  linkedin?: string;
+  github?: string;
+  portfolio?: string;
+  website?: string;
+  profileImage?: string;
+  about?: string;
+}
+
+export interface ResumeSummary {
+  content?: string;
 }
 
 export interface GetResumesParams {
@@ -82,5 +107,15 @@ export const restoreResume = async (id: string): Promise<Resume> => {
 
 export const toggleFavoriteResume = async (id: string): Promise<Resume> => {
   const response = await api.post(`/resumes/${id}/favorite`);
+  return response.data.data;
+};
+
+export const updatePersonalInfo = async (id: string, data: ResumePersonal): Promise<ResumePersonal> => {
+  const response = await api.put(`/resumes/${id}/personal`, data);
+  return response.data.data;
+};
+
+export const updateSummary = async (id: string, data: ResumeSummary): Promise<ResumeSummary> => {
+  const response = await api.put(`/resumes/${id}/summary`, data);
   return response.data.data;
 };

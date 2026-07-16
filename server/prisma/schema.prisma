@@ -194,6 +194,9 @@ model Resume {
 
   versions             ResumeVersion[]
   atsReports           ATSReport[]
+  
+  personal             ResumePersonal?
+  summary              ResumeSummary?
 }
 
 model ResumeVersion {
@@ -231,4 +234,40 @@ model Payment {
   status        String
   transactionId String   @unique
   createdAt     DateTime @default(now())
+}
+
+model ResumePersonal {
+  id           String   @id @default(uuid())
+  resumeId     String   @unique
+  resume       Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  
+  firstName    String?
+  lastName     String?
+  title        String?
+  email        String?
+  phone        String?
+  countryCode  String?
+  location     String?
+  city         String?
+  state        String?
+  country      String?
+  linkedin     String?
+  github       String?
+  portfolio    String?
+  website      String?
+  profileImage String?
+  about        String?  @db.Text
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model ResumeSummary {
+  id           String   @id @default(uuid())
+  resumeId     String   @unique
+  resume       Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  content      String?  @db.Text
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
