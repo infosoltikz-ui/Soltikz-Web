@@ -103,7 +103,21 @@ export const getResumeById = async (req: Request, res: Response, next: NextFunct
 
     const resume = await prisma.resume.findFirst({
       where: { id: id as string, userId, deletedAt: null },
-      include: { template: true, personal: true, summary: true },
+      include: {
+        template: true,
+        personal: true,
+        summary: true,
+        experiences: { orderBy: { displayOrder: 'asc' } },
+        educations: { orderBy: { displayOrder: 'asc' } },
+        skills: { orderBy: { displayOrder: 'asc' } },
+        projects: { orderBy: { displayOrder: 'asc' } },
+        certifications: { orderBy: { displayOrder: 'asc' } },
+        languages: { orderBy: { displayOrder: 'asc' } },
+        achievements: { orderBy: { displayOrder: 'asc' } },
+        awards: { orderBy: { displayOrder: 'asc' } },
+        interests: { orderBy: { displayOrder: 'asc' } },
+        references: { orderBy: { displayOrder: 'asc' } },
+      },
     });
 
     if (!resume) {
@@ -442,6 +456,76 @@ export const toggleFavorite = async (req: Request, res: Response, next: NextFunc
   }
 };
 
+// ==================== Sprint 3.5 Settings APIs ====================
+
+export const updateTemplate = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    const { selectedTemplate } = req.body;
+
+    const resume = await prisma.resume.update({
+      where: { id: id as string, userId },
+      data: { selectedTemplate },
+    });
+
+    res.status(200).json({ success: true, data: resume });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateTheme = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    const { defaultTheme, primaryColor } = req.body;
+
+    const resume = await prisma.resume.update({
+      where: { id: id as string, userId },
+      data: { defaultTheme, primaryColor },
+    });
+
+    res.status(200).json({ success: true, data: resume });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateTypography = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    const { fontFamily, fontSize, lineSpacing } = req.body;
+
+    const resume = await prisma.resume.update({
+      where: { id: id as string, userId },
+      data: { fontFamily, fontSize, lineSpacing },
+    });
+
+    res.status(200).json({ success: true, data: resume });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateLayout = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    const { sectionSpacing, pageMargin, showProfilePhoto, showIcons, showSectionDividers } = req.body;
+
+    const resume = await prisma.resume.update({
+      where: { id: id as string, userId },
+      data: { sectionSpacing, pageMargin, showProfilePhoto, showIcons, showSectionDividers },
+    });
+
+    res.status(200).json({ success: true, data: resume });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const updatePersonal = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user!.id;
@@ -529,3 +613,631 @@ export const updateSummary = async (req: Request, res: Response, next: NextFunct
     next(error);
   }
 };
+
+// ---------------------------------------------------------
+// Experience CRUD
+// ---------------------------------------------------------
+export const createExperience = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    
+    // Verify resume ownership
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+
+    // Get max display order
+    const maxOrder = await prisma.resumeExperience.aggregate({
+      where: { resumeId: id as string },
+      _max: { displayOrder: true }
+    });
+    const displayOrder = (maxOrder._max.displayOrder ?? -1) + 1;
+
+    const experience = await prisma.resumeExperience.create({
+      data: {
+        resumeId: id as string,
+        ...req.body,
+        displayOrder
+      },
+    });
+    res.status(201).json({ success: true, data: experience });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateExperience = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id, expId } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+
+    const experience = await prisma.resumeExperience.update({
+      where: { id: expId as string, resumeId: id as string },
+      data: req.body,
+    });
+    res.status(200).json({ success: true, data: experience });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteExperience = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id, expId } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+
+    await prisma.resumeExperience.delete({
+      where: { id: expId as string, resumeId: id as string },
+    });
+    res.status(200).json({ success: true, message: 'Experience deleted' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const reorderExperience = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    const { items } = req.body;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+
+    await prisma.$transaction(
+      items.map((item: any) =>
+        prisma.resumeExperience.update({
+          where: { id: item.id, resumeId: id as string },
+          data: { displayOrder: item.displayOrder },
+        })
+      )
+    );
+    res.status(200).json({ success: true, message: 'Reordered' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ---------------------------------------------------------
+// Education CRUD
+// ---------------------------------------------------------
+export const createEducation = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+
+    const maxOrder = await prisma.resumeEducation.aggregate({
+      where: { resumeId: id as string },
+      _max: { displayOrder: true }
+    });
+    const displayOrder = (maxOrder._max.displayOrder ?? -1) + 1;
+
+    const education = await prisma.resumeEducation.create({
+      data: { resumeId: id as string, ...req.body, displayOrder },
+    });
+    res.status(201).json({ success: true, data: education });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateEducation = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id, eduId } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+
+    const education = await prisma.resumeEducation.update({
+      where: { id: eduId as string, resumeId: id as string },
+      data: req.body,
+    });
+    res.status(200).json({ success: true, data: education });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteEducation = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id, eduId } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+
+    await prisma.resumeEducation.delete({
+      where: { id: eduId as string, resumeId: id as string },
+    });
+    res.status(200).json({ success: true, message: 'Education deleted' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const reorderEducation = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    const { items } = req.body;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+
+    await prisma.$transaction(
+      items.map((item: any) =>
+        prisma.resumeEducation.update({
+          where: { id: item.id, resumeId: id as string },
+          data: { displayOrder: item.displayOrder },
+        })
+      )
+    );
+    res.status(200).json({ success: true, message: 'Reordered' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ---------------------------------------------------------
+// Skills CRUD
+// ---------------------------------------------------------
+export const createSkill = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+
+    const maxOrder = await prisma.resumeSkill.aggregate({
+      where: { resumeId: id as string },
+      _max: { displayOrder: true }
+    });
+    const displayOrder = (maxOrder._max.displayOrder ?? -1) + 1;
+
+    const skill = await prisma.resumeSkill.create({
+      data: { resumeId: id as string, ...req.body, displayOrder },
+    });
+    res.status(201).json({ success: true, data: skill });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateSkill = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id, skillId } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+
+    const skill = await prisma.resumeSkill.update({
+      where: { id: skillId as string, resumeId: id as string },
+      data: req.body,
+    });
+    res.status(200).json({ success: true, data: skill });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteSkill = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id, skillId } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+
+    await prisma.resumeSkill.delete({
+      where: { id: skillId as string, resumeId: id as string },
+    });
+    res.status(200).json({ success: true, message: 'Skill deleted' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const reorderSkill = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    const { items } = req.body;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+
+    await prisma.$transaction(
+      items.map((item: any) =>
+        prisma.resumeSkill.update({
+          where: { id: item.id, resumeId: id as string },
+          data: { displayOrder: item.displayOrder },
+        })
+      )
+    );
+    res.status(200).json({ success: true, message: 'Reordered' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ---------------------------------------------------------
+// Projects CRUD
+// ---------------------------------------------------------
+export const createProject = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+
+    const maxOrder = await prisma.resumeProject.aggregate({
+      where: { resumeId: id as string },
+      _max: { displayOrder: true }
+    });
+    const displayOrder = (maxOrder._max.displayOrder ?? -1) + 1;
+
+    const project = await prisma.resumeProject.create({
+      data: { resumeId: id as string, ...req.body, displayOrder },
+    });
+    res.status(201).json({ success: true, data: project });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateProject = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id, projectId } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+
+    const project = await prisma.resumeProject.update({
+      where: { id: projectId as string, resumeId: id as string },
+      data: req.body,
+    });
+    res.status(200).json({ success: true, data: project });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteProject = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id, projectId } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+
+    await prisma.resumeProject.delete({
+      where: { id: projectId as string, resumeId: id as string },
+    });
+    res.status(200).json({ success: true, message: 'Project deleted' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const reorderProject = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    const { items } = req.body;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+
+    await prisma.$transaction(
+      items.map((item: any) =>
+        prisma.resumeProject.update({
+          where: { id: item.id, resumeId: id as string },
+          data: { displayOrder: item.displayOrder },
+        })
+      )
+    );
+    res.status(200).json({ success: true, message: 'Reordered' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ---------------------------------------------------------
+// Certifications CRUD
+// ---------------------------------------------------------
+export const createCertification = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+    const maxOrder = await prisma.resumeCertification.aggregate({ where: { resumeId: id as string }, _max: { displayOrder: true } });
+    const displayOrder = (maxOrder._max.displayOrder ?? -1) + 1;
+    const certification = await prisma.resumeCertification.create({ data: { resumeId: id as string, ...req.body, displayOrder } });
+    res.status(201).json({ success: true, data: certification });
+  } catch (error) { next(error); }
+};
+
+export const updateCertification = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id, certId } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+    const certification = await prisma.resumeCertification.update({ where: { id: certId as string, resumeId: id as string }, data: req.body });
+    res.status(200).json({ success: true, data: certification });
+  } catch (error) { next(error); }
+};
+
+export const deleteCertification = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id, certId } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+    await prisma.resumeCertification.delete({ where: { id: certId as string, resumeId: id as string } });
+    res.status(200).json({ success: true, message: 'Certification deleted' });
+  } catch (error) { next(error); }
+};
+
+export const reorderCertification = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    const { items } = req.body;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+    await prisma.$transaction(items.map((item: any) => prisma.resumeCertification.update({ where: { id: item.id, resumeId: id as string }, data: { displayOrder: item.displayOrder } })));
+    res.status(200).json({ success: true, message: 'Reordered' });
+  } catch (error) { next(error); }
+};
+
+// ---------------------------------------------------------
+// Languages CRUD
+// ---------------------------------------------------------
+export const createLanguage = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+    const maxOrder = await prisma.resumeLanguage.aggregate({ where: { resumeId: id as string }, _max: { displayOrder: true } });
+    const displayOrder = (maxOrder._max.displayOrder ?? -1) + 1;
+    const language = await prisma.resumeLanguage.create({ data: { resumeId: id as string, ...req.body, displayOrder } });
+    res.status(201).json({ success: true, data: language });
+  } catch (error) { next(error); }
+};
+
+export const updateLanguage = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id, langId } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+    const language = await prisma.resumeLanguage.update({ where: { id: langId as string, resumeId: id as string }, data: req.body });
+    res.status(200).json({ success: true, data: language });
+  } catch (error) { next(error); }
+};
+
+export const deleteLanguage = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id, langId } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+    await prisma.resumeLanguage.delete({ where: { id: langId as string, resumeId: id as string } });
+    res.status(200).json({ success: true, message: 'Language deleted' });
+  } catch (error) { next(error); }
+};
+
+export const reorderLanguage = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    const { items } = req.body;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+    await prisma.$transaction(items.map((item: any) => prisma.resumeLanguage.update({ where: { id: item.id, resumeId: id as string }, data: { displayOrder: item.displayOrder } })));
+    res.status(200).json({ success: true, message: 'Reordered' });
+  } catch (error) { next(error); }
+};
+
+// ---------------------------------------------------------
+// Achievements CRUD
+// ---------------------------------------------------------
+export const createAchievement = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+    const maxOrder = await prisma.resumeAchievement.aggregate({ where: { resumeId: id as string }, _max: { displayOrder: true } });
+    const displayOrder = (maxOrder._max.displayOrder ?? -1) + 1;
+    const achievement = await prisma.resumeAchievement.create({ data: { resumeId: id as string, ...req.body, displayOrder } });
+    res.status(201).json({ success: true, data: achievement });
+  } catch (error) { next(error); }
+};
+
+export const updateAchievement = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id, achievementId } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+    const achievement = await prisma.resumeAchievement.update({ where: { id: achievementId as string, resumeId: id as string }, data: req.body });
+    res.status(200).json({ success: true, data: achievement });
+  } catch (error) { next(error); }
+};
+
+export const deleteAchievement = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id, achievementId } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+    await prisma.resumeAchievement.delete({ where: { id: achievementId as string, resumeId: id as string } });
+    res.status(200).json({ success: true, message: 'Achievement deleted' });
+  } catch (error) { next(error); }
+};
+
+export const reorderAchievement = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    const { items } = req.body;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+    await prisma.$transaction(items.map((item: any) => prisma.resumeAchievement.update({ where: { id: item.id, resumeId: id as string }, data: { displayOrder: item.displayOrder } })));
+    res.status(200).json({ success: true, message: 'Reordered' });
+  } catch (error) { next(error); }
+};
+
+// ---------------------------------------------------------
+// Awards CRUD
+// ---------------------------------------------------------
+export const createAward = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+    const maxOrder = await prisma.resumeAward.aggregate({ where: { resumeId: id as string }, _max: { displayOrder: true } });
+    const displayOrder = (maxOrder._max.displayOrder ?? -1) + 1;
+    const award = await prisma.resumeAward.create({ data: { resumeId: id as string, ...req.body, displayOrder } });
+    res.status(201).json({ success: true, data: award });
+  } catch (error) { next(error); }
+};
+
+export const updateAward = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id, awardId } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+    const award = await prisma.resumeAward.update({ where: { id: awardId as string, resumeId: id as string }, data: req.body });
+    res.status(200).json({ success: true, data: award });
+  } catch (error) { next(error); }
+};
+
+export const deleteAward = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id, awardId } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+    await prisma.resumeAward.delete({ where: { id: awardId as string, resumeId: id as string } });
+    res.status(200).json({ success: true, message: 'Award deleted' });
+  } catch (error) { next(error); }
+};
+
+export const reorderAward = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    const { items } = req.body;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+    await prisma.$transaction(items.map((item: any) => prisma.resumeAward.update({ where: { id: item.id, resumeId: id as string }, data: { displayOrder: item.displayOrder } })));
+    res.status(200).json({ success: true, message: 'Reordered' });
+  } catch (error) { next(error); }
+};
+
+// ---------------------------------------------------------
+// Interests CRUD
+// ---------------------------------------------------------
+export const createInterest = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+    const maxOrder = await prisma.resumeInterest.aggregate({ where: { resumeId: id as string }, _max: { displayOrder: true } });
+    const displayOrder = (maxOrder._max.displayOrder ?? -1) + 1;
+    const interest = await prisma.resumeInterest.create({ data: { resumeId: id as string, ...req.body, displayOrder } });
+    res.status(201).json({ success: true, data: interest });
+  } catch (error) { next(error); }
+};
+
+export const updateInterest = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id, interestId } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+    const interest = await prisma.resumeInterest.update({ where: { id: interestId as string, resumeId: id as string }, data: req.body });
+    res.status(200).json({ success: true, data: interest });
+  } catch (error) { next(error); }
+};
+
+export const deleteInterest = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id, interestId } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+    await prisma.resumeInterest.delete({ where: { id: interestId as string, resumeId: id as string } });
+    res.status(200).json({ success: true, message: 'Interest deleted' });
+  } catch (error) { next(error); }
+};
+
+export const reorderInterest = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    const { items } = req.body;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+    await prisma.$transaction(items.map((item: any) => prisma.resumeInterest.update({ where: { id: item.id, resumeId: id as string }, data: { displayOrder: item.displayOrder } })));
+    res.status(200).json({ success: true, message: 'Reordered' });
+  } catch (error) { next(error); }
+};
+
+// ---------------------------------------------------------
+// References CRUD
+// ---------------------------------------------------------
+export const createReference = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+    const maxOrder = await prisma.resumeReference.aggregate({ where: { resumeId: id as string }, _max: { displayOrder: true } });
+    const displayOrder = (maxOrder._max.displayOrder ?? -1) + 1;
+    const reference = await prisma.resumeReference.create({ data: { resumeId: id as string, ...req.body, displayOrder } });
+    res.status(201).json({ success: true, data: reference });
+  } catch (error) { next(error); }
+};
+
+export const updateReference = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id, refId } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+    const reference = await prisma.resumeReference.update({ where: { id: refId as string, resumeId: id as string }, data: req.body });
+    res.status(200).json({ success: true, data: reference });
+  } catch (error) { next(error); }
+};
+
+export const deleteReference = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id, refId } = req.params;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+    await prisma.resumeReference.delete({ where: { id: refId as string, resumeId: id as string } });
+    res.status(200).json({ success: true, message: 'Reference deleted' });
+  } catch (error) { next(error); }
+};
+
+export const reorderReference = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.user!.id;
+    const { id } = req.params;
+    const { items } = req.body;
+    const resume = await prisma.resume.findFirst({ where: { id: id as string, userId, deletedAt: null } });
+    if (!resume) return res.status(404).json({ success: false, message: 'Resume not found' });
+    await prisma.$transaction(items.map((item: any) => prisma.resumeReference.update({ where: { id: item.id, resumeId: id as string }, data: { displayOrder: item.displayOrder } })));
+    res.status(200).json({ success: true, message: 'Reordered' });
+  } catch (error) { next(error); }
+};
+

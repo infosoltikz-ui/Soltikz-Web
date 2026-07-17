@@ -329,3 +329,32 @@
     overflow: hidden;
   }
 }
+
+/* ============================================================
+   SPRINT 3.5: AUTO PAGINATION & PRINT STYLES
+   ============================================================ */
+@media print {
+  .resume-template-root h1, 
+  .resume-template-root h2, 
+  .resume-template-root h3 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+  
+  .resume-template-root p,
+  .resume-template-root ul,
+  .resume-template-root li {
+    orphans: 3;
+    widows: 3;
+  }
+
+  .resume-template-root li {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  
+  .break-inside-avoid {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+}

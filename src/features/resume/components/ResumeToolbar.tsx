@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, CheckCircle2, Loader2, Save, XCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Loader2, Save, XCircle, Menu } from 'lucide-react';
 import { Resume } from '../services/resume.api';
 import { useResumeBuilderStore } from '../store/useResumeBuilderStore';
+import { useAIStore } from '../../ai/store/useAIStore';
 import { Button } from '@/components/ui/Button';
 
 interface ResumeToolbarProps {
@@ -10,7 +11,7 @@ interface ResumeToolbarProps {
 }
 
 export const ResumeToolbar: React.FC<ResumeToolbarProps> = ({ resume }) => {
-  const { saveStatus, lastSavedAt, showMobilePreview, setShowMobilePreview } = useResumeBuilderStore();
+  const { saveStatus, lastSavedAt, showMobilePreview, setShowMobilePreview, isSidebarOpen, setIsSidebarOpen } = useResumeBuilderStore();
 
   const renderSaveStatus = () => {
     switch (saveStatus) {
@@ -18,21 +19,21 @@ export const ResumeToolbar: React.FC<ResumeToolbarProps> = ({ resume }) => {
         return (
           <div className="flex items-center gap-1.5 text-slate-500 text-sm font-medium">
             <Loader2 className="w-4 h-4 animate-spin" />
-            Saving...
+            <span className="hidden sm:inline">Saving...</span>
           </div>
         );
       case 'saved':
         return (
           <div className="flex items-center gap-1.5 text-emerald-600 text-sm font-medium">
             <CheckCircle2 className="w-4 h-4" />
-            Saved
+            <span className="hidden sm:inline">Saved</span>
           </div>
         );
       case 'error':
         return (
           <div className="flex items-center gap-1.5 text-rose-600 text-sm font-medium">
             <XCircle className="w-4 h-4" />
-            Save Failed
+            <span className="hidden sm:inline">Failed</span>
           </div>
         );
       case 'idle':
@@ -40,7 +41,7 @@ export const ResumeToolbar: React.FC<ResumeToolbarProps> = ({ resume }) => {
         return lastSavedAt ? (
           <div className="flex items-center gap-1.5 text-slate-400 text-sm font-medium">
             <Save className="w-4 h-4" />
-            Last saved {lastSavedAt}
+            <span className="hidden sm:inline">Saved {lastSavedAt}</span>
           </div>
         ) : null;
     }
@@ -48,12 +49,18 @@ export const ResumeToolbar: React.FC<ResumeToolbarProps> = ({ resume }) => {
 
   return (
     <header className="h-16 bg-white border-b border-slate-200 px-4 md:px-6 flex items-center justify-between sticky top-0 z-20">
-      <div className="flex items-center gap-3">
-        <Link to="/dashboard" className="p-2 -ml-2 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors">
+      <div className="flex items-center gap-2 md:gap-3">
+        <button 
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="md:hidden p-2 -ml-2 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+        <Link to="/dashboard" className="p-2 hidden md:block -ml-2 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div className="hidden sm:block">
-          <h1 className="font-semibold text-slate-900 leading-tight">{resume.title}</h1>
+          <h1 className="font-semibold text-slate-900 leading-tight truncate max-w-[200px] md:max-w-xs">{resume.title}</h1>
           <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
             <span>{resume.template?.name || 'Blank Template'}</span>
             <span className="w-1 h-1 rounded-full bg-slate-300"></span>
@@ -64,7 +71,7 @@ export const ResumeToolbar: React.FC<ResumeToolbarProps> = ({ resume }) => {
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 md:gap-4">
         {renderSaveStatus()}
         
         {/* Mobile Preview Toggle */}
@@ -72,13 +79,21 @@ export const ResumeToolbar: React.FC<ResumeToolbarProps> = ({ resume }) => {
           variant={showMobilePreview ? 'primary' : 'outline'}
           size="sm"
           className="md:hidden"
-          onClick={() => setShowMobilePreview(!showMobilePreview)}
+          onClick={() => {
+            setShowMobilePreview(!showMobilePreview);
+            setIsSidebarOpen(false); // Close sidebar when toggling preview
+          }}
         >
           {showMobilePreview ? 'Edit' : 'Preview'}
         </Button>
 
-        {/* AI Assistant - Coming Soon */}
-        <Button variant="secondary" size="sm" className="hidden sm:inline-flex opacity-50 cursor-not-allowed">
+        {/* AI Assistant Toggle */}
+        <Button 
+          variant="secondary" 
+          size="sm" 
+          className="hidden sm:inline-flex"
+          onClick={() => useAIStore.getState().setSidebarOpen(!useAIStore.getState().isSidebarOpen)}
+        >
           AI Assistant
         </Button>
       </div>

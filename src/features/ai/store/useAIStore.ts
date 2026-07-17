@@ -1,0 +1,71 @@
+import { create } from 'zustand';
+
+export interface AIMessageType {
+  id: string;
+  role: 'USER' | 'ASSISTANT' | 'SYSTEM';
+  content: string;
+  createdAt: Date;
+  tokens?: number;
+  cost?: number;
+  model?: string;
+  provider?: string;
+}
+
+interface AIState {
+  isGenerating: boolean;
+  isSidebarOpen: boolean;
+  currentConversationId: string | null;
+  messages: AIMessageType[];
+  streamingMessage: string;
+  
+  setIsGenerating: (isGenerating: boolean) => void;
+  setSidebarOpen: (isOpen: boolean) => void;
+  setCurrentConversationId: (id: string | null) => void;
+  setMessages: (messages: AIMessageType[]) => void;
+  addMessage: (message: AIMessageType) => void;
+  setStreamingMessage: (chunk: string | ((prev: string) => string)) => void;
+  clearStreamingMessage: () => void;
+  
+  isAdminDashboardOpen: boolean;
+  setAdminDashboardOpen: (isOpen: boolean) => void;
+  
+  // Summary Generator State
+  summaryLoading: boolean;
+  setSummaryLoading: (loading: boolean) => void;
+  generatedSummary: string;
+  setGeneratedSummary: (summary: string) => void;
+  selectedSummary: string;
+  setSelectedSummary: (summary: string) => void;
+  isSummaryGeneratorOpen: boolean;
+  setSummaryGeneratorOpen: (isOpen: boolean) => void;
+}
+
+export const useAIStore = create<AIState>((set) => ({
+  isGenerating: false,
+  isSidebarOpen: false,
+  currentConversationId: null,
+  messages: [],
+  streamingMessage: '',
+  
+  setIsGenerating: (isGenerating) => set({ isGenerating }),
+  setSidebarOpen: (isOpen) => set({ isSidebarOpen: isOpen }),
+  setCurrentConversationId: (id) => set({ currentConversationId: id }),
+  setMessages: (messages) => set({ messages }),
+  addMessage: (message) => set((state) => ({ messages: [...state.messages, message] })),
+  setStreamingMessage: (chunk) => set((state) => ({
+    streamingMessage: typeof chunk === 'function' ? chunk(state.streamingMessage) : chunk
+  })),
+  clearStreamingMessage: () => set({ streamingMessage: '' }),
+  
+  isAdminDashboardOpen: false,
+  setAdminDashboardOpen: (isOpen) => set({ isAdminDashboardOpen: isOpen }),
+  
+  summaryLoading: false,
+  setSummaryLoading: (loading) => set({ summaryLoading: loading }),
+  generatedSummary: '',
+  setGeneratedSummary: (summary) => set({ generatedSummary: summary }),
+  selectedSummary: '',
+  setSelectedSummary: (summary) => set({ selectedSummary: summary }),
+  isSummaryGeneratorOpen: false,
+  setSummaryGeneratorOpen: (isOpen) => set({ isSummaryGeneratorOpen: isOpen })
+}));

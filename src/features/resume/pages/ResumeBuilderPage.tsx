@@ -6,6 +6,9 @@ import { ResumeToolbar } from '../components/ResumeToolbar';
 import { ResumeSidebar } from '../components/ResumeSidebar';
 import { ResumeEditor } from '../components/ResumeEditor';
 import { ResumePreview } from '../components/ResumePreview';
+import { AIWorkspace } from '../../ai/components/AIWorkspace';
+import { AdminDashboard } from '../../ai/components/dashboard/AdminDashboard';
+import { AIGenerationModal } from '../../ai/components/generator/AIGenerationModal';
 
 export const ResumeBuilderPage: React.FC = () => {
   const { resumeId } = useParams<{ resumeId: string }>();
@@ -46,10 +49,13 @@ export const ResumeBuilderPage: React.FC = () => {
     <div className="h-screen bg-slate-50 flex flex-col overflow-hidden">
       <ResumeToolbar resume={resume} />
 
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden relative">
         <ResumeSidebar resume={resume} />
-        <ResumeEditor resume={resume} />
+        <ResumeEditor resumeId={resume.id} />
         <ResumePreview resume={resume} />
+        <AIWorkspace />
+        <AdminDashboard />
+        <AIGenerationModal resumeId={resume.id} />
       </div>
     </div>
   );

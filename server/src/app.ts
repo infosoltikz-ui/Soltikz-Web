@@ -10,6 +10,7 @@ import authRoutes from './routes/auth.route';
 import profileRoutes from './routes/profile.route';
 import notificationRoutes from './routes/notification.route';
 import resumeRoutes from './routes/resume.route';
+import aiRoutes from './modules/ai/ai.routes';
 
 import { errorHandler, notFoundHandler } from './middlewares/error.middleware';
 
@@ -73,8 +74,9 @@ app.get('/api/v1/health', async (req: Request, res: Response) => {
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
-app.use('/api/notifications', notificationRoutes);
+app.use('/api/v1/notifications', notificationRoutes);
 app.use('/api/v1/resumes', resumeRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Error Handling
 app.use(notFoundHandler);

@@ -1,11 +1,13 @@
 import React, { useEffect, useRef } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Resume } from '../services/resume.api';
 import { useUpdateSummary } from '../hooks/resume.queries';
 import { useResumeBuilderStore } from '../store/useResumeBuilderStore';
 import { useDebounce } from '@/hooks';
+import { RichTextEditor } from './RichTextEditor';
+import { useAIStore } from '../../ai/store/useAIStore';
 
 const summarySchema = z.object({
   content: z.string().max(2000, 'Max 2000 characters').optional(),
@@ -19,13 +21,12 @@ interface SummaryFormProps {
 
 export const SummaryForm: React.FC<SummaryFormProps> = ({ resume }) => {
   const { mutate: updateSummary } = useUpdateSummary();
-  const { setSaveStatus, setLastSavedAt } = useResumeBuilderStore();
+  const { setSaveStatus, setLastSavedAt, setLiveSummary } = useResumeBuilderStore();
   const isFirstRender = useRef(true);
 
   const {
-    register,
+    control,
     watch,
-    formState: { errors },
   } = useForm<SummaryValues>({
     resolver: zodResolver(summarySchema),
     defaultValues: {
@@ -34,8 +35,14 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ resume }) => {
   });
 
   const formValues = watch();
-  const debouncedValues = useDebounce(formValues, 1000);
+  const debouncedValues = useDebounce(formValues, 5000);
 
+  // Instantly update live store for preview
+  useEffect(() => {
+    setLiveSummary(formValues as any);
+  }, [formValues, setLiveSummary]);
+
+  // Auto-save logic
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -49,11 +56,6 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ resume }) => {
         onSuccess: () => {
           setSaveStatus('saved');
           setLastSavedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-          setTimeout(() => {
-            if (useResumeBuilderStore.getState().saveStatus === 'saved') {
-              setSaveStatus('idle');
-            }
-          }, 2000);
         },
         onError: () => {
           setSaveStatus('error');
@@ -62,24 +64,57 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ resume }) => {
     );
   }, [debouncedValues, resume.id, updateSummary, setSaveStatus, setLastSavedAt]);
 
+  const handleBlurSave = () => {
+    setSaveStatus('saving');
+    updateSummary(
+      { id: resume.id, data: formValues },
+      {
+        onSuccess: () => {
+          setSaveStatus('saved');
+          setLastSavedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+        },
+        onError: () => {
+          setSaveStatus('error');
+        }
+      }
+    );
+  };
+
   return (
-    <div className="space-y-4">
-      <p className="text-sm text-slate-500">
-        Write a brief summary highlighting your most valuable skills and experiences.
-      </p>
-      
-      <div>
-        <textarea
-          className={`w-full min-h-[200px] p-3 rounded-xl border ${
-            errors.content ? 'border-rose-300 focus:ring-rose-200' : 'border-slate-200 focus:ring-primary-100'
-          } focus:border-primary-500 focus:ring-4 outline-none transition-all resize-y text-slate-700 leading-relaxed`}
-          placeholder="e.g. Results-driven marketing professional with 5+ years of experience..."
-          {...register('content')}
-        />
-        {errors.content && (
-          <p className="mt-1.5 text-sm text-rose-500">{errors.content.message}</p>
-        )}
+    <div className="space-y-4 pb-20" onBlurCapture={(e) => {
+      if (!e.currentTarget.contains(e.relatedTarget)) {
+        handleBlurSave();
+      }
+    }}>
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-slate-500">
+          Write a brief summary highlighting your most valuable skills and experiences.
+        </p>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            useAIStore.getState().setSummaryGeneratorOpen(true);
+          }}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors border border-indigo-200"
+        >
+          ✨ Generate With AI
+        </button>
       </div>
+      
+      <Controller
+        control={control}
+        name="content"
+        render={({ field, fieldState: { error } }) => (
+          <RichTextEditor
+            value={field.value || ''}
+            onChange={field.onChange}
+            placeholder="e.g. Results-driven marketing professional with 5+ years of experience..."
+            maxLength={2000}
+            error={error?.message}
+          />
+        )}
+      />
     </div>
   );
 };

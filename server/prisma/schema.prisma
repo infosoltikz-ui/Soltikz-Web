@@ -60,7 +60,6 @@ model User {
   settings          Settings?
   subscriptions     Subscription[]
   resumes           Resume[]
-  aiUsages          AIUsage[]
   payments          Payment[]
 }
 
@@ -187,6 +186,19 @@ model Resume {
   isFavorite           Boolean          @default(false)
   isArchived           Boolean          @default(false)
   content              Json?
+
+  // Presentation Settings (Sprint 3.5)
+  selectedTemplate     String?          @default("modern")
+  defaultTheme         String?          @default("blue")
+  primaryColor         String?
+  fontFamily           String?          @default("inter")
+  fontSize             String?          @default("medium")
+  lineSpacing          String?          @default("normal")
+  sectionSpacing       String?          @default("comfortable")
+  pageMargin           String?          @default("medium")
+  showProfilePhoto     Boolean          @default(true)
+  showIcons            Boolean          @default(true)
+  showSectionDividers  Boolean          @default(true)
   
   createdAt            DateTime         @default(now())
   updatedAt            DateTime         @updatedAt
@@ -197,6 +209,17 @@ model Resume {
   
   personal             ResumePersonal?
   summary              ResumeSummary?
+  
+  experiences          ResumeExperience[]
+  educations           ResumeEducation[]
+  skills               ResumeSkill[]
+  projects             ResumeProject[]
+  certifications       ResumeCertification[]
+  languages            ResumeLanguage[]
+  achievements         ResumeAchievement[]
+  awards               ResumeAward[]
+  interests            ResumeInterest[]
+  references           ResumeReference[]
 }
 
 model ResumeVersion {
@@ -216,14 +239,6 @@ model ATSReport {
   createdAt DateTime @default(now())
 }
 
-model AIUsage {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tokens    Int
-  feature   String
-  createdAt DateTime @default(now())
-}
 
 model Payment {
   id            String   @id @default(uuid())
@@ -270,4 +285,292 @@ model ResumeSummary {
   
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model ResumeExperience {
+  id               String   @id @default(uuid())
+  resumeId         String
+  resume           Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  companyName      String
+  jobTitle         String
+  employmentType   String?
+  city             String?
+  state            String?
+  country          String?
+  startDate        String?
+  endDate          String?
+  currentlyWorking Boolean  @default(false)
+  description      String?  @db.Text
+  displayOrder     Int      @default(0)
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model ResumeEducation {
+  id                String   @id @default(uuid())
+  resumeId          String
+  resume            Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  institution       String
+  degree            String?
+  fieldOfStudy      String?
+  grade             String?
+  city              String?
+  country           String?
+  startDate         String?
+  endDate           String?
+  currentlyStudying Boolean  @default(false)
+  description       String?  @db.Text
+  displayOrder      Int      @default(0)
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model ResumeSkill {
+  id           String   @id @default(uuid())
+  resumeId     String
+  resume       Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  name         String
+  category     String?
+  proficiency  String?
+  displayOrder Int      @default(0)
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model ResumeProject {
+  id           String   @id @default(uuid())
+  resumeId     String
+  resume       Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  title        String
+  description  String?  @db.Text
+  technologies String[]
+  githubUrl    String?
+  liveUrl      String?
+  startDate    String?
+  endDate      String?
+  featured     Boolean  @default(false)
+  displayOrder Int      @default(0)
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model ResumeCertification {
+  id                   String   @id @default(uuid())
+  resumeId             String
+  resume               Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  certificationName    String
+  issuingOrganization  String?
+  credentialId         String?
+  credentialUrl        String?
+  issueDate            String?
+  expirationDate       String?
+  neverExpires         Boolean  @default(false)
+  displayOrder         Int      @default(0)
+
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model ResumeLanguage {
+  id           String   @id @default(uuid())
+  resumeId     String
+  resume       Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  language     String
+  proficiency  String   @default("Intermediate")
+  displayOrder Int      @default(0)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model ResumeAchievement {
+  id              String   @id @default(uuid())
+  resumeId        String
+  resume          Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  title           String
+  description     String?  @db.Text
+  achievementDate String?
+  displayOrder    Int      @default(0)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model ResumeAward {
+  id           String   @id @default(uuid())
+  resumeId     String
+  resume       Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  awardName    String
+  issuer       String?
+  awardDate    String?
+  description  String?  @db.Text
+  displayOrder Int      @default(0)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model ResumeInterest {
+  id           String   @id @default(uuid())
+  resumeId     String
+  resume       Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  interest     String
+  category     String?
+  displayOrder Int      @default(0)
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model ResumeReference {
+  id                   String   @id @default(uuid())
+  resumeId             String
+  resume               Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  name                 String
+  designation          String?
+  company              String?
+  email                String?
+  phone                String?
+  relationship         String?
+  availableUponRequest Boolean  @default(false)
+  displayOrder         Int      @default(0)
+
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+// ==========================================
+// SPRINT 4.1A - AI FOUNDATION MODELS
+// ==========================================
+
+enum AIProvider {
+  OPENAI
+  CLAUDE
+  GEMINI
+}
+
+enum AIRole {
+  SYSTEM
+  USER
+  ASSISTANT
+}
+
+model AIConversation {
+  id        String   @id @default(cuid())
+  userId    String
+  resumeId  String?
+  provider  AIProvider
+  title     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  messages  AIMessage[]
+  usage     AIUsage[]
+}
+
+model AIMessage {
+  id             String   @id @default(cuid())
+  conversationId String
+  role           AIRole
+  content        String   @db.Text
+  tokens         Int?
+  createdAt      DateTime @default(now())
+  
+  conversation   AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+model AIUsage {
+  id               String   @id @default(cuid())
+  conversationId   String
+  provider         AIProvider
+  model            String
+  promptTokens     Int
+  completionTokens Int
+  totalTokens      Int
+  estimatedCost    Decimal
+  latency          Int
+  createdAt        DateTime @default(now())
+  
+  conversation     AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+model AISettings {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  provider       AIProvider
+  preferredModel String
+  temperature    Float    @default(0.7)
+  maxTokens      Int      @default(1000)
+  stream         Boolean  @default(true)
+  language       String   @default("English")
+  tone           String   @default("Professional")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// ==========================================
+// SPRINT 4.1C - AI PLATFORM SERVICES
+// ==========================================
+
+model AIPrompt {
+  id           String     @id @default(cuid())
+  category     String
+  version      Int
+  provider     AIProvider? // Null means compatible with all
+  systemPrompt String     @db.Text
+  userPrompt   String     @db.Text
+  variables    String[]
+  description  String?    @db.Text
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([category, version])
+}
+
+model AICache {
+  id        String     @id @default(cuid())
+  hashKey   String     @unique
+  provider  AIProvider
+  model     String
+  response  String     @db.Text
+  tokens    Int
+  expiresAt DateTime
+  createdAt DateTime   @default(now())
+
+  @@index([hashKey])
+}
+
+model AIAuditLog {
+  id             String     @id @default(cuid())
+  userId         String
+  conversationId String?
+  promptId       String?
+  provider       AIProvider
+  model          String
+  tokens         Int
+  latency        Int
+  cost           Decimal
+  status         String     // "SUCCESS" | "FAILED"
+  errorMessage   String?    @db.Text
+  createdAt      DateTime   @default(now())
+
+  @@index([userId])
+  @@index([status])
+}
+
+model AIRateLimit {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // "MINUTE" | "HOUR" | "DAY"
+  count     Int      @default(0)
+  resetAt   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, type])
 }
