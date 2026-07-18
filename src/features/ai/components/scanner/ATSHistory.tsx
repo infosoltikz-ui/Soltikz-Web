@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, FC } from 'react';
 import { Clock, Loader2, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
@@ -14,7 +14,7 @@ interface ATSHistoryProps {
   onSelect: (result: any) => void;
 }
 
-export const ATSHistory: React.FC<ATSHistoryProps> = ({ resumeId, onSelect }) => {
+export const ATSHistory: FC<ATSHistoryProps> = ({ resumeId, onSelect }) => {
   const [history, setHistory] = useState<ATSHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
 

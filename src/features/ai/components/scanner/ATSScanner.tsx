@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC } from 'react';
 import { useAIStore } from '../../store/useAIStore';
 import { Button } from '@/components/ui/Button';
 import { ScanSearch, Brain } from 'lucide-react';
@@ -11,7 +11,7 @@ interface ATSScannerProps {
   resumeId: string;
 }
 
-export const ATSScanner: React.FC<ATSScannerProps> = ({ resumeId }) => {
+export const ATSScanner: FC<ATSScannerProps> = ({ resumeId }) => {
   const { atsScannerLoading, setAtsScannerLoading, atsScannerResults, setAtsScannerResults } = useAIStore();
 
   const handleScan = async () => {

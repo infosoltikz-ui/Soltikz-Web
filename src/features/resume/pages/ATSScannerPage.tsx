@@ -1,8 +1,7 @@
-import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { IconButton } from '@/components/ui/Button';
 import { ArrowLeft } from 'lucide-react';
-import { ATSScanner } from '../../ai/components/scanner/ATSScanner';
+import { ATSScanner } from '@features/ai/components/scanner/ATSScanner';
 
 export const ATSScannerPage = () => {
   const { resumeId } = useParams<{ resumeId: string }>();

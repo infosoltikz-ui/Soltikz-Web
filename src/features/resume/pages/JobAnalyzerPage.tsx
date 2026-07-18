@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { JobDescriptionAnalyzer } from '../../ai/components/analyzer/JobDescriptionAnalyzer';
+import { JobDescriptionAnalyzer } from '@features/ai/components/analyzer/JobDescriptionAnalyzer';
 import { IconButton } from '@/components/ui/Button';
 import { ArrowLeft } from 'lucide-react';
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC } from 'react';
 import { AlertTriangle, AlertCircle, Info, CheckCircle2 } from 'lucide-react';
 
 interface ATSIssueListProps {
@@ -23,7 +23,7 @@ interface ATSIssueListProps {
   };
 }
 
-export const ATSIssueList: React.FC<ATSIssueListProps> = ({ 
+export const ATSIssueList: FC<ATSIssueListProps> = ({ 
   keywordAnalysis, 
   formattingAnalysis, 
   contentAnalysis, 

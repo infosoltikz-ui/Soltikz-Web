@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC } from 'react';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
@@ -14,7 +14,7 @@ interface ATSScoreCardProps {
   };
 }
 
-export const ATSScoreCard: React.FC<ATSScoreCardProps> = ({ score, sectionScores }) => {
+export const ATSScoreCard: FC<ATSScoreCardProps> = ({ score, sectionScores }) => {
   const getScoreColor = (value: number) => {
     if (value >= 80) return '#10b981'; // emerald-500
     if (value >= 60) return '#f59e0b'; // amber-500

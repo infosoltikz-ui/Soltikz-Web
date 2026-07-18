@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC } from 'react';
 import { Lightbulb, Wrench } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useAIStore } from '../../store/useAIStore';
@@ -14,7 +14,7 @@ interface ATSRecommendationPanelProps {
   recommendations: ATSRecommendation[];
 }
 
-export const ATSRecommendationPanel: React.FC<ATSRecommendationPanelProps> = ({ recommendations }) => {
+export const ATSRecommendationPanel: FC<ATSRecommendationPanelProps> = ({ recommendations }) => {
   const { setSidebarOpen } = useAIStore();
 
   const getSeverityColor = (severity: string) => {
