@@ -29,6 +29,9 @@ const ExportPage       = lazy(() => import('@features/export/pages/ExportPage').
 const NotFoundPage     = lazy(() => import('@features/home/NotFoundPage'))
 const BillingDashboardPage = lazy(() => import('@features/billing/pages/BillingDashboard').then(module => ({ default: module.BillingDashboard })))
 const BillingPricingPage   = lazy(() => import('@features/billing/pages/PricingPage').then(module => ({ default: module.PricingPage })))
+const AdminLayout          = lazy(() => import('@features/admin/layouts/AdminLayout').then(module => ({ default: module.AdminLayout })))
+const AdminDashboardPage   = lazy(() => import('@features/admin/pages/AdminDashboardPage').then(module => ({ default: module.AdminDashboardPage })))
+const UsersPage            = lazy(() => import('@features/admin/pages/UsersPage').then(module => ({ default: module.UsersPage })))
 
 // ── Suspense wrapper ──────────────────────────────────────────
 const Lazy = ({ children }: { children: React.ReactNode }) => (
@@ -68,6 +71,14 @@ const router = createBrowserRouter([
       { path: '/dashboard/resumes/:resumeId/cover-letter', element: <Lazy><CoverLetterPage /></Lazy> },
       { path: '/dashboard/billing', element: <Lazy><BillingDashboardPage /></Lazy> },
       { path: '/dashboard/pricing', element: <Lazy><BillingPricingPage /></Lazy> },
+    ],
+  },
+  /* Admin routes */
+  {
+    element: <ProtectedRoute><AdminLayout /></ProtectedRoute>,
+    children: [
+      { path: '/admin', element: <Lazy><AdminDashboardPage /></Lazy> },
+      { path: '/admin/users', element: <Lazy><UsersPage /></Lazy> },
     ],
   },
   /* Fallback */

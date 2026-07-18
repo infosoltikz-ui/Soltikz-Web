@@ -50,6 +50,11 @@ model User {
   updatedAt     DateTime  @updatedAt
   deletedAt     DateTime?
 
+  roleId        String?
+  adminRole     AdminRole? @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  isSuspended   Boolean   @default(false)
+  loginCount    Int       @default(0)
+
   sessions          Session[]
   refreshTokens     RefreshToken[]
   emailVerifications EmailVerification[]
@@ -69,6 +74,7 @@ model User {
   coverLetterAnalytics CoverLetterAnalytics[]
   invoices          Invoice[]
   usage             Usage?
+  auditLogs         AuditLog[]
 }
 
 model Session {
@@ -168,6 +174,7 @@ model Subscription {
   expiryDate      DateTime?
   nextBillingDate DateTime?
   trialEndsAt     DateTime?
+  managedBy       String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -272,6 +279,7 @@ model Payment {
   status            String
   paymentMethod     String?
   transactionId     String?  @unique
+  reviewedBy        String?
   createdAt         DateTime @default(now())
   
   invoice           Invoice?
@@ -756,4 +764,75 @@ model Plan {
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+// ==========================================
+// SPRINT 10 - ENTERPRISE ADMIN PANEL
+// ==========================================
+
+model AdminRole {
+  id          String   @id @default(uuid())
+  name        String   @unique // e.g. "SUPER_ADMIN", "ADMIN", "SUPPORT", "FINANCE"
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       User[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  action      String   @unique // e.g. "MANAGE_USERS", "MANAGE_BILLING", "VIEW_ANALYTICS"
+  description String?
+  createdAt   DateTime @default(now())
+
+  roles       RolePermission[]
+}
+
+model RolePermission {
+  id           String    @id @default(uuid())
+  roleId       String
+  permissionId String
+  createdAt    DateTime  @default(now())
+
+  role         AdminRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  userId      String?
+  action      String   // e.g. "USER_SUSPENDED", "PLAN_UPDATED"
+  entityType  String?  // e.g. "USER", "SUBSCRIPTION"
+  entityId    String?
+  metadata    Json?
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+}
+
+model SystemSetting {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String   @db.Text
+  description String?
+  isPublic    Boolean  @default(false)
+  updatedBy   String?
+  updatedAt   DateTime @updatedAt
+}
+
+model FeatureFlag {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  isEnabled   Boolean  @default(false)
+  description String?
+  updatedBy   String?
+  updatedAt   DateTime @updatedAt
 }

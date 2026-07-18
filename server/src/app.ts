@@ -85,6 +85,9 @@ app.use('/api/v1/cover-letter', coverLetterRoutes);
 import billingRoutes from './modules/billing/routes/billing.routes';
 app.use('/api/v1', billingRoutes);
 
+import adminRoutes from './modules/admin/routes/admin.routes';
+app.use('/api/admin', adminRoutes);
+
 // Error Handling
 app.use(notFoundHandler);
 app.use(errorHandler);
