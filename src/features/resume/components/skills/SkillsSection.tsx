@@ -6,6 +6,7 @@ import { useCreateSkill, useReorderSkill } from '../../hooks/resume.queries';
 import { SortableList } from '../ui/SortableList';
 import { AddButton } from '../ui/AddButton';
 import { SkillCard } from './SkillCard';
+import { useAIStore } from '../../../ai/store/useAIStore';
 
 interface SkillsSectionProps {
   resume: Resume;
@@ -77,7 +78,18 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({ resume }) => {
         </div>
       )}
 
-      <AddButton label="Add Skill" onClick={handleAddSkill} />
+      <div className="flex items-center gap-3">
+        <AddButton label="Add Skill" onClick={handleAddSkill} />
+        <button
+          onClick={() => {
+            useAIStore.getState().setGeneratorType('skills');
+            useAIStore.getState().setGeneratorOpen(true);
+          }}
+          className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition-colors border border-indigo-200 shadow-sm"
+        >
+          ✨ Generate Skills with AI
+        </button>
+      </div>
     </div>
   );
 };

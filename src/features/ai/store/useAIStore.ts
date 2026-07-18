@@ -42,8 +42,8 @@ interface AIState {
   // Generic Generator State
   isGeneratorOpen: boolean;
   setGeneratorOpen: (isOpen: boolean) => void;
-  generatorType: 'summary' | 'experience' | null;
-  setGeneratorType: (type: 'summary' | 'experience' | null) => void;
+  generatorType: 'summary' | 'experience' | 'skills' | null;
+  setGeneratorType: (type: 'summary' | 'experience' | 'skills' | null) => void;
   generatorSelectedId: string | null;
   setGeneratorSelectedId: (id: string | null) => void;
 
@@ -52,6 +52,12 @@ interface AIState {
   setExperienceLoading: (loading: boolean) => void;
   rewrittenExperience: string;
   setRewrittenExperience: (experience: string) => void;
+
+  // Skills Generator State
+  skillsLoading: boolean;
+  setSkillsLoading: (loading: boolean) => void;
+  generatedSkills: string;
+  setGeneratedSkills: (skills: string) => void;
 }
 
 export const useAIStore = create<AIState>((set) => ({
@@ -93,5 +99,10 @@ export const useAIStore = create<AIState>((set) => ({
   experienceLoading: false,
   setExperienceLoading: (loading) => set({ experienceLoading: loading }),
   rewrittenExperience: '',
-  setRewrittenExperience: (experience) => set({ rewrittenExperience: experience })
+  setRewrittenExperience: (experience) => set({ rewrittenExperience: experience }),
+
+  skillsLoading: false,
+  setSkillsLoading: (loading) => set({ skillsLoading: loading }),
+  generatedSkills: '',
+  setGeneratedSkills: (skills) => set({ generatedSkills: skills })
 }));

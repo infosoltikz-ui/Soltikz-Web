@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { AIController } from './ai.controller';
 import { SummaryGenerationController } from './SummaryGenerationController';
 import { ExperienceRewriteController } from './ExperienceRewriteController';
+import { SkillsGenerationController } from './SkillsGenerationController';
 import { protect } from '../../middlewares/auth.middleware';
 
 const router = Router();
@@ -30,5 +31,10 @@ router.get('/summary/history', SummaryGenerationController.getHistory);
 router.post('/experience/rewrite', ExperienceRewriteController.rewrite);
 router.post('/experience/stream', ExperienceRewriteController.stream);
 router.get('/experience/history', ExperienceRewriteController.getHistory);
+
+// Skills Generator Endpoints
+router.post('/skills/generate', SkillsGenerationController.generate);
+router.post('/skills/stream', SkillsGenerationController.stream);
+router.get('/skills/history', SkillsGenerationController.getHistory);
 
 export default router;

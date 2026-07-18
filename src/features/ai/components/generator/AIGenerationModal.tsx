@@ -7,6 +7,9 @@ import { SummaryHistory } from './SummaryHistory';
 import { ExperienceRewriterForm } from './experience/ExperienceRewriterForm';
 import { ExperiencePreview } from './experience/ExperiencePreview';
 import { ExperienceHistory } from './experience/ExperienceHistory';
+import { SkillsGeneratorForm } from './skills/SkillsGeneratorForm';
+import { SkillsPreview } from './skills/SkillsPreview';
+import { SkillsHistory } from './skills/SkillsHistory';
 
 export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) => {
   const { 
@@ -16,7 +19,8 @@ export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) 
     isGeneratorOpen,
     setGeneratorOpen,
     generatorType,
-    rewrittenExperience
+    rewrittenExperience,
+    generatedSkills
   } = useAIStore();
 
   const isOpen = isSummaryGeneratorOpen || isGeneratorOpen;
@@ -30,11 +34,19 @@ export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) 
 
   const isSummary = isSummaryGeneratorOpen || generatorType === 'summary';
   const isExperience = generatorType === 'experience';
+  const isSkills = generatorType === 'skills';
 
-  const title = isSummary ? 'AI Summary Generator' : 'AI Experience Rewriter';
-  const subtitle = isSummary ? 'Create ATS-friendly, professional summaries' : 'Transform basic descriptions into powerful achievements';
+  const title = isSummary ? 'AI Summary Generator' : 
+                isExperience ? 'AI Experience Rewriter' : 
+                'AI Skills Generator';
+                
+  const subtitle = isSummary ? 'Create ATS-friendly, professional summaries' : 
+                   isExperience ? 'Transform basic descriptions into powerful achievements' :
+                   'Discover and add ATS-optimized skills for your target role';
   
-  const hasGeneratedContent = isSummary ? !!generatedSummary : !!rewrittenExperience;
+  const hasGeneratedContent = isSummary ? !!generatedSummary : 
+                              isExperience ? !!rewrittenExperience : 
+                              !!generatedSkills;
 
   return (
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex justify-center pt-10 sm:pt-20 px-4 overflow-y-auto">
@@ -65,13 +77,16 @@ export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) 
           <div className="w-full md:w-1/3 border-r border-slate-100 bg-slate-50 overflow-y-auto p-5">
             {isSummary && <SummaryGeneratorForm resumeId={resumeId} />}
             {isExperience && <ExperienceRewriterForm resumeId={resumeId} />}
+            {isSkills && <SkillsGeneratorForm resumeId={resumeId} />}
           </div>
 
           {/* Right Side: Preview & History */}
           <div className="w-full md:w-2/3 flex flex-col overflow-hidden">
             <div className="flex-1 overflow-y-auto bg-white p-6">
               {hasGeneratedContent ? (
-                isSummary ? <SummaryPreview resumeId={resumeId} /> : <ExperiencePreview resumeId={resumeId} />
+                isSummary ? <SummaryPreview resumeId={resumeId} /> : 
+                isExperience ? <ExperiencePreview resumeId={resumeId} /> :
+                <SkillsPreview resumeId={resumeId} />
               ) : (
                 <div className="h-full flex flex-col items-center justify-center text-center p-8">
                   <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 border border-slate-100">
@@ -79,7 +94,7 @@ export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) 
                   </div>
                   <h3 className="text-lg font-semibold text-slate-700 mb-2">Ready to generate</h3>
                   <p className="text-slate-500 max-w-sm">
-                    Adjust the settings on the left and click {isSummary ? 'Generate' : 'Rewrite'} to create a tailored professional description.
+                    Adjust the settings on the left and click {isSummary ? 'Generate' : isExperience ? 'Rewrite' : 'Generate'} to create tailored content.
                   </p>
                 </div>
               )}
@@ -87,6 +102,7 @@ export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) 
             <div className="border-t border-slate-100 bg-slate-50 h-48 overflow-y-auto">
               {isSummary && <SummaryHistory resumeId={resumeId} />}
               {isExperience && <ExperienceHistory resumeId={resumeId} />}
+              {isSkills && <SkillsHistory resumeId={resumeId} />}
             </div>
           </div>
         </div>
