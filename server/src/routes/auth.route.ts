@@ -7,6 +7,7 @@ import {
   forgotPassword,
   resetPassword,
   verifyEmail,
+  googleLogin,
 } from '../controllers/auth.controller';
 import { validate } from '../middlewares/validate.middleware';
 import {
@@ -26,5 +27,6 @@ router.post('/refresh-token', refreshToken);
 router.post('/forgot-password', validate(forgotPasswordSchema), forgotPassword);
 router.post('/reset-password', validate(resetPasswordSchema), resetPassword);
 router.post('/verify-email', verifyEmail);
+router.post('/google', googleLogin);
 
 export default router;

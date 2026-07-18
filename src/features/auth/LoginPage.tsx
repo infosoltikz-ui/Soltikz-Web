@@ -8,6 +8,7 @@ import { Button }        from '@components/ui/Button'
 import { Input }         from '@components/ui/Input'
 import { ROUTES }        from '@constants'
 import { stagger, fadeUp } from '@utils/motion'
+import { GoogleLoginButton } from './components/GoogleLoginButton'
 
 interface LoginFormData {
   email:    string
@@ -100,16 +101,8 @@ export default function LoginPage() {
           <div className="flex-1 h-px bg-surface-border dark:bg-dark-border" />
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          {['Google', 'GitHub'].map((provider) => (
-            <button key={provider}
-              className="flex items-center justify-center gap-2 h-10 rounded-xl border
-                         border-surface-border dark:border-dark-border text-sm font-medium
-                         text-body dark:text-dark-text
-                         hover:bg-surface-muted dark:hover:bg-dark-muted transition-colors">
-              {provider}
-            </button>
-          ))}
+        <div className="grid grid-cols-1 gap-3">
+          <GoogleLoginButton actionText="signin_with" />
         </div>
       </motion.div>
     </motion.div>

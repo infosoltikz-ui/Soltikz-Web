@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
+import { OAuth2Client } from 'google-auth-library';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import { prisma } from '../server';
+import { prisma } from '../prisma';
 import { generateTokens, setTokenCookies, clearTokenCookies } from '../utils/jwt.util';
 import { sendEmail } from '../lib/nodemailer';
 
@@ -273,6 +274,85 @@ export const verifyEmail = async (req: Request, res: Response, next: NextFunctio
     await prisma.emailVerification.delete({ where: { id: verificationRecord.id } });
 
     res.status(200).json({ success: true, statusCode: 200, message: 'Email has been verified successfully', data: null, errors: null, timestamp: new Date().toISOString(), requestId: (req as any).id || '' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || 'dummy-client-id');
+
+export const googleLogin = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { credential } = req.body;
+    if (!credential) {
+      return res.status(400).json({ success: false, statusCode: 400, message: 'Google credential is required', data: null, errors: null, timestamp: new Date().toISOString(), requestId: (req as any).id || '' });
+    }
+
+    const ticket = await client.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID || 'dummy-client-id',
+    });
+    
+    const payload = ticket.getPayload();
+    if (!payload || !payload.email) {
+      return res.status(400).json({ success: false, statusCode: 400, message: 'Invalid Google token payload', data: null, errors: null, timestamp: new Date().toISOString(), requestId: (req as any).id || '' });
+    }
+
+    const { email, name, picture } = payload;
+    let user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      const randomPassword = crypto.randomBytes(32).toString('hex');
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(randomPassword, salt);
+
+      user = await prisma.user.create({
+        data: {
+          name: name || 'User',
+          email,
+          password: hashedPassword,
+          avatar: picture,
+          emailVerified: true,
+          profile: { create: {} }
+        },
+      });
+    }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { lastLogin: new Date() },
+    });
+
+    await prisma.activityLog.create({
+      data: {
+        userId: user.id,
+        action: 'GOOGLE_LOGIN',
+        ip: req.ip,
+        userAgent: req.headers['user-agent'],
+      }
+    });
+
+    const { accessToken, refreshToken } = generateTokens(user.id);
+
+    await prisma.refreshToken.create({
+      data: {
+        userId: user.id,
+        token: refreshToken,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      },
+    });
+
+    setTokenCookies(res, accessToken, refreshToken);
+
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: 'Google Login successful',
+      data: { id: user.id, name: user.name, email: user.email, role: user.role, avatar: user.avatar },
+      errors: null,
+      timestamp: new Date().toISOString(),
+      requestId: (req as any).id || '',
+    });
   } catch (error) {
     next(error);
   }

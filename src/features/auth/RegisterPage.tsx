@@ -9,6 +9,7 @@ import { Input }          from '@components/ui/Input'
 import { Checkbox }       from '@components/ui/Input'
 import { ROUTES }         from '@constants'
 import { stagger, fadeUp } from '@utils/motion'
+import { GoogleLoginButton } from './components/GoogleLoginButton'
 
 interface RegisterFormData {
   name:     string
@@ -95,6 +96,16 @@ export default function RegisterPage() {
             {isSubmitting ? 'Creating account…' : 'Create free account'}
           </Button>
         </form>
+
+        <div className="relative flex items-center gap-3">
+          <div className="flex-1 h-px bg-surface-border dark:bg-dark-border" />
+          <span className="text-xs text-muted">or continue with</span>
+          <div className="flex-1 h-px bg-surface-border dark:bg-dark-border" />
+        </div>
+
+        <div className="grid grid-cols-1 gap-3">
+          <GoogleLoginButton actionText="signup_with" />
+        </div>
 
         <p className="text-center text-xs text-muted">
           No credit card required · Cancel anytime

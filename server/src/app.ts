@@ -49,7 +49,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.get('/api/v1/health', async (req: Request, res: Response) => {
   let dbStatus = 'ok';
   try {
-    const { prisma } = require('./server');
+    const { prisma } = require('./prisma');
     await prisma.$queryRaw`SELECT 1`;
   } catch (error) {
     dbStatus = 'error';

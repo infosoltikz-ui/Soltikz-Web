@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { prisma } from '../server';
+import { prisma } from '../prisma';
 import bcrypt from 'bcrypt';
 import { cloudinary } from '../lib/cloudinary';
 
