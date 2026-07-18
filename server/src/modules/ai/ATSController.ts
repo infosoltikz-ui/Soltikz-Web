@@ -1,7 +1,10 @@
 import { Request, Response } from 'express';
+import { PrismaClient } from '@prisma/client';
 import { ATSScannerService } from './services/ATSScannerService';
 import { ATSScoreService } from './services/ATSScoreService';
 import { AIService } from './services/AIService';
+
+const prisma = new PrismaClient();
 
 export class ATSController {
   public static async scan(req: Request, res: Response): Promise<void> {
@@ -26,7 +29,7 @@ export class ATSController {
       res.status(200).json({ 
         scan: normalizedScan,
         metadata: {
-          conversationId: result.conversationId,
+          conversationId: conversationId,
           tokens: result.tokens
         }
       });
@@ -75,12 +78,18 @@ export class ATSController {
       const userId = req.user!.id;
       const { resumeId } = req.query;
 
-      const history = await AIService.getHistory(
-        userId,
-        resumeId as string,
-        'ATS_SCANNER',
-        10
-      );
+      const whereClause: any = { userId };
+      if (resumeId) {
+        whereClause.resumeId = resumeId as string;
+      }
+      
+      whereClause.title = { contains: 'ATS_SCANNER' };
+
+      const history = await prisma.aIConversation.findMany({
+        where: whereClause,
+        orderBy: { createdAt: 'desc' },
+        include: { messages: true }
+      });
 
       res.status(200).json({ history });
     } catch (error: any) {
