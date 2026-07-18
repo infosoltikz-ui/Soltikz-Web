@@ -32,7 +32,7 @@ export const GrammarPreview: React.FC<{ resumeId: string }> = ({ resumeId }) => 
     setIsUpdating(true);
 
     const data = { description: generatedGrammar };
-    const summaryData = { summary: generatedGrammar };
+    const summaryData = { content: generatedGrammar };
 
     const onSuccess = () => {
       setIsUpdating(false);
