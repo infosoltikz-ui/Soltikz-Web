@@ -20,6 +20,7 @@ const TemplatesPage    = lazy(() => import('@features/home/TemplatesPage'))
 const LoginPage        = lazy(() => import('@features/auth/LoginPage'))
 const RegisterPage     = lazy(() => import('@features/auth/RegisterPage'))
 const DashboardPage    = lazy(() => import('@features/resume/pages/ResumeDashboardPage').then(module => ({ default: module.ResumeDashboardPage })))
+const MyResumesPage    = lazy(() => import('@features/resume/pages/MyResumesPage').then(module => ({ default: module.MyResumesPage })))
 const ResumeEditorPage = lazy(() => import('@features/resume/pages/ResumeBuilderPage').then(module => ({ default: module.ResumeBuilderPage })))
 const JobAnalyzerPage  = lazy(() => import('@features/resume/pages/JobAnalyzerPage').then(module => ({ default: module.JobAnalyzerPage })))
 const ATSScannerPage   = lazy(() => import('@features/resume/pages/ATSScannerPage').then(module => ({ default: module.ATSScannerPage })))
@@ -64,7 +65,7 @@ const router = createBrowserRouter([
     element: <ProtectedRoute><DashboardLayout /></ProtectedRoute>,
     children: [
       { path: '/dashboard', element: <Lazy><DashboardPage /></Lazy> },
-      { path: '/dashboard/resumes', element: <Lazy><DashboardPage /></Lazy> },
+      { path: '/dashboard/resumes', element: <Lazy><MyResumesPage /></Lazy> },
       { path: '/dashboard/resumes/:resumeId', element: <Lazy><ResumeEditorPage /></Lazy> },
       { path: '/dashboard/resumes/:resumeId/job-analyzer', element: <Lazy><JobAnalyzerPage /></Lazy> },
       { path: '/dashboard/resumes/:resumeId/ats-scanner', element: <Lazy><ATSScannerPage /></Lazy> },
