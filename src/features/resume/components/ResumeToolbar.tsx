@@ -87,6 +87,18 @@ export const ResumeToolbar: React.FC<ResumeToolbarProps> = ({ resume }) => {
           {showMobilePreview ? 'Edit' : 'Preview'}
         </Button>
 
+        {/* Job Analyzer Button */}
+        <Button
+          variant="outline"
+          size="sm"
+          className="hidden sm:inline-flex"
+          asChild
+        >
+          <Link to={`/dashboard/resumes/${resume.id}/job-analyzer`}>
+            Job Analyzer
+          </Link>
+        </Button>
+
         {/* AI Assistant Toggle */}
         <Button 
           variant="secondary" 

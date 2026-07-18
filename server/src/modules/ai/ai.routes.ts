@@ -7,6 +7,7 @@ import { ProjectGenerationController } from './ProjectGenerationController';
 import { AchievementGenerationController } from './AchievementGenerationController';
 import { ExperienceBulletController } from './ExperienceBulletController';
 import { GrammarToneController } from './GrammarToneController';
+import { JobDescriptionController } from './JobDescriptionController';
 import { protect } from '../../middlewares/auth.middleware';
 
 const router = Router();
@@ -60,5 +61,11 @@ router.get('/experience-bullets/history', ExperienceBulletController.getHistory)
 router.post('/grammar/optimize', GrammarToneController.optimize);
 router.post('/grammar/stream', GrammarToneController.stream);
 router.get('/grammar/history', GrammarToneController.getHistory);
+
+// Job Description Analyzer & Tailoring Endpoints
+router.post('/job-description/analyze', JobDescriptionController.analyze);
+router.post('/job-description/stream-analyze', JobDescriptionController.streamAnalyze);
+router.post('/job-description/tailor', JobDescriptionController.tailor);
+router.post('/job-description/stream-tailor', JobDescriptionController.streamTailor);
 
 export default router;

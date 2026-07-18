@@ -21,6 +21,7 @@ const LoginPage        = lazy(() => import('@features/auth/LoginPage'))
 const RegisterPage     = lazy(() => import('@features/auth/RegisterPage'))
 const DashboardPage    = lazy(() => import('@features/resume/pages/ResumeDashboardPage').then(module => ({ default: module.ResumeDashboardPage })))
 const ResumeEditorPage = lazy(() => import('@features/resume/pages/ResumeBuilderPage').then(module => ({ default: module.ResumeBuilderPage })))
+const JobAnalyzerPage  = lazy(() => import('@features/resume/pages/JobAnalyzerPage').then(module => ({ default: module.JobAnalyzerPage })))
 const NotFoundPage     = lazy(() => import('@features/home/NotFoundPage'))
 
 // ── Suspense wrapper ──────────────────────────────────────────
@@ -55,6 +56,7 @@ const router = createBrowserRouter([
     children: [
       { path: '/dashboard', element: <Lazy><DashboardPage /></Lazy> },
       { path: '/dashboard/resumes/:resumeId', element: <Lazy><ResumeEditorPage /></Lazy> },
+      { path: '/dashboard/resumes/:resumeId/job-analyzer', element: <Lazy><JobAnalyzerPage /></Lazy> },
     ],
   },
   /* Fallback */

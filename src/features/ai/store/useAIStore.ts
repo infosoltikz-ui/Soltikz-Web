@@ -88,6 +88,19 @@ interface AIState {
   setAchievementLoading: (loading: boolean) => void;
   generatedAchievement: string;
   setGeneratedAchievement: (achievement: string) => void;
+
+  // Job Analyzer & Tailoring State
+  jobAnalyzerLoading: boolean;
+  setJobAnalyzerLoading: (loading: boolean) => void;
+  jobAnalyzerResults: any | null;
+  setJobAnalyzerResults: (results: any | null) => void;
+  jobDescriptionText: string;
+  setJobDescriptionText: (text: string) => void;
+  
+  tailoringLoading: boolean;
+  setTailoringLoading: (loading: boolean) => void;
+  tailoredResume: any | null;
+  setTailoredResume: (resume: any | null) => void;
 }
 
 export const useAIStore = create<AIState>((set) => ({
@@ -158,5 +171,17 @@ export const useAIStore = create<AIState>((set) => ({
   grammarLoading: false,
   setGrammarLoading: (loading) => set({ grammarLoading: loading }),
   generatedGrammar: '',
-  setGeneratedGrammar: (grammar) => set({ generatedGrammar: grammar })
+  setGeneratedGrammar: (grammar) => set({ generatedGrammar: grammar }),
+
+  jobAnalyzerLoading: false,
+  setJobAnalyzerLoading: (loading) => set({ jobAnalyzerLoading: loading }),
+  jobAnalyzerResults: null,
+  setJobAnalyzerResults: (results) => set({ jobAnalyzerResults: results }),
+  jobDescriptionText: '',
+  setJobDescriptionText: (text) => set({ jobDescriptionText: text }),
+  
+  tailoringLoading: false,
+  setTailoringLoading: (loading) => set({ tailoringLoading: loading }),
+  tailoredResume: null,
+  setTailoredResume: (resume) => set({ tailoredResume: resume }),
 }));
