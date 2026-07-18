@@ -149,7 +149,7 @@ export const getResumeById = async (req: Request, res: Response, next: NextFunct
 export const createResume = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const userId = req.user!.id;
-    const { title, templateId } = req.body;
+    const { title, templateId, resumeType } = req.body;
 
     const randomString = crypto.randomBytes(3).toString('hex');
     const slug = `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${randomString}`;
@@ -160,6 +160,7 @@ export const createResume = async (req: Request, res: Response, next: NextFuncti
         title,
         slug,
         templateId,
+        resumeType: resumeType || 'FULLTIME',
       },
       include: { template: true },
     });

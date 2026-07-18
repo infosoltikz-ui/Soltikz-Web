@@ -65,6 +65,8 @@ export class SummaryGenerationService {
       .join('\n');
 
     // 3. Prepare AI Variables matching the PromptRegistry requirements
+    const bulletCount = resume.resumeType === 'C2C' ? '9' : '5';
+
     const variables: Record<string, string> = {
       jobTitle: options.targetJobTitle || currentJobTitle || 'Professional',
       yearsOfExperience: options.yearsOfExperience || 'several',
@@ -75,7 +77,8 @@ export class SummaryGenerationService {
       experience: experienceText || 'Not specified',
       writingStyle: options.writingStyle || 'Professional',
       summaryLength: options.summaryLength || 'Medium',
-      additionalNotes: options.additionalNotes || 'None'
+      additionalNotes: options.additionalNotes || 'None',
+      bulletCount
     };
 
     // 4. Delegate to AIService

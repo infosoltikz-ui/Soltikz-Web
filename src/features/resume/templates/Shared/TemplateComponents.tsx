@@ -24,7 +24,7 @@ export const ContactItem = ({ icon: Icon, text, link }: any) => {
   return content;
 };
 
-export const SectionItem = ({ title, subtitle, date, description, bullets = [] }: any) => (
+export const SectionItem = ({ title, subtitle, date, description, environment, bullets = [], children }: any) => (
   <div className="mb-[var(--section-spacing)] last:mb-0 break-inside-avoid">
     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline mb-1 gap-1">
       <div>
@@ -33,6 +33,14 @@ export const SectionItem = ({ title, subtitle, date, description, bullets = [] }
       </div>
       {date && <div className="text-[0.9em] text-slate-500 whitespace-nowrap shrink-0 flex items-center gap-1"><Calendar className="w-3 h-3" /> {date}</div>}
     </div>
+    
+    {environment && (
+      <div className="text-[0.9em] text-slate-700 font-semibold mb-2">
+        Environment: <span className="font-normal text-slate-600">{environment}</span>
+      </div>
+    )}
+
+    {children}
     
     {description && (
       <div className="text-[0.95em] text-slate-600 mt-2 leading-[var(--line-height)] whitespace-pre-wrap">

@@ -27,6 +27,11 @@ enum ResumeStatus {
   ARCHIVED
 }
 
+enum ResumeType {
+  C2C
+  FULLTIME
+}
+
 enum ResumeVisibility {
   PRIVATE
   PUBLIC
@@ -207,6 +212,7 @@ model Resume {
   completionPercentage Int              @default(0)
   isFavorite           Boolean          @default(false)
   isArchived           Boolean          @default(false)
+  resumeType           ResumeType       @default(FULLTIME)
   content              Json?
 
   // Presentation Settings (Sprint 3.5)
@@ -334,6 +340,7 @@ model ResumeExperience {
   startDate        String?
   endDate          String?
   currentlyWorking Boolean  @default(false)
+  environment      String?  @db.Text
   description      String?  @db.Text
   displayOrder     Int      @default(0)
   

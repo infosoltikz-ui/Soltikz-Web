@@ -43,6 +43,9 @@ export class ProjectGenerationService {
       throw new Error('Project not found in this resume.');
     }
 
+    // Determine bullet count based on Resume Type
+    const bulletCount = resume.resumeType === 'C2C' ? '9' : '7';
+
     // 2. Prepare AI Variables
     const variables: Record<string, string> = {
       projectName: project.title || 'Not specified',
@@ -54,7 +57,8 @@ export class ProjectGenerationService {
       targetJobRole: options.targetJobRole || 'Not specified',
       writingStyle: options.writingStyle || 'Professional',
       descriptionLength: options.descriptionLength || 'Medium',
-      additionalNotes: options.additionalNotes || 'None'
+      additionalNotes: options.additionalNotes || 'None',
+      bulletCount
     };
 
     // 3. Delegate to AIService

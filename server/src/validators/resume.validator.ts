@@ -1,10 +1,11 @@
 import { z } from 'zod';
-import { ResumeStatus, ResumeVisibility } from '@prisma/client';
+import { ResumeStatus, ResumeVisibility, ResumeType } from '@prisma/client';
 
 export const createResumeSchema = z.object({
   body: z.object({
     title: z.string().min(1, 'Title is required').max(100, 'Title cannot exceed 100 characters'),
     templateId: z.string().uuid('Invalid template ID').optional(),
+    resumeType: z.nativeEnum(ResumeType).optional(),
   }),
 });
 
@@ -45,6 +46,7 @@ export const updateLayoutSchema = z.object({
     showProfilePhoto: z.boolean().optional(),
     showIcons: z.boolean().optional(),
     showSectionDividers: z.boolean().optional(),
+    resumeType: z.nativeEnum(ResumeType).optional(),
   }),
 });
 

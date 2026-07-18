@@ -4,7 +4,7 @@ export class HTMLExportService {
   /**
    * Generates a clean, ATS-friendly HTML string from Resume Data.
    */
-  public static generateHTML(resume: any, options: { template?: string; margin?: string } = {}): string {
+  public static generateHTML(resume: any, options: { template?: string; margin?: string; fontFamily?: string } = {}): string {
     const { personal, summary, experiences, educations, skills, projects } = resume;
     
     const marginClass = options.margin === 'large' ? 'padding: 60px;' : options.margin === 'small' ? 'padding: 20px;' : 'padding: 40px;';
@@ -22,26 +22,30 @@ export class HTMLExportService {
           }
           * { box-sizing: border-box; }
           body {
-            font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-family: ${options.fontFamily === 'Times New Roman' ? '"Times New Roman", Times, serif' : 
+                          options.fontFamily === 'Calibri' ? 'Calibri, "Open Sans", sans-serif' : 
+                          options.fontFamily === 'Arial' ? 'Arial, Helvetica, sans-serif' : 
+                          '"Inter", "Helvetica Neue", Helvetica, Arial, sans-serif'};
+            font-size: 11pt; /* Body text = 11pt */
             line-height: 1.5;
             color: #333;
             margin: 0;
             background: #fff;
             ${marginClass}
           }
-          h1, h2, h3, h4 { margin: 0 0 10px 0; color: var(--primary); }
-          h1 { font-size: 28px; border-bottom: 2px solid var(--primary); padding-bottom: 8px; margin-bottom: 16px; }
-          h2 { font-size: 20px; border-bottom: 1px solid #ccc; padding-bottom: 4px; margin-top: 24px; margin-bottom: 12px; }
-          h3 { font-size: 16px; font-weight: 600; }
-          p { margin: 0 0 8px 0; }
-          .contact-info { margin-bottom: 24px; font-size: 14px; color: #555; }
-          .contact-info span { margin-right: 12px; }
-          .section { margin-bottom: 24px; }
-          .item { margin-bottom: 16px; }
+          h1, h2, h3, h4 { margin: 0 0 10pt 0; color: var(--primary); }
+          h1 { font-size: 15pt; border-bottom: 2pt solid var(--primary); padding-bottom: 8pt; margin-bottom: 16pt; } /* Name = 14-15pt */
+          h2 { font-size: 12pt; border-bottom: 1pt solid #ccc; padding-bottom: 4pt; margin-top: 24pt; margin-bottom: 12pt; text-transform: uppercase; } /* Section Headings = 12pt */
+          h3 { font-size: 11pt; font-weight: 600; }
+          p { margin: 0 0 8pt 0; font-size: 11pt; }
+          .contact-info { margin-bottom: 24pt; font-size: 11pt; color: #555; }
+          .contact-info span { margin-right: 12pt; }
+          .section { margin-bottom: 24pt; }
+          .item { margin-bottom: 16pt; }
           .item-header { display: flex; justify-content: space-between; align-items: baseline; }
-          .item-subtitle { font-style: italic; color: #666; font-size: 14px; margin-bottom: 4px;}
-          .skills-list { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0; }
-          .skills-list li { background: #f1f5f9; padding: 4px 10px; border-radius: 4px; font-size: 13px; }
+          .item-subtitle { font-style: italic; color: #666; font-size: 11pt; margin-bottom: 4pt;}
+          .skills-list { display: flex; flex-wrap: wrap; gap: 8pt; list-style: none; padding: 0; margin: 0; }
+          .skills-list li { background: #f1f5f9; padding: 4pt 10pt; border-radius: 4px; font-size: 11pt; }
           @media print {
             body { padding: 0; }
             @page { margin: 0.5in; }

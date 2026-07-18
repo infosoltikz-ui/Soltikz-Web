@@ -84,6 +84,7 @@ export default function CreativeTemplate({ data, settings }: any) {
                 subtitle={exp.companyName}
                 date={`${exp.startDate || ''} - ${exp.currentlyWorking ? 'Present' : exp.endDate || ''}`}
                 description={exp.description}
+                environment={exp.environment}
               />
             ))}
           </section>

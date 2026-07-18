@@ -13,7 +13,8 @@ import { ResumeList } from '../components/ResumeList';
 import {
   DeleteResumeModal,
   ArchiveResumeModal,
-  RenameResumeModal
+  RenameResumeModal,
+  CreateResumeModal
 } from '../components/ResumeModals';
 import {
   Search,
@@ -69,17 +70,14 @@ export const MyResumesPage: React.FC = () => {
   const updateMutation    = useUpdateResume();
 
   const [modalState, setModalState] = useState<{
-    type: 'delete' | 'archive' | 'rename' | null;
+    type: 'create' | 'delete' | 'archive' | 'rename' | null;
     resumeId: string | null;
   }>({ type: null, resumeId: null });
 
   const activeResume = resumes.find(r => r.id === modalState.resumeId);
 
-  const handleCreate = () => {
-    createMutation.mutate(
-      { title: 'Untitled Resume' },
-      { onSuccess: (res: any) => { if (res?.id) navigate(`/dashboard/resumes/${res.id}`); } }
-    );
+  const handleCreateClick = () => {
+    setModalState({ type: 'create', resumeId: null });
   };
 
   return (
@@ -96,7 +94,7 @@ export const MyResumesPage: React.FC = () => {
           </div>
 
           <button
-            onClick={handleCreate}
+            onClick={handleCreateClick}
             disabled={createMutation.isPending}
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white text-sm font-semibold rounded-xl shadow-sm transition-all duration-150"
           >
@@ -221,6 +219,21 @@ export const MyResumesPage: React.FC = () => {
       </div>
 
       {/* ── Modals ──────────────────────────────────────── */}
+      <CreateResumeModal
+        isOpen={modalState.type === 'create'}
+        onClose={() => setModalState({ type: null, resumeId: null })}
+        onConfirm={(title, resumeType) => {
+          createMutation.mutate(
+            { title, resumeType },
+            { onSuccess: (res: any) => { 
+              setModalState({ type: null, resumeId: null });
+              if (res?.id) navigate(`/dashboard/resumes/${res.id}`); 
+            }}
+          );
+        }}
+        isLoading={createMutation.isPending}
+      />
+
       <DeleteResumeModal
         isOpen={modalState.type === 'delete'}
         onClose={() => setModalState({ type: null, resumeId: null })}

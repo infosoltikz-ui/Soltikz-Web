@@ -64,7 +64,7 @@ export const ExperienceSection: React.FC<ExperienceSectionProps> = ({ resume }) 
         <div className="mb-6">
           <SortableList items={liveExperiences} onDragEnd={handleDragEnd}>
             {liveExperiences.map((exp) => (
-              <ExperienceCard key={exp.id} experience={exp} resumeId={resume.id} />
+              <ExperienceCard key={exp.id} experience={exp} resumeId={resume.id} resumeType={resume.resumeType} />
             ))}
           </SortableList>
         </div>

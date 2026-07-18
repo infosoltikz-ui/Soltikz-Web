@@ -11,6 +11,7 @@ export interface Resume {
   completionPercentage: number;
   isFavorite: boolean;
   isArchived: boolean;
+  resumeType: 'C2C' | 'FULLTIME';
   content: any;
   createdAt: string;
   updatedAt: string;
@@ -99,7 +100,7 @@ export const getResumeById = async (id: string): Promise<Resume> => {
   return response.data.data;
 };
 
-export const createResume = async (data: { title: string; templateId?: string }): Promise<Resume> => {
+export const createResume = async (data: { title: string; templateId?: string; resumeType?: 'C2C' | 'FULLTIME' }): Promise<Resume> => {
   const response = await api.post('/resumes', data);
   return response.data.data;
 };
@@ -175,9 +176,10 @@ export interface ResumeExperience {
   state?: string | null;
   country?: string | null;
   startDate?: string | null;
-  endDate?: string | null;
+  endDate?: string;
   currentlyWorking: boolean;
-  description?: string | null;
+  environment?: string;
+  description?: string;
   displayOrder: number;
 }
 

@@ -37,9 +37,22 @@ export default function MinimalTemplate({ data, settings }: any) {
               key={exp.id}
               title={exp.jobTitle}
               subtitle={exp.companyName}
-              date={`${exp.startDate || ''} - ${exp.currentlyWorking ? 'Present' : exp.endDate || ''}`}
-              description={exp.description}
-            />
+            >
+              <div className="text-xs text-slate-500 mb-2 font-medium">
+                {exp.startDate} - {exp.currentlyWorking ? 'Present' : exp.endDate}
+                {exp.city && ` | ${exp.city}`}
+              </div>
+              {exp.environment && (
+                <div className="text-xs text-slate-700 mb-2 font-semibold">
+                  Environment: <span className="font-normal text-slate-600">{exp.environment}</span>
+                </div>
+              )}
+              {exp.description && (
+                <div className="text-[0.9em] leading-[var(--line-height)] text-slate-600 font-light">
+                  {exp.description}
+                </div>
+              )}
+            </SectionItem>
           ))}
         </section>
       )}

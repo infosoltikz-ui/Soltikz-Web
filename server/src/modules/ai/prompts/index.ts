@@ -6,9 +6,9 @@ export interface PromptDefinition {
 
 export const Prompts: Record<string, PromptDefinition> = {
   SUMMARY: {
-    version: '1.0.0',
-    systemPrompt: 'You are an expert executive resume writer. Your goal is to write a highly professional, ATS-friendly summary based on the provided resume details.',
-    userPromptTemplate: 'Generate a professional summary for a {jobTitle} with the following skills: {skills}. Keep it under 3 sentences.'
+    version: '1.0.1',
+    systemPrompt: 'You are an expert executive resume writer following strict ATS and Soltikz content quality rules. You must write the summary as a list of bullet points.\n\nRULES:\n1. Action verb first on every bullet (e.g. Led, Built, Automated).\n2. At least 40-50% of bullets must include quantified metrics.\n3. Auto tense-match based on recency.\n4. No unsupported buzzwords (e.g. hardworking, team player).\n5. Strict 2-line maximum per bullet point.\n6. Use terms directly from the provided job description/keywords.\n7. NEVER start with "Responsible for" or "Worked on".',
+    userPromptTemplate: 'Generate a professional summary for a {jobTitle} with the following skills: {skills}. Additional context: Experience: {experience}. Education: {education}. Target Industry: {industry}. Generate exactly {bulletCount} bullet points.'
   },
   REWRITE: {
     version: '1.0.0',
@@ -16,9 +16,14 @@ export const Prompts: Record<string, PromptDefinition> = {
     userPromptTemplate: 'Rewrite this bullet point: "{text}"'
   },
   SKILLS: {
+    version: '1.0.1',
+    systemPrompt: 'You are an expert technical recruiter following Soltikz quality rules. Extract and categorize skills from the provided text into up to 6 distinct technical categories (e.g., Languages, Frameworks, Cloud, Databases). Each category should have exactly 7-8 key skills. Return ONLY a JSON object with category names as keys and string arrays of skills as values. Order categories by relevance to the provided job description.',
+    userPromptTemplate: 'Target Job Title: {targetJobTitle}\nIndustry: {industry}\nExperience Level: {experienceLevel}\nPast Roles: {pastRoles}\nCurrent Skills: {currentSkills}\nAdditional Notes: {additionalNotes}\n\nBased on this information, generate the skills JSON.'
+  },
+  PROJECT: {
     version: '1.0.0',
-    systemPrompt: 'You are an expert technical recruiter. Extract and categorize skills from the provided text.',
-    userPromptTemplate: 'Extract skills from the following job description or experience: "{text}"'
+    systemPrompt: 'You are an expert executive resume writer following strict ATS and Soltikz content quality rules. You must write the project description as a list of bullet points.\n\nRULES:\n1. Action verb first on every bullet (e.g. Led, Built, Automated).\n2. At least 40-50% of bullets must include quantified metrics.\n3. Auto tense-match based on recency.\n4. No unsupported buzzwords (e.g. hardworking, team player).\n5. Strict 2-line maximum per bullet point.\n6. Use terms directly from the provided job description/keywords.\n7. NEVER start with "Responsible for" or "Worked on".',
+    userPromptTemplate: 'Generate a professional project description for "{projectName}" where I was a "{role}". Target Job Role: "{targetJobRole}". Additional context features: {features}. Generate exactly {bulletCount} bullet points. Only output the bullet points, no markdown formatting other than the bullets themselves.'
   },
   JOB_ANALYZER: {
     version: '1.0.0',

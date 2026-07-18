@@ -59,6 +59,11 @@ export default function ExecutiveTemplate({ data, settings }: any) {
                 <p className="font-semibold italic text-slate-700 text-[1.05em]">{exp.jobTitle}</p>
                 <span className="text-sm text-slate-500">{[exp.city, exp.country].filter(Boolean).join(', ')}</span>
               </div>
+              {exp.environment && (
+                <div className="text-[0.9em] text-slate-700 font-semibold mb-2">
+                  Environment: <span className="font-normal text-slate-600">{exp.environment}</span>
+                </div>
+              )}
               <div className="text-[0.95em] text-slate-700 mt-2 leading-[var(--line-height)] whitespace-pre-wrap">
                 {exp.description}
               </div>

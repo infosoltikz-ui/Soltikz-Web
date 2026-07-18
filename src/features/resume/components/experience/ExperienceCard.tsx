@@ -10,9 +10,10 @@ import { ExperienceForm } from './ExperienceForm';
 interface ExperienceCardProps {
   experience: ResumeExperience;
   resumeId: string;
+  resumeType: 'C2C' | 'FULLTIME';
 }
 
-export const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience, resumeId }) => {
+export const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience, resumeId, resumeType }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const { mutate: deleteExperience } = useDeleteExperience();
@@ -71,8 +72,8 @@ export const ExperienceCard: React.FC<ExperienceCardProps> = ({ experience, resu
 
           {/* Expanded Form */}
           {isExpanded && (
-            <div className="p-5 border-t border-slate-100 bg-slate-50/50">
-              <ExperienceForm experience={experience} resumeId={resumeId} />
+            <div className="p-4 bg-slate-50 border-t border-slate-100">
+              <ExperienceForm experience={experience} resumeId={resumeId} resumeType={resumeType} />
             </div>
           )}
 

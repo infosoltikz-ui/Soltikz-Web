@@ -17,6 +17,7 @@ const experienceSchema = z.object({
   endDate: z.string().max(50).optional(),
   city: z.string().max(50).optional(),
   country: z.string().max(50).optional(),
+  environment: z.string().max(200).optional(),
   description: z.string().max(4000).optional(),
   currentlyWorking: z.boolean().optional(),
 });
@@ -26,9 +27,10 @@ type ExperienceValues = z.infer<typeof experienceSchema>;
 interface ExperienceFormProps {
   experience: ResumeExperience;
   resumeId: string;
+  resumeType: 'C2C' | 'FULLTIME';
 }
 
-export const ExperienceForm: React.FC<ExperienceFormProps> = ({ experience, resumeId }) => {
+export const ExperienceForm: React.FC<ExperienceFormProps> = ({ experience, resumeId, resumeType }) => {
   const { mutate: updateExperience } = useUpdateExperience();
   const { setSaveStatus, setLastSavedAt, liveExperiences, setLiveExperiences } = useResumeBuilderStore();
   const isFirstRender = useRef(true);
@@ -47,6 +49,7 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ experience, resu
       endDate: experience.endDate || '',
       city: experience.city || '',
       country: experience.country || '',
+      environment: experience.environment || '',
       description: experience.description || '',
       currentlyWorking: experience.currentlyWorking || false,
     },
@@ -158,6 +161,17 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ experience, resu
           {...register('country')}
         />
       </div>
+
+      {resumeType === 'C2C' && (
+        <div className="mb-4">
+          <Input
+            label="Environment / Tech Stack"
+            placeholder="e.g. Java, Spring Boot, React, AWS"
+            error={errors.environment?.message}
+            {...register('environment')}
+          />
+        </div>
+      )}
 
       <div>
         <div className="flex items-center justify-between mb-1">
