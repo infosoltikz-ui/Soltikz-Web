@@ -34,13 +34,16 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ resume }) => {
     },
   });
 
+  // Use subscribe instead of watch() in useEffect to avoid infinite loops
+  useEffect(() => {
+    const subscription = watch((values) => {
+      setLiveSummary(values as any);
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, setLiveSummary]);
+
   const formValues = watch();
   const debouncedValues = useDebounce(formValues, 5000);
-
-  // Instantly update live store for preview
-  useEffect(() => {
-    setLiveSummary(formValues as any);
-  }, [formValues, setLiveSummary]);
 
   // Auto-save logic
   useEffect(() => {

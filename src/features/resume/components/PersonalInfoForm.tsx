@@ -66,13 +66,17 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ resume }) =>
     },
   });
 
+  // Use subscribe instead of watch() in useEffect to avoid infinite loops
+  // watch() creates a new object reference every render causing infinite re-renders
+  useEffect(() => {
+    const subscription = watch((values) => {
+      setLivePersonal(values as any);
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, setLivePersonal]);
+
   const formValues = watch();
   const debouncedValues = useDebounce(formValues, 5000); // 5 seconds auto-save per requirements
-
-  // Instantly update live store for preview
-  useEffect(() => {
-    setLivePersonal(formValues as any);
-  }, [formValues, setLivePersonal]);
 
   // Auto-save logic
   useEffect(() => {
