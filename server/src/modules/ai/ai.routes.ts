@@ -8,6 +8,7 @@ import { AchievementGenerationController } from './AchievementGenerationControll
 import { ExperienceBulletController } from './ExperienceBulletController';
 import { GrammarToneController } from './GrammarToneController';
 import { JobDescriptionController } from './JobDescriptionController';
+import { ATSController } from './ATSController';
 import { protect } from '../../middlewares/auth.middleware';
 
 const router = Router();
@@ -67,5 +68,10 @@ router.post('/job-description/analyze', JobDescriptionController.analyze);
 router.post('/job-description/stream-analyze', JobDescriptionController.streamAnalyze);
 router.post('/job-description/tailor', JobDescriptionController.tailor);
 router.post('/job-description/stream-tailor', JobDescriptionController.streamTailor);
+
+// ATS Scanner Endpoints
+router.post('/ats/scan', ATSController.scan);
+router.post('/ats/stream', ATSController.streamScan);
+router.get('/ats/history', ATSController.getHistory);
 
 export default router;

@@ -101,6 +101,12 @@ interface AIState {
   setTailoringLoading: (loading: boolean) => void;
   tailoredResume: any | null;
   setTailoredResume: (resume: any | null) => void;
+
+  // ATS Scanner State
+  atsScannerLoading: boolean;
+  setAtsScannerLoading: (loading: boolean) => void;
+  atsScannerResults: any | null;
+  setAtsScannerResults: (results: any | null) => void;
 }
 
 export const useAIStore = create<AIState>((set) => ({
@@ -184,4 +190,9 @@ export const useAIStore = create<AIState>((set) => ({
   setTailoringLoading: (loading) => set({ tailoringLoading: loading }),
   tailoredResume: null,
   setTailoredResume: (resume) => set({ tailoredResume: resume }),
+
+  atsScannerLoading: false,
+  setAtsScannerLoading: (loading) => set({ atsScannerLoading: loading }),
+  atsScannerResults: null,
+  setAtsScannerResults: (results) => set({ atsScannerResults: results }),
 }));

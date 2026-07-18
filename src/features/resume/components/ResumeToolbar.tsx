@@ -87,11 +87,22 @@ export const ResumeToolbar: React.FC<ResumeToolbarProps> = ({ resume }) => {
           {showMobilePreview ? 'Edit' : 'Preview'}
         </Button>
 
-        {/* Job Analyzer Button */}
+        {/* ATS Scanner Button */}
         <Button
           variant="outline"
           size="sm"
           className="hidden sm:inline-flex"
+          as={Link}
+          to={`/dashboard/resumes/${resume.id}/ats-scanner`}
+        >
+          ATS Scanner
+        </Button>
+
+        {/* Job Analyzer Button */}
+        <Button
+          variant="outline"
+          size="sm"
+          className="hidden md:inline-flex"
           as={Link}
           to={`/dashboard/resumes/${resume.id}/job-analyzer`}
         >
