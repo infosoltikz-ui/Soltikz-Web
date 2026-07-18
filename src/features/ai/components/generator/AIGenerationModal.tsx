@@ -19,6 +19,9 @@ import { AchievementHistory } from './achievement/AchievementHistory';
 import { ExperienceBulletGeneratorForm } from './experience-bullets/ExperienceBulletGeneratorForm';
 import { ExperienceBulletPreview } from './experience-bullets/ExperienceBulletPreview';
 import { ExperienceBulletHistory } from './experience-bullets/ExperienceBulletHistory';
+import { GrammarOptimizerForm } from './grammar/GrammarOptimizerForm';
+import { GrammarPreview } from './grammar/GrammarPreview';
+import { GrammarHistory } from './grammar/GrammarHistory';
 
 export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) => {
   const { 
@@ -32,7 +35,8 @@ export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) 
     generatedSkills,
     generatedProject,
     generatedAchievement,
-    generatedExperienceBullets
+    generatedExperienceBullets,
+    generatedGrammar
   } = useAIStore();
 
   const isOpen = isSummaryGeneratorOpen || isGeneratorOpen;
@@ -50,27 +54,31 @@ export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) 
   const isProject = generatorType === 'project';
   const isAchievement = generatorType === 'achievement';
   const isExperienceBullets = generatorType === 'experience-bullets';
+  const isGrammar = generatorType === 'grammar';
 
   const title = isSummary ? 'AI Summary Generator' : 
                 isExperience ? 'AI Experience Rewriter' : 
                 isSkills ? 'AI Skills Generator' :
                 isProject ? 'AI Project Description Generator' :
                 isAchievement ? 'AI Achievement Generator' :
-                'AI Experience Bullet Generator';
+                isExperienceBullets ? 'AI Experience Bullet Generator' :
+                'AI Grammar & Tone Optimizer';
                 
   const subtitle = isSummary ? 'Create ATS-friendly, professional summaries' : 
                    isExperience ? 'Transform basic descriptions into powerful achievements' :
                    isSkills ? 'Discover and add ATS-optimized skills for your target role' :
                    isProject ? 'Transform project details into professional descriptions' :
                    isAchievement ? 'Convert raw responsibilities into quantified achievement statements' :
-                   'Generate impactful, action-oriented bullet points from your job description';
+                   isExperienceBullets ? 'Generate impactful, action-oriented bullet points from your job description' :
+                   'Improve grammar, tone, and readability of your content';
   
   const hasGeneratedContent = isSummary ? !!generatedSummary : 
                               isExperience ? !!rewrittenExperience : 
                               isSkills ? !!generatedSkills :
                               isProject ? !!generatedProject :
                               isAchievement ? !!generatedAchievement :
-                              !!generatedExperienceBullets;
+                              isExperienceBullets ? !!generatedExperienceBullets :
+                              !!generatedGrammar;
 
   return (
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex justify-center pt-10 sm:pt-20 px-4 overflow-y-auto">
@@ -105,6 +113,7 @@ export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) 
             {isProject && <ProjectGeneratorForm resumeId={resumeId} />}
             {isAchievement && <AchievementGeneratorForm resumeId={resumeId} />}
             {isExperienceBullets && <ExperienceBulletGeneratorForm resumeId={resumeId} />}
+            {isGrammar && <GrammarOptimizerForm resumeId={resumeId} />}
           </div>
 
           {/* Right Side: Preview & History */}
@@ -116,7 +125,8 @@ export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) 
                 isSkills ? <SkillsPreview resumeId={resumeId} /> :
                 isProject ? <ProjectPreview resumeId={resumeId} /> :
                 isAchievement ? <AchievementPreview resumeId={resumeId} /> :
-                <ExperienceBulletPreview resumeId={resumeId} />
+                isExperienceBullets ? <ExperienceBulletPreview resumeId={resumeId} /> :
+                <GrammarPreview resumeId={resumeId} />
               ) : (
                 <div className="h-full flex flex-col items-center justify-center text-center p-8">
                   <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 border border-slate-100">
@@ -124,7 +134,7 @@ export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) 
                   </div>
                   <h3 className="text-lg font-semibold text-slate-700 mb-2">Ready to generate</h3>
                   <p className="text-slate-500 max-w-sm">
-                    Adjust the settings on the left and click Generate to create tailored content.
+                    Adjust the settings on the left and click {isGrammar ? 'Improve with AI' : 'Generate'} to create tailored content.
                   </p>
                 </div>
               )}
@@ -136,6 +146,7 @@ export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) 
               {isProject && <ProjectHistory resumeId={resumeId} />}
               {isAchievement && <AchievementHistory resumeId={resumeId} />}
               {isExperienceBullets && <ExperienceBulletHistory resumeId={resumeId} />}
+              {isGrammar && <GrammarHistory resumeId={resumeId} />}
             </div>
           </div>
         </div>

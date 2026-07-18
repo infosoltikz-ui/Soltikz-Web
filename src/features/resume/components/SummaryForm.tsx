@@ -86,20 +86,35 @@ export const SummaryForm: React.FC<SummaryFormProps> = ({ resume }) => {
         handleBlurSave();
       }
     }}>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-4">
         <p className="text-sm text-slate-500">
           Write a brief summary highlighting your most valuable skills and experiences.
         </p>
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            useAIStore.getState().setSummaryGeneratorOpen(true);
-          }}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors border border-indigo-200"
-        >
-          ✨ Generate With AI
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              useAIStore.getState().setGeneratorType('grammar');
+              useAIStore.getState().setGrammarTargetType('summary');
+              useAIStore.getState().setGrammarTargetContent(resume.summary?.content || '');
+              useAIStore.getState().setGeneratorOpen(true);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors border border-indigo-200"
+          >
+            ✨ Improve with AI
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              useAIStore.getState().setSummaryGeneratorOpen(true);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors border border-indigo-200"
+          >
+            ✨ Generate With AI
+          </button>
+        </div>
       </div>
       
       <Controller

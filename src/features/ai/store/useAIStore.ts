@@ -42,10 +42,16 @@ interface AIState {
   // Generic Generator State
   isGeneratorOpen: boolean;
   setGeneratorOpen: (isOpen: boolean) => void;
-  generatorType: 'summary' | 'experience' | 'skills' | 'project' | 'achievement' | 'experience-bullets' | null;
-  setGeneratorType: (type: 'summary' | 'experience' | 'skills' | 'project' | 'achievement' | 'experience-bullets' | null) => void;
+  generatorType: 'summary' | 'experience' | 'skills' | 'project' | 'achievement' | 'experience-bullets' | 'grammar' | null;
+  setGeneratorType: (type: 'summary' | 'experience' | 'skills' | 'project' | 'achievement' | 'experience-bullets' | 'grammar' | null) => void;
   generatorSelectedId: string | null;
   setGeneratorSelectedId: (id: string | null) => void;
+
+  // Grammar Target State
+  grammarTargetType: 'summary' | 'experience' | 'project' | 'achievement' | null;
+  setGrammarTargetType: (type: 'summary' | 'experience' | 'project' | 'achievement' | null) => void;
+  grammarTargetContent: string;
+  setGrammarTargetContent: (content: string) => void;
 
   // Experience Rewriter State
   experienceLoading: boolean;
@@ -58,6 +64,12 @@ interface AIState {
   setExperienceBulletsLoading: (loading: boolean) => void;
   generatedExperienceBullets: string;
   setGeneratedExperienceBullets: (bullets: string) => void;
+
+  // Grammar State
+  grammarLoading: boolean;
+  setGrammarLoading: (loading: boolean) => void;
+  generatedGrammar: string;
+  setGeneratedGrammar: (grammar: string) => void;
 
   // Skills Generator State
   skillsLoading: boolean;
@@ -137,5 +149,14 @@ export const useAIStore = create<AIState>((set) => ({
   experienceBulletsLoading: false,
   setExperienceBulletsLoading: (loading) => set({ experienceBulletsLoading: loading }),
   generatedExperienceBullets: '',
-  setGeneratedExperienceBullets: (bullets) => set({ generatedExperienceBullets: bullets })
+  setGeneratedExperienceBullets: (bullets) => set({ generatedExperienceBullets: bullets }),
+
+  grammarTargetType: null,
+  setGrammarTargetType: (type) => set({ grammarTargetType: type }),
+  grammarTargetContent: '',
+  setGrammarTargetContent: (content) => set({ grammarTargetContent: content }),
+  grammarLoading: false,
+  setGrammarLoading: (loading) => set({ grammarLoading: loading }),
+  generatedGrammar: '',
+  setGeneratedGrammar: (grammar) => set({ generatedGrammar: grammar })
 }));

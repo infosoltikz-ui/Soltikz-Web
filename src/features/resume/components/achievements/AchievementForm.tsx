@@ -75,7 +75,22 @@ export const AchievementForm: React.FC<AchievementFormProps> = ({ achievement, r
       </div>
       <div className="space-y-1">
         <div className="flex items-center justify-between mb-1">
-          <label className="block text-sm font-medium text-slate-700">Description</label>
+        <label className="block text-sm font-medium text-slate-700">Achievement Description</label>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              useAIStore.getState().setGeneratorSelectedId(achievement.id);
+              useAIStore.getState().setGrammarTargetType('achievement');
+              useAIStore.getState().setGrammarTargetContent(achievement.description || '');
+              useAIStore.getState().setGeneratorType('grammar');
+              useAIStore.getState().setGeneratorOpen(true);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors border border-indigo-200"
+          >
+            ✨ Improve with AI
+          </button>
           <button
             type="button"
             onClick={(e) => {
@@ -90,6 +105,7 @@ export const AchievementForm: React.FC<AchievementFormProps> = ({ achievement, r
             Generate Achievement
           </button>
         </div>
+      </div>
         <textarea
           rows={3}
           placeholder="Briefly describe what you achieved and its impact..."

@@ -137,19 +137,34 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ project, resumeId }) =
 
       <div className="flex items-center justify-between mb-1">
         <label className="block text-sm font-medium text-slate-700">Description</label>
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            useAIStore.getState().setGeneratorSelectedId(project.id);
-            useAIStore.getState().setGeneratorType('project');
-            useAIStore.getState().setGeneratorOpen(true);
-          }}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors border border-indigo-100"
-        >
-          <Sparkles className="w-3.5 h-3.5" />
-          Generate Project Description
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              useAIStore.getState().setGeneratorSelectedId(project.id);
+              useAIStore.getState().setGrammarTargetType('project');
+              useAIStore.getState().setGrammarTargetContent(project.description || '');
+              useAIStore.getState().setGeneratorType('grammar');
+              useAIStore.getState().setGeneratorOpen(true);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors border border-indigo-200"
+          >
+            ✨ Improve with AI
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              useAIStore.getState().setGeneratorType('project');
+              useAIStore.getState().setGeneratorSelectedId(project.id);
+              useAIStore.getState().setGeneratorOpen(true);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors border border-indigo-200"
+          >
+            ✨ Generate Description
+          </button>
+        </div>
       </div>
       <div>
         <Controller
