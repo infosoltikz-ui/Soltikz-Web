@@ -3,6 +3,7 @@ import { AIController } from './ai.controller';
 import { SummaryGenerationController } from './SummaryGenerationController';
 import { ExperienceRewriteController } from './ExperienceRewriteController';
 import { SkillsGenerationController } from './SkillsGenerationController';
+import { ProjectGenerationController } from './ProjectGenerationController';
 import { protect } from '../../middlewares/auth.middleware';
 
 const router = Router();
@@ -36,5 +37,10 @@ router.get('/experience/history', ExperienceRewriteController.getHistory);
 router.post('/skills/generate', SkillsGenerationController.generate);
 router.post('/skills/stream', SkillsGenerationController.stream);
 router.get('/skills/history', SkillsGenerationController.getHistory);
+
+// Project Description Generator Endpoints
+router.post('/project/generate', ProjectGenerationController.generate);
+router.post('/project/stream', ProjectGenerationController.stream);
+router.get('/project/history', ProjectGenerationController.getHistory);
 
 export default router;

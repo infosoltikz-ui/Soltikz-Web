@@ -8,6 +8,8 @@ import { useResumeBuilderStore } from '../../store/useResumeBuilderStore';
 import { Input } from '@/components/ui/Input';
 import { useDebounce } from '@/hooks';
 import { RichTextEditor } from '../RichTextEditor';
+import { useAIStore } from '../../../ai/store/useAIStore';
+import { Sparkles } from 'lucide-react';
 
 const projectSchema = z.object({
   title: z.string().min(1, 'Project title is required').max(100),
@@ -133,8 +135,23 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ project, resumeId }) =
         />
       </div>
 
+      <div className="flex items-center justify-between mb-1">
+        <label className="block text-sm font-medium text-slate-700">Description</label>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            useAIStore.getState().setGeneratorSelectedId(project.id);
+            useAIStore.getState().setGeneratorType('project');
+            useAIStore.getState().setGeneratorOpen(true);
+          }}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors border border-indigo-100"
+        >
+          <Sparkles className="w-3.5 h-3.5" />
+          Generate Project Description
+        </button>
+      </div>
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
         <Controller
           control={control}
           name="description"

@@ -42,8 +42,8 @@ interface AIState {
   // Generic Generator State
   isGeneratorOpen: boolean;
   setGeneratorOpen: (isOpen: boolean) => void;
-  generatorType: 'summary' | 'experience' | 'skills' | null;
-  setGeneratorType: (type: 'summary' | 'experience' | 'skills' | null) => void;
+  generatorType: 'summary' | 'experience' | 'skills' | 'project' | null;
+  setGeneratorType: (type: 'summary' | 'experience' | 'skills' | 'project' | null) => void;
   generatorSelectedId: string | null;
   setGeneratorSelectedId: (id: string | null) => void;
 
@@ -58,6 +58,12 @@ interface AIState {
   setSkillsLoading: (loading: boolean) => void;
   generatedSkills: string;
   setGeneratedSkills: (skills: string) => void;
+
+  // Project Generator State
+  projectLoading: boolean;
+  setProjectLoading: (loading: boolean) => void;
+  generatedProject: string;
+  setGeneratedProject: (project: string) => void;
 }
 
 export const useAIStore = create<AIState>((set) => ({
@@ -104,5 +110,10 @@ export const useAIStore = create<AIState>((set) => ({
   skillsLoading: false,
   setSkillsLoading: (loading) => set({ skillsLoading: loading }),
   generatedSkills: '',
-  setGeneratedSkills: (skills) => set({ generatedSkills: skills })
+  setGeneratedSkills: (skills) => set({ generatedSkills: skills }),
+
+  projectLoading: false,
+  setProjectLoading: (loading) => set({ projectLoading: loading }),
+  generatedProject: '',
+  setGeneratedProject: (project) => set({ generatedProject: project })
 }));

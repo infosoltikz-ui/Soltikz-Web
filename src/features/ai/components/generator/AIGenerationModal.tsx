@@ -10,6 +10,9 @@ import { ExperienceHistory } from './experience/ExperienceHistory';
 import { SkillsGeneratorForm } from './skills/SkillsGeneratorForm';
 import { SkillsPreview } from './skills/SkillsPreview';
 import { SkillsHistory } from './skills/SkillsHistory';
+import { ProjectGeneratorForm } from './project/ProjectGeneratorForm';
+import { ProjectPreview } from './project/ProjectPreview';
+import { ProjectHistory } from './project/ProjectHistory';
 
 export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) => {
   const { 
@@ -20,7 +23,8 @@ export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) 
     setGeneratorOpen,
     generatorType,
     rewrittenExperience,
-    generatedSkills
+    generatedSkills,
+    generatedProject
   } = useAIStore();
 
   const isOpen = isSummaryGeneratorOpen || isGeneratorOpen;
@@ -35,18 +39,22 @@ export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) 
   const isSummary = isSummaryGeneratorOpen || generatorType === 'summary';
   const isExperience = generatorType === 'experience';
   const isSkills = generatorType === 'skills';
+  const isProject = generatorType === 'project';
 
   const title = isSummary ? 'AI Summary Generator' : 
                 isExperience ? 'AI Experience Rewriter' : 
-                'AI Skills Generator';
+                isSkills ? 'AI Skills Generator' :
+                'AI Project Description Generator';
                 
   const subtitle = isSummary ? 'Create ATS-friendly, professional summaries' : 
                    isExperience ? 'Transform basic descriptions into powerful achievements' :
-                   'Discover and add ATS-optimized skills for your target role';
+                   isSkills ? 'Discover and add ATS-optimized skills for your target role' :
+                   'Transform project details into professional descriptions';
   
   const hasGeneratedContent = isSummary ? !!generatedSummary : 
                               isExperience ? !!rewrittenExperience : 
-                              !!generatedSkills;
+                              isSkills ? !!generatedSkills :
+                              !!generatedProject;
 
   return (
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex justify-center pt-10 sm:pt-20 px-4 overflow-y-auto">
@@ -78,6 +86,7 @@ export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) 
             {isSummary && <SummaryGeneratorForm resumeId={resumeId} />}
             {isExperience && <ExperienceRewriterForm resumeId={resumeId} />}
             {isSkills && <SkillsGeneratorForm resumeId={resumeId} />}
+            {isProject && <ProjectGeneratorForm resumeId={resumeId} />}
           </div>
 
           {/* Right Side: Preview & History */}
@@ -86,7 +95,8 @@ export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) 
               {hasGeneratedContent ? (
                 isSummary ? <SummaryPreview resumeId={resumeId} /> : 
                 isExperience ? <ExperiencePreview resumeId={resumeId} /> :
-                <SkillsPreview resumeId={resumeId} />
+                isSkills ? <SkillsPreview resumeId={resumeId} /> :
+                <ProjectPreview resumeId={resumeId} />
               ) : (
                 <div className="h-full flex flex-col items-center justify-center text-center p-8">
                   <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 border border-slate-100">
@@ -103,6 +113,7 @@ export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) 
               {isSummary && <SummaryHistory resumeId={resumeId} />}
               {isExperience && <ExperienceHistory resumeId={resumeId} />}
               {isSkills && <SkillsHistory resumeId={resumeId} />}
+              {isProject && <ProjectHistory resumeId={resumeId} />}
             </div>
           </div>
         </div>
