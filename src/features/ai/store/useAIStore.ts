@@ -107,6 +107,12 @@ interface AIState {
   setAtsScannerLoading: (loading: boolean) => void;
   atsScannerResults: any | null;
   setAtsScannerResults: (results: any | null) => void;
+
+  // Resume Analyzer State
+  resumeAnalyzerLoading: boolean;
+  setResumeAnalyzerLoading: (loading: boolean) => void;
+  resumeAnalyzerResults: any | null;
+  setResumeAnalyzerResults: (results: any | null) => void;
 }
 
 export const useAIStore = create<AIState>((set) => ({
@@ -195,4 +201,9 @@ export const useAIStore = create<AIState>((set) => ({
   setAtsScannerLoading: (loading) => set({ atsScannerLoading: loading }),
   atsScannerResults: null,
   setAtsScannerResults: (results) => set({ atsScannerResults: results }),
+
+  resumeAnalyzerLoading: false,
+  setResumeAnalyzerLoading: (loading) => set({ resumeAnalyzerLoading: loading }),
+  resumeAnalyzerResults: null,
+  setResumeAnalyzerResults: (results) => set({ resumeAnalyzerResults: results }),
 }));

@@ -90,5 +90,76 @@ Return ONLY a valid JSON object following this exact schema:
     }
   ]
 }`
+  },
+  RESUME_ANALYZER: {
+    version: '1.0.0',
+    systemPrompt: 'You are an expert executive recruiter, hiring manager, and ATS specialist. Your objective is to perform a comprehensive, 360-degree analysis of a resume. You will evaluate the resume across multiple dimensions, provide benchmarking insights, and generate an actionable improvement roadmap. You must output ONLY a valid JSON object matching the exact schema requested.',
+    userPromptTemplate: `Evaluate the following resume JSON context.
+
+Resume Context: {resumeContent}
+
+Return ONLY a valid JSON object following this exact schema:
+{
+  "overallScore": number (0-100),
+  "contentQuality": {
+    "summary": number (0-100),
+    "experience": number (0-100),
+    "skills": number (0-100),
+    "projects": number (0-100),
+    "achievements": number (0-100),
+    "education": number (0-100)
+  },
+  "recruiterPerspective": {
+    "firstImpression": number (0-100),
+    "readability": number (0-100),
+    "clarity": number (0-100),
+    "professionalism": number (0-100),
+    "careerProgression": number (0-100),
+    "technicalDepth": number (0-100)
+  },
+  "atsCompatibility": {
+    "atsScore": number (0-100),
+    "keywordOptimization": number (0-100),
+    "parseSuccess": boolean
+  },
+  "benchmarking": {
+    "percentile": number (0-100),
+    "strengths": string[],
+    "weaknesses": string[]
+  },
+  "insights": {
+    "topStrengths": string[],
+    "criticalWeaknesses": string[],
+    "missingSections": string[],
+    "missingSkills": string[],
+    "careerGrowthSuggestions": string[]
+  },
+  "roadmap": {
+    "quickWins": [
+      {
+        "priority": "High" | "Medium" | "Low",
+        "impact": "High" | "Medium" | "Low",
+        "difficulty": "Easy",
+        "suggestion": string
+      }
+    ],
+    "mediumImprovements": [
+      {
+        "priority": "High" | "Medium" | "Low",
+        "impact": "High" | "Medium" | "Low",
+        "difficulty": "Medium",
+        "suggestion": string
+      }
+    ],
+    "majorImprovements": [
+      {
+        "priority": "High" | "Medium" | "Low",
+        "impact": "High" | "Medium" | "Low",
+        "difficulty": "Hard",
+        "suggestion": string
+      }
+    ]
+  }
+}`
   }
 };

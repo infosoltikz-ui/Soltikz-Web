@@ -9,6 +9,7 @@ import { ExperienceBulletController } from './ExperienceBulletController';
 import { GrammarToneController } from './GrammarToneController';
 import { JobDescriptionController } from './JobDescriptionController';
 import { ATSController } from './ATSController';
+import { ResumeAnalyzerController } from './ResumeAnalyzerController';
 import { protect } from '../../middlewares/auth.middleware';
 
 const router = Router();
@@ -73,5 +74,10 @@ router.post('/job-description/stream-tailor', JobDescriptionController.streamTai
 router.post('/ats/scan', ATSController.scan);
 router.post('/ats/stream', ATSController.streamScan);
 router.get('/ats/history', ATSController.getHistory);
+
+// Resume Analyzer Endpoints
+router.post('/resume/analyze', ResumeAnalyzerController.analyze);
+router.post('/resume/stream', ResumeAnalyzerController.streamAnalyze);
+router.get('/resume/history', ResumeAnalyzerController.getHistory);
 
 export default router;

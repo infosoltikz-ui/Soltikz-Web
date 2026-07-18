@@ -23,6 +23,7 @@ const DashboardPage    = lazy(() => import('@features/resume/pages/ResumeDashboa
 const ResumeEditorPage = lazy(() => import('@features/resume/pages/ResumeBuilderPage').then(module => ({ default: module.ResumeBuilderPage })))
 const JobAnalyzerPage  = lazy(() => import('@features/resume/pages/JobAnalyzerPage').then(module => ({ default: module.JobAnalyzerPage })))
 const ATSScannerPage   = lazy(() => import('@features/resume/pages/ATSScannerPage').then(module => ({ default: module.ATSScannerPage })))
+const ResumeAnalyzerPage = lazy(() => import('@features/resume/pages/ResumeAnalyzerPage').then(module => ({ default: module.ResumeAnalyzerPage })))
 const NotFoundPage     = lazy(() => import('@features/home/NotFoundPage'))
 
 // ── Suspense wrapper ──────────────────────────────────────────
@@ -59,6 +60,7 @@ const router = createBrowserRouter([
       { path: '/dashboard/resumes/:resumeId', element: <Lazy><ResumeEditorPage /></Lazy> },
       { path: '/dashboard/resumes/:resumeId/job-analyzer', element: <Lazy><JobAnalyzerPage /></Lazy> },
       { path: '/dashboard/resumes/:resumeId/ats-scanner', element: <Lazy><ATSScannerPage /></Lazy> },
+      { path: '/dashboard/resumes/:resumeId/analyzer', element: <Lazy><ResumeAnalyzerPage /></Lazy> },
     ],
   },
   /* Fallback */

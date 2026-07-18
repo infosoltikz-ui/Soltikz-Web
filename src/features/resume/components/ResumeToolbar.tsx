@@ -109,6 +109,17 @@ export const ResumeToolbar: React.FC<ResumeToolbarProps> = ({ resume }) => {
           Job Analyzer
         </Button>
 
+        {/* Resume Analyzer Button */}
+        <Button
+          variant="outline"
+          size="sm"
+          className="hidden md:inline-flex bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100"
+          as={Link}
+          to={`/dashboard/resumes/${resume.id}/analyzer`}
+        >
+          Resume Analyzer
+        </Button>
+
         {/* AI Assistant Toggle */}
         <Button 
           variant="secondary" 
