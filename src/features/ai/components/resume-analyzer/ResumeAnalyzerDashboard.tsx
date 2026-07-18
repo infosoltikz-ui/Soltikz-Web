@@ -1,3 +1,4 @@
+// Triggering IDE re-index
 import { FC } from 'react';
 import { useAIStore } from '../../store/useAIStore';
 import { Button } from '@/components/ui/Button';

@@ -109,6 +109,17 @@ export const ResumeToolbar: React.FC<ResumeToolbarProps> = ({ resume }) => {
           Job Analyzer
         </Button>
 
+        {/* Export Resume Button */}
+        <Button
+          variant="outline"
+          size="sm"
+          className="hidden md:inline-flex bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100"
+          as={Link}
+          to={`/dashboard/resumes/${resume.id}/export`}
+        >
+          Export Resume
+        </Button>
+
         {/* Resume Analyzer Button */}
         <Button
           variant="outline"

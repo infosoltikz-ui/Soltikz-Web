@@ -11,6 +11,7 @@ import profileRoutes from './routes/profile.route';
 import notificationRoutes from './routes/notification.route';
 import resumeRoutes from './routes/resume.route';
 import aiRoutes from './modules/ai/ai.routes';
+import exportRoutes from './routes/export.routes';
 
 import { errorHandler, notFoundHandler } from './middlewares/error.middleware';
 
@@ -77,6 +78,7 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/v1/notifications', notificationRoutes);
 app.use('/api/v1/resumes', resumeRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/export', exportRoutes);
 
 // Error Handling
 app.use(notFoundHandler);

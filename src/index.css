@@ -357,4 +357,26 @@
     page-break-inside: avoid;
     break-inside: avoid;
   }
+
+  /* Hide UI elements */
+  nav, header, footer, .sidebar, .toolbar, .no-print, button, [role="button"] {
+    display: none !important;
+  }
+  
+  /* Reset margins for print */
+  body {
+    background: white;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Ensure the resume container takes up full page */
+  .resume-print-container {
+    width: 100% !important;
+    max-width: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
 }

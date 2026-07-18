@@ -61,6 +61,9 @@ model User {
   subscriptions     Subscription[]
   resumes           Resume[]
   payments          Payment[]
+  exports           ExportHistory[]
+  shares            ResumeShare[]
+  exportAnalytics   ExportAnalytics[]
 }
 
 model Session {
@@ -206,6 +209,9 @@ model Resume {
 
   versions             ResumeVersion[]
   atsReports           ATSReport[]
+  exports              ExportHistory[]
+  shares               ResumeShare[]
+  exportAnalytics      ExportAnalytics[]
   
   personal             ResumePersonal?
   summary              ResumeSummary?
@@ -574,3 +580,63 @@ model AIRateLimit {
 
   @@unique([userId, type])
 }
+
+// ==========================================
+// SPRINT 7 - EXPORT ENGINE
+// ==========================================
+
+model ExportHistory {
+  id          String   @id @default(uuid())
+  resumeId    String
+  userId      String
+  format      String   // "PDF" | "DOCX" | "HTML" | "JSON"
+  template    String?  // e.g., "modern", "classic"
+  fileSize    Int?     // size in bytes
+  durationMs  Int?     // time taken to generate
+  status      String   // "SUCCESS" | "FAILED"
+  error       String?  @db.Text
+  createdAt   DateTime @default(now())
+
+  resume      Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([resumeId])
+}
+
+model ResumeShare {
+  id          String   @id @default(uuid())
+  resumeId    String
+  userId      String
+  token       String   @unique
+  url         String
+  type        String   // "PUBLIC" | "PRIVATE" | "PASSWORD"
+  passwordHash String?
+  views       Int      @default(0)
+  downloads   Int      @default(0)
+  expiresAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  resume      Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([resumeId])
+}
+
+model ExportAnalytics {
+  id          String   @id @default(uuid())
+  resumeId    String
+  userId      String
+  action      String   // "DOWNLOAD_PDF", "SHARE_LINK_CREATED", etc.
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  resume      Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([action])
+}
+
