@@ -7,6 +7,8 @@ import { useUpdateAchievement } from '../../hooks/resume.queries';
 import { useResumeBuilderStore } from '../../store/useResumeBuilderStore';
 import { Input } from '@/components/ui/Input';
 import { useDebounce } from '@/hooks';
+import { useAIStore } from '../../../ai/store/useAIStore';
+import { Sparkles } from 'lucide-react';
 
 const schema = z.object({
   title: z.string().min(1, 'Title is required').max(150),
@@ -72,7 +74,22 @@ export const AchievementForm: React.FC<AchievementFormProps> = ({ achievement, r
         <Input label="Date" placeholder="e.g. Dec 2023" {...register('achievementDate')} />
       </div>
       <div className="space-y-1">
-        <label className="block text-sm font-medium text-slate-700">Description</label>
+        <div className="flex items-center justify-between mb-1">
+          <label className="block text-sm font-medium text-slate-700">Description</label>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              useAIStore.getState().setGeneratorSelectedId(achievement.id);
+              useAIStore.getState().setGeneratorType('achievement');
+              useAIStore.getState().setGeneratorOpen(true);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors border border-indigo-100"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            Generate Achievement
+          </button>
+        </div>
         <textarea
           rows={3}
           placeholder="Briefly describe what you achieved and its impact..."

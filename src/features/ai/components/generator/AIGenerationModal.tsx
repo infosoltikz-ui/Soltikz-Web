@@ -13,6 +13,9 @@ import { SkillsHistory } from './skills/SkillsHistory';
 import { ProjectGeneratorForm } from './project/ProjectGeneratorForm';
 import { ProjectPreview } from './project/ProjectPreview';
 import { ProjectHistory } from './project/ProjectHistory';
+import { AchievementGeneratorForm } from './achievement/AchievementGeneratorForm';
+import { AchievementPreview } from './achievement/AchievementPreview';
+import { AchievementHistory } from './achievement/AchievementHistory';
 
 export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) => {
   const { 
@@ -24,7 +27,8 @@ export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) 
     generatorType,
     rewrittenExperience,
     generatedSkills,
-    generatedProject
+    generatedProject,
+    generatedAchievement
   } = useAIStore();
 
   const isOpen = isSummaryGeneratorOpen || isGeneratorOpen;
@@ -40,21 +44,25 @@ export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) 
   const isExperience = generatorType === 'experience';
   const isSkills = generatorType === 'skills';
   const isProject = generatorType === 'project';
+  const isAchievement = generatorType === 'achievement';
 
   const title = isSummary ? 'AI Summary Generator' : 
                 isExperience ? 'AI Experience Rewriter' : 
                 isSkills ? 'AI Skills Generator' :
-                'AI Project Description Generator';
+                isProject ? 'AI Project Description Generator' :
+                'AI Achievement Generator';
                 
   const subtitle = isSummary ? 'Create ATS-friendly, professional summaries' : 
                    isExperience ? 'Transform basic descriptions into powerful achievements' :
                    isSkills ? 'Discover and add ATS-optimized skills for your target role' :
-                   'Transform project details into professional descriptions';
+                   isProject ? 'Transform project details into professional descriptions' :
+                   'Convert raw responsibilities into quantified achievement statements';
   
   const hasGeneratedContent = isSummary ? !!generatedSummary : 
                               isExperience ? !!rewrittenExperience : 
                               isSkills ? !!generatedSkills :
-                              !!generatedProject;
+                              isProject ? !!generatedProject :
+                              !!generatedAchievement;
 
   return (
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex justify-center pt-10 sm:pt-20 px-4 overflow-y-auto">
@@ -87,6 +95,7 @@ export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) 
             {isExperience && <ExperienceRewriterForm resumeId={resumeId} />}
             {isSkills && <SkillsGeneratorForm resumeId={resumeId} />}
             {isProject && <ProjectGeneratorForm resumeId={resumeId} />}
+            {isAchievement && <AchievementGeneratorForm resumeId={resumeId} />}
           </div>
 
           {/* Right Side: Preview & History */}
@@ -96,7 +105,8 @@ export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) 
                 isSummary ? <SummaryPreview resumeId={resumeId} /> : 
                 isExperience ? <ExperiencePreview resumeId={resumeId} /> :
                 isSkills ? <SkillsPreview resumeId={resumeId} /> :
-                <ProjectPreview resumeId={resumeId} />
+                isProject ? <ProjectPreview resumeId={resumeId} /> :
+                <AchievementPreview resumeId={resumeId} />
               ) : (
                 <div className="h-full flex flex-col items-center justify-center text-center p-8">
                   <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 border border-slate-100">
@@ -114,6 +124,7 @@ export const AIGenerationModal: React.FC<{ resumeId: string }> = ({ resumeId }) 
               {isExperience && <ExperienceHistory resumeId={resumeId} />}
               {isSkills && <SkillsHistory resumeId={resumeId} />}
               {isProject && <ProjectHistory resumeId={resumeId} />}
+              {isAchievement && <AchievementHistory resumeId={resumeId} />}
             </div>
           </div>
         </div>

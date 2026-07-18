@@ -42,8 +42,8 @@ interface AIState {
   // Generic Generator State
   isGeneratorOpen: boolean;
   setGeneratorOpen: (isOpen: boolean) => void;
-  generatorType: 'summary' | 'experience' | 'skills' | 'project' | null;
-  setGeneratorType: (type: 'summary' | 'experience' | 'skills' | 'project' | null) => void;
+  generatorType: 'summary' | 'experience' | 'skills' | 'project' | 'achievement' | null;
+  setGeneratorType: (type: 'summary' | 'experience' | 'skills' | 'project' | 'achievement' | null) => void;
   generatorSelectedId: string | null;
   setGeneratorSelectedId: (id: string | null) => void;
 
@@ -64,6 +64,12 @@ interface AIState {
   setProjectLoading: (loading: boolean) => void;
   generatedProject: string;
   setGeneratedProject: (project: string) => void;
+
+  // Achievement Generator State
+  achievementLoading: boolean;
+  setAchievementLoading: (loading: boolean) => void;
+  generatedAchievement: string;
+  setGeneratedAchievement: (achievement: string) => void;
 }
 
 export const useAIStore = create<AIState>((set) => ({
@@ -115,5 +121,10 @@ export const useAIStore = create<AIState>((set) => ({
   projectLoading: false,
   setProjectLoading: (loading) => set({ projectLoading: loading }),
   generatedProject: '',
-  setGeneratedProject: (project) => set({ generatedProject: project })
+  setGeneratedProject: (project) => set({ generatedProject: project }),
+
+  achievementLoading: false,
+  setAchievementLoading: (loading) => set({ achievementLoading: loading }),
+  generatedAchievement: '',
+  setGeneratedAchievement: (achievement) => set({ generatedAchievement: achievement })
 }));

@@ -4,6 +4,7 @@ import { SummaryGenerationController } from './SummaryGenerationController';
 import { ExperienceRewriteController } from './ExperienceRewriteController';
 import { SkillsGenerationController } from './SkillsGenerationController';
 import { ProjectGenerationController } from './ProjectGenerationController';
+import { AchievementGenerationController } from './AchievementGenerationController';
 import { protect } from '../../middlewares/auth.middleware';
 
 const router = Router();
@@ -42,5 +43,10 @@ router.get('/skills/history', SkillsGenerationController.getHistory);
 router.post('/project/generate', ProjectGenerationController.generate);
 router.post('/project/stream', ProjectGenerationController.stream);
 router.get('/project/history', ProjectGenerationController.getHistory);
+
+// Achievement Generator Endpoints
+router.post('/achievement/generate', AchievementGenerationController.generate);
+router.post('/achievement/stream', AchievementGenerationController.stream);
+router.get('/achievement/history', AchievementGenerationController.getHistory);
 
 export default router;
