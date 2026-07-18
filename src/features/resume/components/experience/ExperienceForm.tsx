@@ -8,6 +8,7 @@ import { useResumeBuilderStore } from '../../store/useResumeBuilderStore';
 import { Input } from '@/components/ui/Input';
 import { useDebounce } from '@/hooks';
 import { RichTextEditor } from '../RichTextEditor';
+import { useAIStore } from '../../../ai/store/useAIStore';
 
 const experienceSchema = z.object({
   jobTitle: z.string().min(1, 'Job title is required').max(100),
@@ -159,7 +160,21 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ experience, resu
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+        <div className="flex items-center justify-between mb-1">
+          <label className="block text-sm font-medium text-slate-700">Description</label>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              useAIStore.getState().setGeneratorType('experience');
+              useAIStore.getState().setGeneratorSelectedId(experience.id);
+              useAIStore.getState().setGeneratorOpen(true);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors border border-indigo-200"
+          >
+            ✨ Rewrite With AI
+          </button>
+        </div>
         <Controller
           control={control}
           name="description"

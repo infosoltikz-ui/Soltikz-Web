@@ -29,7 +29,7 @@ interface AIState {
   isAdminDashboardOpen: boolean;
   setAdminDashboardOpen: (isOpen: boolean) => void;
   
-  // Summary Generator State
+  // Summary Generator State (Legacy/Specific)
   summaryLoading: boolean;
   setSummaryLoading: (loading: boolean) => void;
   generatedSummary: string;
@@ -38,6 +38,20 @@ interface AIState {
   setSelectedSummary: (summary: string) => void;
   isSummaryGeneratorOpen: boolean;
   setSummaryGeneratorOpen: (isOpen: boolean) => void;
+
+  // Generic Generator State
+  isGeneratorOpen: boolean;
+  setGeneratorOpen: (isOpen: boolean) => void;
+  generatorType: 'summary' | 'experience' | null;
+  setGeneratorType: (type: 'summary' | 'experience' | null) => void;
+  generatorSelectedId: string | null;
+  setGeneratorSelectedId: (id: string | null) => void;
+
+  // Experience Rewriter State
+  experienceLoading: boolean;
+  setExperienceLoading: (loading: boolean) => void;
+  rewrittenExperience: string;
+  setRewrittenExperience: (experience: string) => void;
 }
 
 export const useAIStore = create<AIState>((set) => ({
@@ -67,5 +81,17 @@ export const useAIStore = create<AIState>((set) => ({
   selectedSummary: '',
   setSelectedSummary: (summary) => set({ selectedSummary: summary }),
   isSummaryGeneratorOpen: false,
-  setSummaryGeneratorOpen: (isOpen) => set({ isSummaryGeneratorOpen: isOpen })
+  setSummaryGeneratorOpen: (isOpen) => set({ isSummaryGeneratorOpen: isOpen }),
+
+  isGeneratorOpen: false,
+  setGeneratorOpen: (isOpen) => set({ isGeneratorOpen: isOpen }),
+  generatorType: null,
+  setGeneratorType: (type) => set({ generatorType: type }),
+  generatorSelectedId: null,
+  setGeneratorSelectedId: (id) => set({ generatorSelectedId: id }),
+
+  experienceLoading: false,
+  setExperienceLoading: (loading) => set({ experienceLoading: loading }),
+  rewrittenExperience: '',
+  setRewrittenExperience: (experience) => set({ rewrittenExperience: experience })
 }));

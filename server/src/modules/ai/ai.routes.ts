@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { AIController } from './ai.controller';
 import { SummaryGenerationController } from './SummaryGenerationController';
+import { ExperienceRewriteController } from './ExperienceRewriteController';
 import { protect } from '../../middlewares/auth.middleware';
 
 const router = Router();
@@ -24,5 +25,10 @@ router.post('/cache/clear', AIController.clearCache);
 router.post('/summary/generate', SummaryGenerationController.generate);
 router.post('/summary/stream', SummaryGenerationController.stream);
 router.get('/summary/history', SummaryGenerationController.getHistory);
+
+// Experience Rewriter Endpoints
+router.post('/experience/rewrite', ExperienceRewriteController.rewrite);
+router.post('/experience/stream', ExperienceRewriteController.stream);
+router.get('/experience/history', ExperienceRewriteController.getHistory);
 
 export default router;
