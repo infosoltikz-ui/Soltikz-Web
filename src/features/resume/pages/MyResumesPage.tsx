@@ -184,7 +184,7 @@ export const MyResumesPage: React.FC = () => {
         <ResumeList
           resumes={resumes}
           isLoading={isLoading}
-          onCreateNew={handleCreate}
+          onCreateNew={handleCreateClick}
           onDuplicate={id => duplicateMutation.mutate(id)}
           onArchive={id => setModalState({ type: 'archive', resumeId: id })}
           onDelete={id => setModalState({ type: 'delete', resumeId: id })}
