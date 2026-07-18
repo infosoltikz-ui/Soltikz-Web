@@ -27,6 +27,8 @@ const ResumeAnalyzerPage = lazy(() => import('@features/resume/pages/ResumeAnaly
 const CoverLetterPage  = lazy(() => import('@features/cover-letter/pages/CoverLetterPage').then(module => ({ default: module.CoverLetterPage })))
 const ExportPage       = lazy(() => import('@features/export/pages/ExportPage').then(module => ({ default: module.ExportPage })))
 const NotFoundPage     = lazy(() => import('@features/home/NotFoundPage'))
+const BillingDashboardPage = lazy(() => import('@features/billing/pages/BillingDashboard').then(module => ({ default: module.BillingDashboard })))
+const BillingPricingPage   = lazy(() => import('@features/billing/pages/PricingPage').then(module => ({ default: module.PricingPage })))
 
 // ── Suspense wrapper ──────────────────────────────────────────
 const Lazy = ({ children }: { children: React.ReactNode }) => (
@@ -64,6 +66,8 @@ const router = createBrowserRouter([
       { path: '/dashboard/resumes/:resumeId/ats-scanner', element: <Lazy><ATSScannerPage /></Lazy> },
       { path: '/dashboard/resumes/:resumeId/analyzer', element: <Lazy><ResumeAnalyzerPage /></Lazy> },
       { path: '/dashboard/resumes/:resumeId/cover-letter', element: <Lazy><CoverLetterPage /></Lazy> },
+      { path: '/dashboard/billing', element: <Lazy><BillingDashboardPage /></Lazy> },
+      { path: '/dashboard/pricing', element: <Lazy><BillingPricingPage /></Lazy> },
     ],
   },
   /* Fallback */

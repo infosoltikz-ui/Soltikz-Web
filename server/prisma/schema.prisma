@@ -67,6 +67,8 @@ model User {
   coverLetters      CoverLetter[]
   coverLetterHistories CoverLetterHistory[]
   coverLetterAnalytics CoverLetterAnalytics[]
+  invoices          Invoice[]
+  usage             Usage?
 }
 
 model Session {
@@ -156,13 +158,20 @@ model Settings {
 // ---------------------------------------------------------
 
 model Subscription {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  planId    String
-  status    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan            String
+  status          String
+  billingCycle    String?
+  startDate       DateTime?
+  expiryDate      DateTime?
+  nextBillingDate DateTime?
+  trialEndsAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  payments        Payment[]
 }
 
 model ResumeTemplate {
@@ -251,14 +260,21 @@ model ATSReport {
 
 
 model Payment {
-  id            String   @id @default(uuid())
-  userId        String
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  amount        Float
-  currency      String
-  status        String
-  transactionId String   @unique
-  createdAt     DateTime @default(now())
+  id                String   @id @default(uuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscriptionId    String?
+  subscription      Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  razorpayPaymentId String?
+  razorpayOrderId   String?
+  amount            Float
+  currency          String
+  status            String
+  paymentMethod     String?
+  transactionId     String?  @unique
+  createdAt         DateTime @default(now())
+  
+  invoice           Invoice?
 }
 
 model ResumePersonal {
@@ -698,3 +714,46 @@ model CoverLetterAnalytics {
   @@index([action])
 }
 
+// ==========================================
+// SPRINT 9 - PAYMENTS & SUBSCRIPTION
+// ==========================================
+
+model Invoice {
+  id            String   @id @default(uuid())
+  paymentId     String   @unique
+  payment       Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invoiceNumber String   @unique
+  amount        Float
+  tax           Float
+  pdfUrl        String?
+  createdAt     DateTime @default(now())
+}
+
+model Usage {
+  id                  String   @id @default(uuid())
+  userId              String   @unique
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  aiTokens            Int      @default(0)
+  resumeCount         Int      @default(0)
+  atsScans            Int      @default(0)
+  resumeAnalyzerCount Int      @default(0)
+  coverLetterCount    Int      @default(0)
+  exports             Int      @default(0)
+  storageBytes        Int      @default(0)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model Plan {
+  id           String   @id @default(uuid())
+  name         String   @unique
+  monthlyPrice Float
+  yearlyPrice  Float
+  features     Json
+  limits       Json
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
