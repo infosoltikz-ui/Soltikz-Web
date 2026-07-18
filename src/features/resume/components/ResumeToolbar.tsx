@@ -92,11 +92,10 @@ export const ResumeToolbar: React.FC<ResumeToolbarProps> = ({ resume }) => {
           variant="outline"
           size="sm"
           className="hidden sm:inline-flex"
-          asChild
+          as={Link}
+          to={`/dashboard/resumes/${resume.id}/job-analyzer`}
         >
-          <Link to={`/dashboard/resumes/${resume.id}/job-analyzer`}>
-            Job Analyzer
-          </Link>
+          Job Analyzer
         </Button>
 
         {/* AI Assistant Toggle */}
