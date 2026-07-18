@@ -162,18 +162,32 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({ experience, resu
       <div>
         <div className="flex items-center justify-between mb-1">
           <label className="block text-sm font-medium text-slate-700">Description</label>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              useAIStore.getState().setGeneratorType('experience');
-              useAIStore.getState().setGeneratorSelectedId(experience.id);
-              useAIStore.getState().setGeneratorOpen(true);
-            }}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors border border-indigo-200"
-          >
-            ✨ Rewrite With AI
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                useAIStore.getState().setGeneratorSelectedId(experience.id);
+                useAIStore.getState().setGeneratorType('experience-bullets');
+                useAIStore.getState().setGeneratorOpen(true);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors border border-indigo-200"
+            >
+              ✨ Generate Bullet Points
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                useAIStore.getState().setGeneratorSelectedId(experience.id);
+                useAIStore.getState().setGeneratorType('experience');
+                useAIStore.getState().setGeneratorOpen(true);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors border border-indigo-200"
+            >
+              ✨ Rewrite With AI
+            </button>
+          </div>
         </div>
         <Controller
           control={control}

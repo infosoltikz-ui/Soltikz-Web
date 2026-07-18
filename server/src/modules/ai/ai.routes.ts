@@ -5,6 +5,7 @@ import { ExperienceRewriteController } from './ExperienceRewriteController';
 import { SkillsGenerationController } from './SkillsGenerationController';
 import { ProjectGenerationController } from './ProjectGenerationController';
 import { AchievementGenerationController } from './AchievementGenerationController';
+import { ExperienceBulletController } from './ExperienceBulletController';
 import { protect } from '../../middlewares/auth.middleware';
 
 const router = Router();
@@ -48,5 +49,10 @@ router.get('/project/history', ProjectGenerationController.getHistory);
 router.post('/achievement/generate', AchievementGenerationController.generate);
 router.post('/achievement/stream', AchievementGenerationController.stream);
 router.get('/achievement/history', AchievementGenerationController.getHistory);
+
+// Experience Bullet Generator Endpoints
+router.post('/experience-bullets/generate', ExperienceBulletController.generate);
+router.post('/experience-bullets/stream', ExperienceBulletController.stream);
+router.get('/experience-bullets/history', ExperienceBulletController.getHistory);
 
 export default router;
