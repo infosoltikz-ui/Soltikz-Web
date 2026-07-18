@@ -64,6 +64,9 @@ model User {
   exports           ExportHistory[]
   shares            ResumeShare[]
   exportAnalytics   ExportAnalytics[]
+  coverLetters      CoverLetter[]
+  coverLetterHistories CoverLetterHistory[]
+  coverLetterAnalytics CoverLetterAnalytics[]
 }
 
 model Session {
@@ -212,6 +215,7 @@ model Resume {
   exports              ExportHistory[]
   shares               ResumeShare[]
   exportAnalytics      ExportAnalytics[]
+  coverLetters         CoverLetter[]
   
   personal             ResumePersonal?
   summary              ResumeSummary?
@@ -635,6 +639,60 @@ model ExportAnalytics {
 
   resume      Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([action])
+}
+
+// ==========================================
+// SPRINT 8 - COVER LETTER GENERATOR
+// ==========================================
+
+model CoverLetter {
+  id              String   @id @default(uuid())
+  userId          String
+  resumeId        String
+  title           String?
+  companyName     String?
+  position        String?
+  jobDescription  String?  @db.Text
+  content         String?  @db.Text
+  template        String   @default("professional")
+  tone            String   @default("professional")
+  length          String   @default("medium")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resume          Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  histories       CoverLetterHistory[]
+}
+
+model CoverLetterHistory {
+  id              String   @id @default(uuid())
+  coverLetterId   String
+  userId          String
+  action          String   // "GENERATED", "UPDATED", "EXPORTED_PDF"
+  createdAt       DateTime @default(now())
+
+  coverLetter     CoverLetter @relation(fields: [coverLetterId], references: [id], onDelete: Cascade)
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([coverLetterId])
+}
+
+model CoverLetterAnalytics {
+  id              String   @id @default(uuid())
+  userId          String
+  action          String   // "GENERATION", "EXPORT", "REWRITE"
+  tokens          Int?
+  cost            Decimal?
+  template        String?
+  metadata        Json?
+  createdAt       DateTime @default(now())
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([action])

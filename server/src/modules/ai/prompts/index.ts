@@ -161,5 +161,22 @@ Return ONLY a valid JSON object following this exact schema:
     ]
   }
 }`
+  },
+  COVER_LETTER_GENERATOR: {
+    version: '1.0.0',
+    systemPrompt: 'You are an expert executive resume writer and recruiter. Your objective is to write a highly personalized, compelling, and ATS-friendly cover letter based on the provided resume and target job description. Never hallucinate facts, use only the experience and skills found in the resume. Maintain a professional, authentic, and human-sounding tone, avoiding generic phrases. Your response should just be the cover letter text, no markdown code blocks unless requested.',
+    userPromptTemplate: `Please write a cover letter using the following details.
+
+Target Job Description: {jobDescription}
+
+Target Company: {companyName}
+Target Position: {position}
+Tone: {tone}
+Length: {length}
+
+My Resume Context:
+{resumeContent}
+
+Write the cover letter focusing on the alignment between my experience and the job description. Do not include placeholder brackets like [Your Name] in the signature if the name is available in the resume context. Do not invent any metrics or experiences.`
   }
 };

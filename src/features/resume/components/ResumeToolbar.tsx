@@ -131,6 +131,17 @@ export const ResumeToolbar: React.FC<ResumeToolbarProps> = ({ resume }) => {
           Resume Analyzer
         </Button>
 
+        {/* AI Cover Letter Button */}
+        <Button
+          variant="outline"
+          size="sm"
+          className="hidden md:inline-flex bg-pink-50 text-pink-700 border-pink-200 hover:bg-pink-100"
+          as={Link}
+          to={`/dashboard/resumes/${resume.id}/cover-letter`}
+        >
+          Cover Letter
+        </Button>
+
         {/* AI Assistant Toggle */}
         <Button 
           variant="secondary" 

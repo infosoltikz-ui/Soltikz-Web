@@ -12,6 +12,7 @@ import notificationRoutes from './routes/notification.route';
 import resumeRoutes from './routes/resume.route';
 import aiRoutes from './modules/ai/ai.routes';
 import exportRoutes from './routes/export.routes';
+import coverLetterRoutes from './routes/cover-letter.routes';
 
 import { errorHandler, notFoundHandler } from './middlewares/error.middleware';
 
@@ -79,6 +80,7 @@ app.use('/api/v1/notifications', notificationRoutes);
 app.use('/api/v1/resumes', resumeRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/export', exportRoutes);
+app.use('/api/v1/cover-letter', coverLetterRoutes);
 
 // Error Handling
 app.use(notFoundHandler);

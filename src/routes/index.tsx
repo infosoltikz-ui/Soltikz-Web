@@ -24,6 +24,7 @@ const ResumeEditorPage = lazy(() => import('@features/resume/pages/ResumeBuilder
 const JobAnalyzerPage  = lazy(() => import('@features/resume/pages/JobAnalyzerPage').then(module => ({ default: module.JobAnalyzerPage })))
 const ATSScannerPage   = lazy(() => import('@features/resume/pages/ATSScannerPage').then(module => ({ default: module.ATSScannerPage })))
 const ResumeAnalyzerPage = lazy(() => import('@features/resume/pages/ResumeAnalyzerPage').then(module => ({ default: module.ResumeAnalyzerPage })))
+const CoverLetterPage  = lazy(() => import('@features/cover-letter/pages/CoverLetterPage').then(module => ({ default: module.CoverLetterPage })))
 const ExportPage       = lazy(() => import('@features/export/pages/ExportPage').then(module => ({ default: module.ExportPage })))
 const NotFoundPage     = lazy(() => import('@features/home/NotFoundPage'))
 
@@ -62,6 +63,7 @@ const router = createBrowserRouter([
       { path: '/dashboard/resumes/:resumeId/job-analyzer', element: <Lazy><JobAnalyzerPage /></Lazy> },
       { path: '/dashboard/resumes/:resumeId/ats-scanner', element: <Lazy><ATSScannerPage /></Lazy> },
       { path: '/dashboard/resumes/:resumeId/analyzer', element: <Lazy><ResumeAnalyzerPage /></Lazy> },
+      { path: '/dashboard/resumes/:resumeId/cover-letter', element: <Lazy><CoverLetterPage /></Lazy> },
     ],
   },
   /* Fallback */
