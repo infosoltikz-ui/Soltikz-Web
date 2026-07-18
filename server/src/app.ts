@@ -22,7 +22,9 @@ import { errorHandler, notFoundHandler } from './middlewares/error.middleware';
 const app = express();
 
 // Security Middlewares
-app.use(helmet());
+app.use(helmet({
+  crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' }, // Needed for Google OAuth popup
+}));
 app.use(cors({
   origin: [
     'http://localhost:5173',
@@ -86,9 +88,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/v1/notifications', notificationRoutes);
 app.use('/api/v1/resumes', resumeRoutes);
+app.use('/api/resumes', resumeRoutes); // alias without v1 for frontend
 app.use('/api/ai', aiRoutes);
 app.use('/api/export', exportRoutes);
 app.use('/api/v1/cover-letter', coverLetterRoutes);
+app.use('/api/cover-letter', coverLetterRoutes); // alias without v1
 
 import billingRoutes from './modules/billing/routes/billing.routes';
 app.use('/api/v1', billingRoutes);
