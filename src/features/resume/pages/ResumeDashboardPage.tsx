@@ -15,6 +15,7 @@ import {
   ArchiveResumeModal, 
   RenameResumeModal 
 } from '../components/ResumeModals';
+import { ResumeCreationWizard } from '../components/ResumeCreationWizard';
 import { 
   Search, 
   Grid, 
@@ -61,7 +62,7 @@ export const ResumeDashboardPage: React.FC = () => {
   const updateMutation = useUpdateResume();
 
   const [modalState, setModalState] = useState<{
-    type: 'delete' | 'archive' | 'rename' | null;
+    type: 'create' | 'delete' | 'archive' | 'rename' | null;
     resumeId: string | null;
   }>({ type: null, resumeId: null });
 
@@ -88,7 +89,7 @@ export const ResumeDashboardPage: React.FC = () => {
             <h1 className="text-3xl font-bold text-slate-900">Resumes</h1>
             <p className="text-slate-500 mt-1">Manage and track your application documents.</p>
           </div>
-          <Button onClick={() => createMutation.mutate({ title: 'New Resume' })} loading={createMutation.isPending}>
+          <Button onClick={() => setModalState({ type: 'create', resumeId: null })}>
             + Create Resume
           </Button>
         </div>
@@ -198,7 +199,7 @@ export const ResumeDashboardPage: React.FC = () => {
       <ResumeList
         resumes={resumes}
         isLoading={isLoading}
-        onCreateNew={() => createMutation.mutate({ title: 'New Resume' })}
+        onCreateNew={() => setModalState({ type: 'create', resumeId: null })}
         onDuplicate={(id) => duplicateMutation.mutate(id)}
         onArchive={(id) => setModalState({ type: 'archive', resumeId: id })}
         onDelete={(id) => setModalState({ type: 'delete', resumeId: id })}
@@ -240,6 +241,11 @@ export const ResumeDashboardPage: React.FC = () => {
           isLoading={updateMutation.isPending}
         />
       )}
+
+      <ResumeCreationWizard 
+        isOpen={modalState.type === 'create'} 
+        onClose={() => setModalState({ type: null, resumeId: null })} 
+      />
     </div>
   );
 };

@@ -154,6 +154,20 @@ export const createResume = async (req: Request, res: Response, next: NextFuncti
     const randomString = crypto.randomBytes(3).toString('hex');
     const slug = `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${randomString}`;
 
+    const masterProfile = await prisma.masterProfile.findUnique({
+      where: { userId },
+      include: {
+        educations: true,
+        certifications: true,
+        skills: true,
+        employments: true,
+        projects: true,
+        languages: true,
+        awards: true,
+        achievements: true,
+      }
+    });
+
     const resume = await prisma.resume.create({
       data: {
         userId,
@@ -161,6 +175,112 @@ export const createResume = async (req: Request, res: Response, next: NextFuncti
         slug,
         templateId,
         resumeType: resumeType || 'FULLTIME',
+        // Clone Personal Information
+        personal: masterProfile ? {
+          create: {
+            firstName: masterProfile.firstName,
+            lastName: masterProfile.lastName,
+            email: masterProfile.email,
+            phone: masterProfile.mobileNumber,
+            location: masterProfile.currentLocation,
+            country: masterProfile.country,
+            linkedin: masterProfile.linkedin,
+            github: masterProfile.github,
+            portfolio: masterProfile.portfolio,
+            profileImage: masterProfile.profilePhoto,
+          }
+        } : undefined,
+        // Clone Summary
+        summary: masterProfile?.careerObjective ? {
+          create: {
+            content: masterProfile.careerObjective
+          }
+        } : undefined,
+        // Clone Educations
+        educations: masterProfile?.educations?.length ? {
+          create: masterProfile.educations.map((edu, i) => ({
+            institution: edu.university || edu.college || '',
+            degree: edu.degree,
+            fieldOfStudy: edu.specialization,
+            grade: edu.percentageCgpa,
+            startDate: edu.startYear,
+            endDate: edu.endYear,
+            displayOrder: i
+          }))
+        } : undefined,
+        // Clone Employments
+        experiences: masterProfile?.employments?.length ? {
+          create: masterProfile.employments.map((emp, i) => ({
+            companyName: emp.company,
+            jobTitle: emp.designation || '',
+            employmentType: emp.employmentType,
+            startDate: emp.startDate,
+            endDate: emp.endDate,
+            currentlyWorking: emp.currentCompany,
+            city: emp.location,
+            environment: emp.environment,
+            description: emp.responsibilities,
+            displayOrder: i
+          }))
+        } : undefined,
+        // Clone Projects
+        projects: masterProfile?.projects?.length ? {
+          create: masterProfile.projects.map((proj, i) => ({
+            title: proj.projectName,
+            description: proj.description,
+            technologies: proj.technologyStack ? proj.technologyStack.split(',').map(s => s.trim()) : [],
+            startDate: proj.duration?.split('-')[0]?.trim(),
+            endDate: proj.duration?.split('-')[1]?.trim(),
+            displayOrder: i
+          }))
+        } : undefined,
+        // Clone Certifications
+        certifications: masterProfile?.certifications?.length ? {
+          create: masterProfile.certifications.map((cert, i) => ({
+            certificationName: cert.name,
+            issuingOrganization: cert.organization,
+            credentialId: cert.credentialId,
+            credentialUrl: cert.credentialUrl,
+            issueDate: cert.completionDate,
+            displayOrder: i
+          }))
+        } : undefined,
+        // Clone Skills
+        skills: masterProfile?.skills?.length ? {
+          create: masterProfile.skills.flatMap((skillGroup) => 
+            skillGroup.tags.map(tag => ({
+              name: tag,
+              category: skillGroup.category,
+              proficiency: 'Intermediate',
+            }))
+          ).map((s, i) => ({ ...s, displayOrder: i }))
+        } : undefined,
+        // Clone Languages
+        languages: masterProfile?.languages?.length ? {
+          create: masterProfile.languages.map((lang, i) => ({
+            language: lang.language,
+            proficiency: lang.canSpeak ? 'Fluent' : lang.canRead ? 'Intermediate' : 'Beginner',
+            displayOrder: i
+          }))
+        } : undefined,
+        // Clone Awards
+        awards: masterProfile?.awards?.length ? {
+          create: masterProfile.awards.map((award, i) => ({
+            awardName: award.name,
+            issuer: award.organization,
+            awardDate: award.date,
+            description: award.description,
+            displayOrder: i
+          }))
+        } : undefined,
+        // Clone Achievements
+        achievements: masterProfile?.achievements?.length ? {
+          create: masterProfile.achievements.map((ach, i) => ({
+            title: 'Achievement',
+            description: ach.description,
+            displayOrder: i
+          }))
+        } : undefined,
       },
       include: { template: true },
     });
