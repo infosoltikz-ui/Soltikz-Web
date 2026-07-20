@@ -13,9 +13,9 @@ import { ResumeList } from '../components/ResumeList';
 import {
   DeleteResumeModal,
   ArchiveResumeModal,
-  RenameResumeModal,
-  CreateResumeModal
+  RenameResumeModal
 } from '../components/ResumeModals';
+import { ResumeCreationWizard } from '../components/ResumeCreationWizard';
 import {
   Search,
   Grid,
@@ -219,19 +219,9 @@ export const MyResumesPage: React.FC = () => {
       </div>
 
       {/* ── Modals ──────────────────────────────────────── */}
-      <CreateResumeModal
+      <ResumeCreationWizard
         isOpen={modalState.type === 'create'}
         onClose={() => setModalState({ type: null, resumeId: null })}
-        onConfirm={(title, resumeType) => {
-          createMutation.mutate(
-            { title, resumeType },
-            { onSuccess: (res: any) => { 
-              setModalState({ type: null, resumeId: null });
-              if (res?.id) navigate(`/dashboard/resumes/${res.id}`); 
-            }}
-          );
-        }}
-        isLoading={createMutation.isPending}
       />
 
       <DeleteResumeModal
