@@ -9,6 +9,7 @@ import { ResumePreview } from '../components/ResumePreview';
 import { AIWorkspace } from '../../ai/components/AIWorkspace';
 import { AdminDashboard } from '../../ai/components/dashboard/AdminDashboard';
 import { AIGenerationModal } from '../../ai/components/generator/AIGenerationModal';
+import { JDWorkspace } from '../components/JDWorkspace';
 
 export const ResumeBuilderPage: React.FC = () => {
   const { resumeId } = useParams<{ resumeId: string }>();
@@ -54,6 +55,7 @@ export const ResumeBuilderPage: React.FC = () => {
         <ResumeEditor resumeId={resume.id} />
         <ResumePreview resume={resume} />
         <AIWorkspace />
+        <JDWorkspace resumeId={resume.id} />
         <AdminDashboard />
         <AIGenerationModal resumeId={resume.id} />
       </div>

@@ -10,6 +10,7 @@ import { GrammarToneController } from './GrammarToneController';
 import { JobDescriptionController } from './JobDescriptionController';
 import { ATSController } from './ATSController';
 import { ResumeAnalyzerController } from './ResumeAnalyzerController';
+import { ResumeOptimizationController } from './ResumeOptimizationController';
 import { protect } from '../../middlewares/auth.middleware';
 
 const router = Router();
@@ -65,8 +66,8 @@ router.post('/grammar/stream', GrammarToneController.stream);
 router.get('/grammar/history', GrammarToneController.getHistory);
 
 // Job Description Analyzer & Tailoring Endpoints
+router.get('/job-description/analysis/:resumeId', JobDescriptionController.getAnalysis);
 router.post('/job-description/analyze', JobDescriptionController.analyze);
-router.post('/job-description/stream-analyze', JobDescriptionController.streamAnalyze);
 router.post('/job-description/tailor', JobDescriptionController.tailor);
 router.post('/job-description/stream-tailor', JobDescriptionController.streamTailor);
 
@@ -75,9 +76,14 @@ router.post('/ats/scan', ATSController.scan);
 router.post('/ats/stream', ATSController.streamScan);
 router.get('/ats/history', ATSController.getHistory);
 
-// Resume Analyzer Endpoints
-router.post('/resume/analyze', ResumeAnalyzerController.analyze);
+// Resume Analyzer Endpoints (Comprehensive Scoring)
+router.post('/analyzer/analyze', ResumeAnalyzerController.analyze);
+router.get('/analyzer/:resumeId/history', ResumeAnalyzerController.getHistory);
 router.post('/resume/stream', ResumeAnalyzerController.streamAnalyze);
 router.get('/resume/history', ResumeAnalyzerController.getHistory);
+
+// Phase 4: Resume Optimization Endpoints
+router.post('/resume-optimization/generate', ResumeOptimizationController.generateOptimization);
+router.get('/resume-optimization/:resumeId/history', ResumeOptimizationController.getHistory);
 
 export default router;

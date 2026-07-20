@@ -11,7 +11,7 @@ interface ResumeToolbarProps {
 }
 
 export const ResumeToolbar: React.FC<ResumeToolbarProps> = ({ resume }) => {
-  const { saveStatus, lastSavedAt, showMobilePreview, setShowMobilePreview, isSidebarOpen, setIsSidebarOpen } = useResumeBuilderStore();
+  const { saveStatus, lastSavedAt, showMobilePreview, setShowMobilePreview, isSidebarOpen, setIsSidebarOpen, isJdPanelOpen, setIsJdPanelOpen } = useResumeBuilderStore();
 
   const renderSaveStatus = () => {
     switch (saveStatus) {
@@ -98,15 +98,14 @@ export const ResumeToolbar: React.FC<ResumeToolbarProps> = ({ resume }) => {
           ATS Scanner
         </Button>
 
-        {/* Job Analyzer Button */}
+        {/* Job Analyzer Toggle Button */}
         <Button
-          variant="outline"
+          variant={isJdPanelOpen ? 'primary' : 'outline'}
           size="sm"
           className="hidden md:inline-flex"
-          as={Link}
-          to={`/dashboard/resumes/${resume.id}/job-analyzer`}
+          onClick={() => setIsJdPanelOpen(!isJdPanelOpen)}
         >
-          Job Analyzer
+          Job Analysis
         </Button>
 
         {/* Export Resume Button */}

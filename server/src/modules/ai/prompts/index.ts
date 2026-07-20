@@ -38,6 +38,96 @@ Provide a JSON response with:
 - matchedSkills: string[]
 - recommendations: string[]`
   },
+  JOB_DESCRIPTION_EXTRACTOR: {
+    version: '1.0.0',
+    systemPrompt: 'You are an expert technical recruiter and HR analyst. Your objective is to extract highly structured data from a provided Job Description. You must output ONLY a valid JSON object matching the exact schema requested, with no markdown formatting outside of the JSON block.',
+    userPromptTemplate: `Analyze the following Job Description and extract the structured data.
+
+Job Description: {jobDescription}
+
+Return ONLY a valid JSON object following this exact schema:
+{
+  "company": string,
+  "role": string,
+  "experience": string,
+  "skills": {
+    "required": string[],
+    "preferred": string[]
+  },
+  "responsibilities": string[],
+  "qualifications": string[],
+  "keywords": string[],
+  "atsKeywords": string[],
+  "softSkills": string[],
+  "technologies": string[],
+  "summary": {
+    "roleSummary": string,
+    "companyExpectations": string,
+    "candidateExpectations": string,
+    "topPriorities": string
+  }
+}`
+  },
+  RESUME_OPTIMIZER: {
+    version: '1.0.0',
+    systemPrompt: 'You are an expert executive resume writer. Your task is to analyze a Resume Draft against a Structured Job Analysis and provide targeted optimization suggestions. Output ONLY strict JSON with no markdown formatting. Crucial System Instruction: Never invent employers, projects, dates, certifications, or fabricate measurable achievements. Improve wording and highlight existing experience, but never create fictional content.',
+    userPromptTemplate: `Resume Draft: {resumeDraft}
+    
+Structured Job Analysis: {jobAnalysis}
+
+Target Section: {targetSection}
+
+Based on the Target Section ("All", "Summary", "Experience", "Skills", "Projects", "Certifications"), provide your suggestions. If "All" is provided, evaluate all sections. Otherwise, leave sections outside the Target Section empty or omit them from the arrays.
+
+Output strictly valid JSON matching this schema:
+{
+  "summary": {
+    "current": string,
+    "suggested": string,
+    "reason": string,
+    "atsImpact": "High" | "Medium" | "Low"
+  },
+  "experience": [
+    {
+      "id": string (must match original experience id),
+      "current": string,
+      "suggested": string,
+      "reason": string,
+      "atsImpact": "High" | "Medium" | "Low"
+    }
+  ],
+  "projects": [
+    {
+      "id": string,
+      "current": string,
+      "suggested": string,
+      "reason": string,
+      "atsImpact": string
+    }
+  ],
+  "skills": [
+    {
+      "current": string,
+      "suggested": string,
+      "reason": string,
+      "atsImpact": string
+    }
+  ],
+  "certifications": [
+    {
+      "current": string,
+      "suggested": string,
+      "reason": string,
+      "atsImpact": string
+    }
+  ],
+  "overallScore": number,
+  "estimatedATS": number,
+  "missingKeywords": string[],
+  "matchedKeywords": string[],
+  "recommendations": string[]
+}`
+  },
   RESUME_TAILORING: {
     version: '1.0.0',
     systemPrompt: 'You are an expert executive resume writer. Your goal is to tailor the provided resume content to match a specific job description. Incorporate missing ATS keywords naturally into the user\'s existing experience, summary, and skills without fabricating facts or lying. Maintain a professional tone.',

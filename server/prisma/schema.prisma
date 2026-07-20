@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
@@ -38,49 +38,49 @@ enum ResumeVisibility {
 }
 
 model User {
-  id            String    @id @default(uuid())
+  id            String     @id @default(uuid())
   name          String
-  email         String    @unique
+  email         String     @unique
   password      String
   avatar        String?
   phone         String?
   country       String?
   timezone      String?
-  role          Role      @default(USER)
+  role          Role       @default(USER)
   status        UserStatus @default(ACTIVE)
-  emailVerified Boolean   @default(false)
+  emailVerified Boolean    @default(false)
   lastLogin     DateTime?
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  deletedAt     DateTime?
 
-  roleId        String?
-  adminRole     AdminRole? @relation(fields: [roleId], references: [id], onDelete: SetNull)
-  isSuspended   Boolean   @default(false)
-  loginCount    Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
-  sessions          Session[]
-  refreshTokens     RefreshToken[]
-  emailVerifications EmailVerification[]
-  passwordResets    PasswordReset[]
-  profile           UserProfile?
-  notifications     Notification[]
-  activityLogs      ActivityLog[]
-  settings          Settings?
-  subscriptions     Subscription[]
-  resumes           Resume[]
-  payments          Payment[]
-  exports           ExportHistory[]
-  shares            ResumeShare[]
-  exportAnalytics   ExportAnalytics[]
-  coverLetters      CoverLetter[]
+  roleId      String?
+  adminRole   AdminRole? @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  isSuspended Boolean    @default(false)
+  loginCount  Int        @default(0)
+
+  sessions             Session[]
+  refreshTokens        RefreshToken[]
+  emailVerifications   EmailVerification[]
+  passwordResets       PasswordReset[]
+  profile              UserProfile?
+  notifications        Notification[]
+  activityLogs         ActivityLog[]
+  settings             Settings?
+  subscriptions        Subscription[]
+  resumes              Resume[]
+  payments             Payment[]
+  exports              ExportHistory[]
+  shares               ResumeShare[]
+  exportAnalytics      ExportAnalytics[]
+  coverLetters         CoverLetter[]
   coverLetterHistories CoverLetterHistory[]
   coverLetterAnalytics CoverLetterAnalytics[]
-  invoices          Invoice[]
-  usage             Usage?
-  auditLogs         AuditLog[]
-  masterProfile     MasterProfile?
+  invoices             Invoice[]
+  usage                Usage?
+  auditLogs            AuditLog[]
+  masterProfile        MasterProfile?
 }
 
 model Session {
@@ -121,15 +121,15 @@ model PasswordReset {
 }
 
 model UserProfile {
-  id        String   @id @default(uuid())
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bio       String?
-  headline  String?
-  website   String?
-  github    String?
-  linkedin  String?
-  
+  id       String  @id @default(uuid())
+  userId   String  @unique
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio      String?
+  headline String?
+  website  String?
+  github   String?
+  linkedin String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -155,14 +155,14 @@ model ActivityLog {
 }
 
 model Settings {
-  id                 String   @id @default(uuid())
-  userId             String   @unique
-  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  theme              String   @default("light")
-  emailNotifications Boolean  @default(true)
-  
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  id                 String  @id @default(uuid())
+  userId             String  @unique
+  user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  theme              String  @default("light")
+  emailNotifications Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // ---------------------------------------------------------
@@ -170,9 +170,9 @@ model Settings {
 // ---------------------------------------------------------
 
 model Subscription {
-  id              String   @id @default(uuid())
+  id              String    @id @default(uuid())
   userId          String
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   plan            String
   status          String
   billingCycle    String?
@@ -181,10 +181,10 @@ model Subscription {
   nextBillingDate DateTime?
   trialEndsAt     DateTime?
   managedBy       String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
-  payments        Payment[]
+  payments Payment[]
 }
 
 model ResumeTemplate {
@@ -197,7 +197,7 @@ model ResumeTemplate {
   isActive     Boolean  @default(true)
   createdAt    DateTime @default(now())
 
-  resumes      Resume[]
+  resumes Resume[]
 }
 
 model Resume {
@@ -217,42 +217,44 @@ model Resume {
   content              Json?
 
   // Presentation Settings (Sprint 3.5)
-  selectedTemplate     String?          @default("modern")
-  defaultTheme         String?          @default("blue")
-  primaryColor         String?
-  fontFamily           String?          @default("inter")
-  fontSize             String?          @default("medium")
-  lineSpacing          String?          @default("normal")
-  sectionSpacing       String?          @default("comfortable")
-  pageMargin           String?          @default("medium")
-  showProfilePhoto     Boolean          @default(true)
-  showIcons            Boolean          @default(true)
-  showSectionDividers  Boolean          @default(true)
-  
-  createdAt            DateTime         @default(now())
-  updatedAt            DateTime         @updatedAt
-  deletedAt            DateTime?
+  selectedTemplate    String? @default("modern")
+  defaultTheme        String? @default("blue")
+  primaryColor        String?
+  fontFamily          String? @default("inter")
+  fontSize            String? @default("medium")
+  lineSpacing         String? @default("normal")
+  sectionSpacing      String? @default("comfortable")
+  pageMargin          String? @default("medium")
+  showProfilePhoto    Boolean @default(true)
+  showIcons           Boolean @default(true)
+  showSectionDividers Boolean @default(true)
 
-  versions             ResumeVersion[]
-  atsReports           ATSReport[]
-  exports              ExportHistory[]
-  shares               ResumeShare[]
-  exportAnalytics      ExportAnalytics[]
-  coverLetters         CoverLetter[]
-  
-  personal             ResumePersonal?
-  summary              ResumeSummary?
-  
-  experiences          ResumeExperience[]
-  educations           ResumeEducation[]
-  skills               ResumeSkill[]
-  projects             ResumeProject[]
-  certifications       ResumeCertification[]
-  languages            ResumeLanguage[]
-  achievements         ResumeAchievement[]
-  awards               ResumeAward[]
-  interests            ResumeInterest[]
-  references           ResumeReference[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  versions        ResumeVersion[]
+  atsReports      ATSReport[]
+  exports         ExportHistory[]
+  shares          ResumeShare[]
+  exportAnalytics ExportAnalytics[]
+  coverLetters    CoverLetter[]
+  jobDescription  JobDescription?
+  optimizations   ResumeOptimization[]
+
+  personal ResumePersonal?
+  summary  ResumeSummary?
+
+  experiences    ResumeExperience[]
+  educations     ResumeEducation[]
+  skills         ResumeSkill[]
+  projects       ResumeProject[]
+  certifications ResumeCertification[]
+  languages      ResumeLanguage[]
+  achievements   ResumeAchievement[]
+  awards         ResumeAward[]
+  interests      ResumeInterest[]
+  references     ResumeReference[]
 }
 
 model ResumeVersion {
@@ -272,11 +274,10 @@ model ATSReport {
   createdAt DateTime @default(now())
 }
 
-
 model Payment {
-  id                String   @id @default(uuid())
+  id                String        @id @default(uuid())
   userId            String
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   subscriptionId    String?
   subscription      Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
   razorpayPaymentId String?
@@ -285,18 +286,18 @@ model Payment {
   currency          String
   status            String
   paymentMethod     String?
-  transactionId     String?  @unique
+  transactionId     String?       @unique
   reviewedBy        String?
-  createdAt         DateTime @default(now())
-  
-  invoice           Invoice?
+  createdAt         DateTime      @default(now())
+
+  invoice Invoice?
 }
 
 model ResumePersonal {
-  id           String   @id @default(uuid())
-  resumeId     String   @unique
-  resume       Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
-  
+  id       String @id @default(uuid())
+  resumeId String @unique
+  resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
   firstName    String?
   lastName     String?
   title        String?
@@ -312,26 +313,26 @@ model ResumePersonal {
   portfolio    String?
   website      String?
   profileImage String?
-  about        String?  @db.Text
-  
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  about        String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ResumeSummary {
-  id           String   @id @default(uuid())
-  resumeId     String   @unique
-  resume       Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
-  content      String?  @db.Text
-  
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id       String  @id @default(uuid())
+  resumeId String  @unique
+  resume   Resume  @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  content  String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ResumeExperience {
-  id               String   @id @default(uuid())
+  id               String  @id @default(uuid())
   resumeId         String
-  resume           Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  resume           Resume  @relation(fields: [resumeId], references: [id], onDelete: Cascade)
   companyName      String
   jobTitle         String
   employmentType   String?
@@ -340,19 +341,19 @@ model ResumeExperience {
   country          String?
   startDate        String?
   endDate          String?
-  currentlyWorking Boolean  @default(false)
-  environment      String?  @db.Text
-  description      String?  @db.Text
-  displayOrder     Int      @default(0)
-  
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  currentlyWorking Boolean @default(false)
+  environment      String? @db.Text
+  description      String? @db.Text
+  displayOrder     Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ResumeEducation {
-  id                String   @id @default(uuid())
+  id                String  @id @default(uuid())
   resumeId          String
-  resume            Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  resume            Resume  @relation(fields: [resumeId], references: [id], onDelete: Cascade)
   institution       String
   degree            String?
   fieldOfStudy      String?
@@ -361,25 +362,25 @@ model ResumeEducation {
   country           String?
   startDate         String?
   endDate           String?
-  currentlyStudying Boolean  @default(false)
-  description       String?  @db.Text
-  displayOrder      Int      @default(0)
-  
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  currentlyStudying Boolean @default(false)
+  description       String? @db.Text
+  displayOrder      Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ResumeSkill {
-  id           String   @id @default(uuid())
+  id           String  @id @default(uuid())
   resumeId     String
-  resume       Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  resume       Resume  @relation(fields: [resumeId], references: [id], onDelete: Cascade)
   name         String
   category     String?
   proficiency  String?
-  displayOrder Int      @default(0)
-  
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  displayOrder Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ResumeProject {
@@ -395,94 +396,94 @@ model ResumeProject {
   endDate      String?
   featured     Boolean  @default(false)
   displayOrder Int      @default(0)
-  
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ResumeCertification {
-  id                   String   @id @default(uuid())
-  resumeId             String
-  resume               Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
-  certificationName    String
-  issuingOrganization  String?
-  credentialId         String?
-  credentialUrl        String?
-  issueDate            String?
-  expirationDate       String?
-  neverExpires         Boolean  @default(false)
-  displayOrder         Int      @default(0)
+  id                  String  @id @default(uuid())
+  resumeId            String
+  resume              Resume  @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  certificationName   String
+  issuingOrganization String?
+  credentialId        String?
+  credentialUrl       String?
+  issueDate           String?
+  expirationDate      String?
+  neverExpires        Boolean @default(false)
+  displayOrder        Int     @default(0)
 
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ResumeLanguage {
-  id           String   @id @default(uuid())
+  id           String @id @default(uuid())
   resumeId     String
-  resume       Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  resume       Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
   language     String
-  proficiency  String   @default("Intermediate")
-  displayOrder Int      @default(0)
+  proficiency  String @default("Intermediate")
+  displayOrder Int    @default(0)
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ResumeAchievement {
-  id              String   @id @default(uuid())
+  id              String  @id @default(uuid())
   resumeId        String
-  resume          Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  resume          Resume  @relation(fields: [resumeId], references: [id], onDelete: Cascade)
   title           String
-  description     String?  @db.Text
+  description     String? @db.Text
   achievementDate String?
-  displayOrder    Int      @default(0)
+  displayOrder    Int     @default(0)
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ResumeAward {
-  id           String   @id @default(uuid())
+  id           String  @id @default(uuid())
   resumeId     String
-  resume       Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  resume       Resume  @relation(fields: [resumeId], references: [id], onDelete: Cascade)
   awardName    String
   issuer       String?
   awardDate    String?
-  description  String?  @db.Text
-  displayOrder Int      @default(0)
+  description  String? @db.Text
+  displayOrder Int     @default(0)
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ResumeInterest {
-  id           String   @id @default(uuid())
+  id           String  @id @default(uuid())
   resumeId     String
-  resume       Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  resume       Resume  @relation(fields: [resumeId], references: [id], onDelete: Cascade)
   interest     String
   category     String?
-  displayOrder Int      @default(0)
+  displayOrder Int     @default(0)
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ResumeReference {
-  id                   String   @id @default(uuid())
+  id                   String  @id @default(uuid())
   resumeId             String
-  resume               Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  resume               Resume  @relation(fields: [resumeId], references: [id], onDelete: Cascade)
   name                 String
   designation          String?
   company              String?
   email                String?
   phone                String?
   relationship         String?
-  availableUponRequest Boolean  @default(false)
-  displayOrder         Int      @default(0)
+  availableUponRequest Boolean @default(false)
+  displayOrder         Int     @default(0)
 
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // ==========================================
@@ -502,16 +503,16 @@ enum AIRole {
 }
 
 model AIConversation {
-  id        String   @id @default(cuid())
+  id        String     @id @default(cuid())
   userId    String
   resumeId  String?
   provider  AIProvider
   title     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  messages  AIMessage[]
-  usage     AIUsage[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  messages AIMessage[]
+  usage    AIUsage[]
 }
 
 model AIMessage {
@@ -521,12 +522,12 @@ model AIMessage {
   content        String   @db.Text
   tokens         Int?
   createdAt      DateTime @default(now())
-  
-  conversation   AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  conversation AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 }
 
 model AIUsage {
-  id               String   @id @default(cuid())
+  id               String     @id @default(cuid())
   conversationId   String
   provider         AIProvider
   model            String
@@ -535,23 +536,23 @@ model AIUsage {
   totalTokens      Int
   estimatedCost    Decimal
   latency          Int
-  createdAt        DateTime @default(now())
-  
-  conversation     AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  createdAt        DateTime   @default(now())
+
+  conversation AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 }
 
 model AISettings {
-  id             String   @id @default(cuid())
-  userId         String   @unique
+  id             String     @id @default(cuid())
+  userId         String     @unique
   provider       AIProvider
   preferredModel String
-  temperature    Float    @default(0.7)
-  maxTokens      Int      @default(1000)
-  stream         Boolean  @default(true)
-  language       String   @default("English")
-  tone           String   @default("Professional")
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  temperature    Float      @default(0.7)
+  maxTokens      Int        @default(1000)
+  stream         Boolean    @default(true)
+  language       String     @default("English")
+  tone           String     @default("Professional")
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
 }
 
 // ==========================================
@@ -559,17 +560,17 @@ model AISettings {
 // ==========================================
 
 model AIPrompt {
-  id           String     @id @default(cuid())
+  id           String      @id @default(cuid())
   category     String
   version      Int
   provider     AIProvider? // Null means compatible with all
-  systemPrompt String     @db.Text
-  userPrompt   String     @db.Text
+  systemPrompt String      @db.Text
+  userPrompt   String      @db.Text
   variables    String[]
-  description  String?    @db.Text
-  isActive     Boolean    @default(true)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  description  String?     @db.Text
+  isActive     Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 
   @@unique([category, version])
 }
@@ -597,7 +598,7 @@ model AIAuditLog {
   tokens         Int
   latency        Int
   cost           Decimal
-  status         String     // "SUCCESS" | "FAILED"
+  status         String // "SUCCESS" | "FAILED"
   errorMessage   String?    @db.Text
   createdAt      DateTime   @default(now())
 
@@ -608,7 +609,7 @@ model AIAuditLog {
 model AIRateLimit {
   id        String   @id @default(cuid())
   userId    String
-  type      String   // "MINUTE" | "HOUR" | "DAY"
+  type      String // "MINUTE" | "HOUR" | "DAY"
   count     Int      @default(0)
   resetAt   DateTime
   createdAt DateTime @default(now())
@@ -622,55 +623,55 @@ model AIRateLimit {
 // ==========================================
 
 model ExportHistory {
-  id          String   @id @default(uuid())
-  resumeId    String
-  userId      String
-  format      String   // "PDF" | "DOCX" | "HTML" | "JSON"
-  template    String?  // e.g., "modern", "classic"
-  fileSize    Int?     // size in bytes
-  durationMs  Int?     // time taken to generate
-  status      String   // "SUCCESS" | "FAILED"
-  error       String?  @db.Text
-  createdAt   DateTime @default(now())
+  id         String   @id @default(uuid())
+  resumeId   String
+  userId     String
+  format     String // "PDF" | "DOCX" | "HTML" | "JSON"
+  template   String? // e.g., "modern", "classic"
+  fileSize   Int? // size in bytes
+  durationMs Int? // time taken to generate
+  status     String // "SUCCESS" | "FAILED"
+  error      String?  @db.Text
+  createdAt  DateTime @default(now())
 
-  resume      Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([resumeId])
 }
 
 model ResumeShare {
-  id          String   @id @default(uuid())
-  resumeId    String
-  userId      String
-  token       String   @unique
-  url         String
-  type        String   // "PUBLIC" | "PRIVATE" | "PASSWORD"
+  id           String    @id @default(uuid())
+  resumeId     String
+  userId       String
+  token        String    @unique
+  url          String
+  type         String // "PUBLIC" | "PRIVATE" | "PASSWORD"
   passwordHash String?
-  views       Int      @default(0)
-  downloads   Int      @default(0)
-  expiresAt   DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  views        Int       @default(0)
+  downloads    Int       @default(0)
+  expiresAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
-  resume      Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([resumeId])
 }
 
 model ExportAnalytics {
-  id          String   @id @default(uuid())
-  resumeId    String
-  userId      String
-  action      String   // "DOWNLOAD_PDF", "SHARE_LINK_CREATED", etc.
-  metadata    Json?
-  createdAt   DateTime @default(now())
+  id        String   @id @default(uuid())
+  resumeId  String
+  userId    String
+  action    String // "DOWNLOAD_PDF", "SHARE_LINK_CREATED", etc.
+  metadata  Json?
+  createdAt DateTime @default(now())
 
-  resume      Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([action])
@@ -681,50 +682,50 @@ model ExportAnalytics {
 // ==========================================
 
 model CoverLetter {
-  id              String   @id @default(uuid())
-  userId          String
-  resumeId        String
-  title           String?
-  companyName     String?
-  position        String?
-  jobDescription  String?  @db.Text
-  content         String?  @db.Text
-  template        String   @default("professional")
-  tone            String   @default("professional")
-  length          String   @default("medium")
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String   @id @default(uuid())
+  userId         String
+  resumeId       String
+  title          String?
+  companyName    String?
+  position       String?
+  jobDescription String?  @db.Text
+  content        String?  @db.Text
+  template       String   @default("professional")
+  tone           String   @default("professional")
+  length         String   @default("medium")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  resume          Resume   @relation(fields: [resumeId], references: [id], onDelete: Cascade)
-  histories       CoverLetterHistory[]
+  user      User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resume    Resume               @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  histories CoverLetterHistory[]
 }
 
 model CoverLetterHistory {
-  id              String   @id @default(uuid())
-  coverLetterId   String
-  userId          String
-  action          String   // "GENERATED", "UPDATED", "EXPORTED_PDF"
-  createdAt       DateTime @default(now())
+  id            String   @id @default(uuid())
+  coverLetterId String
+  userId        String
+  action        String // "GENERATED", "UPDATED", "EXPORTED_PDF"
+  createdAt     DateTime @default(now())
 
-  coverLetter     CoverLetter @relation(fields: [coverLetterId], references: [id], onDelete: Cascade)
-  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  coverLetter CoverLetter @relation(fields: [coverLetterId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([coverLetterId])
 }
 
 model CoverLetterAnalytics {
-  id              String   @id @default(uuid())
-  userId          String
-  action          String   // "GENERATION", "EXPORT", "REWRITE"
-  tokens          Int?
-  cost            Decimal?
-  template        String?
-  metadata        Json?
-  createdAt       DateTime @default(now())
+  id        String   @id @default(uuid())
+  userId    String
+  action    String // "GENERATION", "EXPORT", "REWRITE"
+  tokens    Int?
+  cost      Decimal?
+  template  String?
+  metadata  Json?
+  createdAt DateTime @default(now())
 
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([action])
@@ -795,32 +796,32 @@ model Permission {
   description String?
   createdAt   DateTime @default(now())
 
-  roles       RolePermission[]
+  roles RolePermission[]
 }
 
 model RolePermission {
-  id           String    @id @default(uuid())
+  id           String   @id @default(uuid())
   roleId       String
   permissionId String
-  createdAt    DateTime  @default(now())
+  createdAt    DateTime @default(now())
 
-  role         AdminRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  role       AdminRole  @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
 
   @@unique([roleId, permissionId])
 }
 
 model AuditLog {
-  id          String   @id @default(uuid())
-  userId      String?
-  action      String   // e.g. "USER_SUSPENDED", "PLAN_UPDATED"
-  entityType  String?  // e.g. "USER", "SUBSCRIPTION"
-  entityId    String?
-  metadata    Json?
-  ipAddress   String?
-  createdAt   DateTime @default(now())
+  id         String   @id @default(uuid())
+  userId     String?
+  action     String // e.g. "USER_SUSPENDED", "PLAN_UPDATED"
+  entityType String? // e.g. "USER", "SUBSCRIPTION"
+  entityId   String?
+  metadata   Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
 
-  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([action])
@@ -850,189 +851,263 @@ model FeatureFlag {
 // ---------------------------------------------------------
 
 model MasterProfile {
-  id                  String   @id @default(uuid())
-  userId              String   @unique
-  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   // Section 1: Personal Information
-  profilePhoto        String?
-  firstName           String
-  lastName            String
-  email               String
-  mobileNumber        String
-  currentLocation     String?
-  country             String?
-  linkedin            String?
-  github              String?
-  portfolio           String?
-  currentDesignation  String?
-  totalExperience     String?
-  noticePeriod        String?
-  currentCtc          String?
-  expectedCtc         String?
-  preferredLocation   String?
-  workAuthorization   String?
-  visaStatus          String?
-  careerObjective     String?  @db.Text
+  profilePhoto       String?
+  firstName          String
+  lastName           String
+  email              String
+  mobileNumber       String
+  currentLocation    String?
+  country            String?
+  linkedin           String?
+  github             String?
+  portfolio          String?
+  currentDesignation String?
+  totalExperience    String?
+  noticePeriod       String?
+  currentCtc         String?
+  expectedCtc        String?
+  preferredLocation  String?
+  workAuthorization  String?
+  visaStatus         String?
+  careerObjective    String? @db.Text
 
   // Meta
-  completionPercentage Int     @default(0)
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  completionPercentage Int      @default(0)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
   // Relationships (Sections 2-10)
-  educations          MasterEducation[]
-  certifications      MasterCertification[]
-  skills              MasterTechnicalSkill[]
-  employments         MasterEmployment[]
-  projects            MasterProject[]
-  languages           MasterLanguage[]
-  awards              MasterAward[]
-  achievements        MasterAchievement[]
-  socialLinks         MasterSocialLink[]
+  educations     MasterEducation[]
+  certifications MasterCertification[]
+  skills         MasterTechnicalSkill[]
+  employments    MasterEmployment[]
+  projects       MasterProject[]
+  languages      MasterLanguage[]
+  awards         MasterAward[]
+  achievements   MasterAchievement[]
+  socialLinks    MasterSocialLink[]
 }
 
 model MasterEducation {
-  id              String   @id @default(uuid())
+  id              String        @id @default(uuid())
   masterProfileId String
   masterProfile   MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
-  
-  degree          String
-  specialization  String?
-  university      String?
-  college         String?
-  percentageCgpa  String?
-  startYear       String?
-  endYear         String?
-  educationType   String?
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+
+  degree         String
+  specialization String?
+  university     String?
+  college        String?
+  percentageCgpa String?
+  startYear      String?
+  endYear        String?
+  educationType  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model MasterCertification {
-  id              String   @id @default(uuid())
+  id              String        @id @default(uuid())
   masterProfileId String
   masterProfile   MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
-  
-  name            String
-  organization    String?
-  completionDate  String?
-  credentialId    String?
-  credentialUrl   String?
-  skillsCovered   String?  @db.Text
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+
+  name           String
+  organization   String?
+  completionDate String?
+  credentialId   String?
+  credentialUrl  String?
+  skillsCovered  String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model MasterTechnicalSkill {
-  id              String   @id @default(uuid())
+  id              String        @id @default(uuid())
   masterProfileId String
   masterProfile   MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
-  
-  category        String   // Frontend, Backend, Database, Cloud, DevOps, Tools, Testing, Programming Languages, Operating Systems, Others
-  tags            String[] // Arrays are supported in PostgreSQL
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+
+  category String // Frontend, Backend, Database, Cloud, DevOps, Tools, Testing, Programming Languages, Operating Systems, Others
+  tags     String[] // Arrays are supported in PostgreSQL
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model MasterEmployment {
-  id              String   @id @default(uuid())
+  id              String        @id @default(uuid())
   masterProfileId String
   masterProfile   MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
-  
-  company         String
-  client          String?
-  designation     String?
-  employmentType  String?
-  startDate       String?
-  endDate         String?
-  currentCompany  Boolean  @default(false)
-  location        String?
+
+  company          String
+  client           String?
+  designation      String?
+  employmentType   String?
+  startDate        String?
+  endDate          String?
+  currentCompany   Boolean @default(false)
+  location         String?
   responsibilities String? @db.Text
-  environment     String?
-  technologyStack String?
-  achievements    String?  @db.Text
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  environment      String?
+  technologyStack  String?
+  achievements     String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model MasterProject {
-  id              String   @id @default(uuid())
+  id              String        @id @default(uuid())
   masterProfileId String
   masterProfile   MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
-  
-  projectName     String
-  client          String?
-  role            String?
-  businessDomain  String?
-  description     String?  @db.Text
+
+  projectName      String
+  client           String?
+  role             String?
+  businessDomain   String?
+  description      String? @db.Text
   responsibilities String? @db.Text
-  technologyStack String?
-  environment     String?
-  duration        String?
-  teamSize        String?
-  methodology     String?
-  achievements    String?  @db.Text
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  technologyStack  String?
+  environment      String?
+  duration         String?
+  teamSize         String?
+  methodology      String?
+  achievements     String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model MasterLanguage {
-  id              String   @id @default(uuid())
+  id              String        @id @default(uuid())
   masterProfileId String
   masterProfile   MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
-  
-  language        String
-  canRead         Boolean  @default(false)
-  canWrite        Boolean  @default(false)
-  canSpeak        Boolean  @default(false)
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+
+  language String
+  canRead  Boolean @default(false)
+  canWrite Boolean @default(false)
+  canSpeak Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model MasterAward {
-  id              String   @id @default(uuid())
+  id              String        @id @default(uuid())
   masterProfileId String
   masterProfile   MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
-  
-  name            String
-  organization    String?
-  date            String?
-  description     String?  @db.Text
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+
+  name         String
+  organization String?
+  date         String?
+  description  String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model MasterAchievement {
-  id              String   @id @default(uuid())
+  id              String        @id @default(uuid())
   masterProfileId String
   masterProfile   MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
-  
-  description     String   @db.Text
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+
+  description String @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model MasterSocialLink {
-  id              String   @id @default(uuid())
+  id              String        @id @default(uuid())
   masterProfileId String
   masterProfile   MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
-  
-  linkedin        String?
-  github          String?
-  portfolio       String?
-  stackOverflow   String?
-  leetCode        String?
-  hackerRank      String?
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+
+  linkedin      String?
+  github        String?
+  portfolio     String?
+  stackOverflow String?
+  leetCode      String?
+  hackerRank    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model JobDescription {
+  id       String @id @default(uuid())
+  resumeId String @unique
+  resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  text            String  @db.Text
+  companyName     String?
+  jobTitle        String?
+  location        String?
+  employmentType  String?
+  experienceLevel String?
+  industry        String?
+
+  jdHash         String?
+  sourceType     String? @default("Paste") // Paste, PDF, DOCX
+  fileName       String?
+  analysisStatus String? @default("Pending") // Pending, Processing, Completed, Failed
+
+  analysis JobAnalysis?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model JobAnalysis {
+  id               String         @id @default(uuid())
+  jobDescriptionId String         @unique
+  jobDescription   JobDescription @relation(fields: [jobDescriptionId], references: [id], onDelete: Cascade)
+
+  structuredData Json? // Primary Data
+  rawResponse    String? @db.Text // Optional for troubleshooting
+
+  confidenceScore Int?
+  tokenUsage      Int?
+  analysisVersion String?
+  aiModel         String?
+  promptVersion   String?
+  analysisTime    Int? // milliseconds taken
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ResumeOptimization {
+  id       String @id @default(uuid())
+  resumeId String
+  resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  // Core Data
+  structuredSuggestions Json? // Source of truth for frontend
+  rawResponse           String? @db.Text // Optional for debugging
+  status                String  @default("Pending") // Pending, Processing, Completed, Failed
+
+  // Caching Hashes
+  resumeHash      String?
+  jobAnalysisHash String?
+
+  // Targeting (Partial Optimization)
+  targetSection String? @default("All") // Summary, Experience, Skills, Projects, All
+
+  // Metadata
+  version       Int     @default(1)
+  aiModel       String?
+  promptVersion String?
+
+  // Usage & Performance
+  tokenUsage Int?
+  cost       Float?
+  latency    Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

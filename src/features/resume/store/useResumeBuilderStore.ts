@@ -30,6 +30,9 @@ interface ResumeBuilderState {
   isSidebarOpen: boolean;
   setIsSidebarOpen: (isOpen: boolean) => void;
 
+  isJdPanelOpen: boolean;
+  setIsJdPanelOpen: (isOpen: boolean) => void;
+
   saveStatus: 'idle' | 'saving' | 'saved' | 'error';
   setSaveStatus: (status: 'idle' | 'saving' | 'saved' | 'error') => void;
   
@@ -101,6 +104,9 @@ export const useResumeBuilderStore = create<ResumeBuilderState>((set) => ({
   
   isSidebarOpen: false,
   setIsSidebarOpen: (isOpen) => set({ isSidebarOpen: isOpen }),
+
+  isJdPanelOpen: false,
+  setIsJdPanelOpen: (isOpen) => set({ isJdPanelOpen: isOpen }),
 
   saveStatus: 'idle',
   setSaveStatus: (status) => set({ saveStatus: status }),

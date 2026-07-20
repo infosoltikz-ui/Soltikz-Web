@@ -1,157 +1,146 @@
 import { PrismaClient } from '@prisma/client';
 import { AIService } from './AIService';
+import crypto from 'crypto';
 
 const prisma = new PrismaClient();
 
 export class JobDescriptionAnalyzerService {
   /**
-   * Automatically collects resume data, merges with the job description, and analyzes it.
+   * Analyzes a Job Description, extracting structured data and saving it to the DB.
+   * Utilizes JD hashing to avoid redundant AI calls.
    */
   public static async analyze(
     userId: string,
     resumeId: string,
-    jobDescription: string,
+    jobDescriptionText: string,
+    sourceType: string = 'Paste',
+    fileName?: string,
     conversationId?: string
   ) {
-    // 1. Fetch Resume Context
-    const resume = await prisma.resume.findUnique({
-      where: { id: resumeId, userId },
-      include: {
-        personal: true,
-        experiences: {
-          orderBy: { startDate: 'desc' }
-        },
-        educations: {
-          orderBy: { startDate: 'desc' }
-        },
-        skills: true,
-        projects: true,
-        achievements: true,
-        summary: true,
+    // 1. Generate Hash for caching
+    const jdHash = crypto.createHash('sha256').update(jobDescriptionText).digest('hex');
+
+    // 2. Check for cached version
+    const existingJd = await prisma.jobDescription.findUnique({
+      where: { resumeId },
+      include: { analysis: true }
+    });
+
+    if (
+      existingJd && 
+      existingJd.jdHash === jdHash && 
+      existingJd.analysisStatus === 'Completed' && 
+      existingJd.analysis?.structuredData
+    ) {
+      return {
+        success: true,
+        cached: true,
+        jobDescription: existingJd,
+        analysis: existingJd.analysis.structuredData
+      };
+    }
+
+    // 3. Upsert Job Description with 'Processing' state
+    const jd = await prisma.jobDescription.upsert({
+      where: { resumeId },
+      update: {
+        text: jobDescriptionText,
+        jdHash,
+        sourceType,
+        fileName,
+        analysisStatus: 'Processing'
+      },
+      create: {
+        resumeId,
+        text: jobDescriptionText,
+        jdHash,
+        sourceType,
+        fileName,
+        analysisStatus: 'Processing'
       }
     });
 
-    if (!resume) throw new Error('Resume not found or access denied.');
-
-    // 2. Format Resume Content
-    const contentParts = [];
-    
-    if (resume.personal) {
-      contentParts.push(`Job Title: ${resume.personal.title || ''}`);
-    }
-
-    if (resume.summary?.content) {
-      contentParts.push(`Summary:\n${resume.summary.content}`);
-    }
-
-    if (resume.skills && resume.skills.length > 0) {
-      contentParts.push(`Skills:\n${resume.skills.map(s => s.name).join(', ')}`);
-    }
-
-    if (resume.experiences && resume.experiences.length > 0) {
-      const exp = resume.experiences.map(e => `${e.jobTitle} at ${e.companyName}\n${e.description || ''}`).join('\n\n');
-      contentParts.push(`Experience:\n${exp}`);
-    }
-
-    if (resume.projects && resume.projects.length > 0) {
-      const proj = resume.projects.map(p => `${p.title}\n${p.description || ''}`).join('\n\n');
-      contentParts.push(`Projects:\n${proj}`);
-    }
-
-    const resumeContent = contentParts.join('\n\n---\n\n');
-
-    // 3. Prepare AI Variables
-    const variables: Record<string, string> = {
-      jobDescription: jobDescription,
-      resumeContent: resumeContent
-    };
-
-    // 4. Delegate to AIService
-    // Ensure the AI outputs JSON. We can configure ProviderManager to use JSON mode if supported,
-    // but the system prompt already asks for JSON format only.
-    const result = await AIService.generate(
-      userId,
-      resumeId,
-      'JOB_ANALYZER',
-      variables,
-      conversationId
-    );
-
-    // 5. Parse JSON
     try {
-      // Find the JSON block if it's wrapped in markdown
-      const jsonMatch = result.response.match(/```json\n([\s\S]*?)\n```/);
+      // 4. Delegate to AIService using JOB_DESCRIPTION_EXTRACTOR
+      const startTime = Date.now();
+      const result = await AIService.generate(
+        userId,
+        resumeId,
+        'JOB_DESCRIPTION_EXTRACTOR',
+        { jobDescription: jobDescriptionText },
+        conversationId
+      );
+      const analysisTime = Date.now() - startTime;
+
+      // 5. Parse JSON
+      const jsonMatch = result.response.match(/```(?:json)?\n([\s\S]*?)\n```/i);
       const jsonString = jsonMatch ? jsonMatch[1] : result.response;
       
-      const parsed = JSON.parse(jsonString);
-      return {
-        ...result,
-        analysis: parsed
-      };
-    } catch (e) {
-      console.error('Failed to parse AI job analysis response:', e);
-      // Fallback
-      return {
-        ...result,
-        analysis: {
-          score: 50,
-          missingSkills: [],
-          matchedSkills: [],
-          recommendations: ['AI returned an invalid format. Please try again.']
+      let parsedData;
+      try {
+        parsedData = JSON.parse(jsonString);
+      } catch (e) {
+        // Find first { and last } if regex fails
+        const firstBrace = jsonString.indexOf('{');
+        const lastBrace = jsonString.lastIndexOf('}');
+        if (firstBrace >= 0 && lastBrace >= 0) {
+            parsedData = JSON.parse(jsonString.substring(firstBrace, lastBrace + 1));
+        } else {
+            throw new Error('AI output is not valid JSON');
         }
-      };
-    }
-  }
-
-  public static async streamAnalyze(
-    userId: string,
-    resumeId: string,
-    jobDescription: string,
-    onChunk: (chunk: string) => void,
-    conversationId?: string
-  ) {
-    // Similar to above, but using AIService.stream
-    // Since stream is for text, streaming a JSON response might be tricky to parse on the fly on the frontend.
-    // For this implementation, we will just use the standard stream, and the frontend will wait to parse the final result.
-    
-    // 1. Fetch Resume Context
-    const resume = await prisma.resume.findUnique({
-      where: { id: resumeId, userId },
-      include: {
-        personal: true,
-        experiences: { orderBy: { startDate: 'desc' } },
-        educations: { orderBy: { startDate: 'desc' } },
-        skills: true,
-        projects: true,
-        summary: true,
       }
-    });
 
-    if (!resume) throw new Error('Resume not found or access denied.');
+      // 6. Update Job Description and Create/Update Job Analysis
+      const updatedJd = await prisma.jobDescription.update({
+        where: { id: jd.id },
+        data: {
+          companyName: parsedData.company || null,
+          jobTitle: parsedData.role || null,
+          experienceLevel: parsedData.experience || null,
+          analysisStatus: 'Completed',
+          analysis: {
+            upsert: {
+              create: {
+                structuredData: parsedData,
+                rawResponse: result.response,
+                tokenUsage: result.tokens?.total || 0,
+                analysisTime,
+                aiModel: result.model || 'unknown',
+                analysisVersion: '1.0.0',
+                promptVersion: '1.0.0'
+              },
+              update: {
+                structuredData: parsedData,
+                rawResponse: result.response,
+                tokenUsage: result.tokens?.total || 0,
+                analysisTime,
+                aiModel: result.model || 'unknown',
+                analysisVersion: '1.0.0',
+                promptVersion: '1.0.0'
+              }
+            }
+          }
+        },
+        include: { analysis: true }
+      });
 
-    // 2. Format Resume Content
-    const contentParts = [];
-    if (resume.personal) contentParts.push(`Job Title: ${resume.personal.title || ''}`);
-    if (resume.summary?.content) contentParts.push(`Summary:\n${resume.summary.content}`);
-    if (resume.skills.length > 0) contentParts.push(`Skills:\n${resume.skills.map(s => s.name).join(', ')}`);
-    if (resume.experiences.length > 0) contentParts.push(`Experience:\n${resume.experiences.map(e => `${e.jobTitle} at ${e.companyName}\n${e.description || ''}`).join('\n\n')}`);
-    
-    const resumeContent = contentParts.join('\n\n---\n\n');
-
-    const variables: Record<string, string> = {
-      jobDescription: jobDescription,
-      resumeContent: resumeContent
-    };
-
-    return await AIService.stream(
-      userId,
-      resumeId,
-      'JOB_ANALYZER',
-      variables,
-      onChunk,
-      undefined,
-      undefined,
-      conversationId
-    );
+      return {
+        success: true,
+        cached: false,
+        jobDescription: updatedJd,
+        analysis: parsedData
+      };
+      
+    } catch (error: any) {
+      console.error('Failed to analyze JD:', error);
+      
+      // Update status to Failed on error
+      await prisma.jobDescription.update({
+        where: { id: jd.id },
+        data: { analysisStatus: 'Failed' }
+      });
+      
+      throw new Error(error.message || 'Failed to analyze job description');
+    }
   }
 }
