@@ -33,6 +33,7 @@ const BillingPricingPage   = lazy(() => import('@features/billing/pages/PricingP
 const AdminLayout          = lazy(() => import('@features/admin/layouts/AdminLayout').then(module => ({ default: module.AdminLayout })))
 const AdminDashboardPage   = lazy(() => import('@features/admin/pages/AdminDashboardPage').then(module => ({ default: module.AdminDashboardPage })))
 const UsersPage            = lazy(() => import('@features/admin/pages/UsersPage').then(module => ({ default: module.UsersPage })))
+const MasterProfilePage    = lazy(() => import('@features/master-profile/pages/MasterProfilePage').then(module => ({ default: module.MasterProfilePage })))
 
 // ── Suspense wrapper ──────────────────────────────────────────
 const Lazy = ({ children }: { children: React.ReactNode }) => (
@@ -65,6 +66,7 @@ const router = createBrowserRouter([
     element: <ProtectedRoute><DashboardLayout /></ProtectedRoute>,
     children: [
       { path: '/dashboard', element: <Lazy><DashboardPage /></Lazy> },
+      { path: '/dashboard/master-profile', element: <Lazy><MasterProfilePage /></Lazy> },
       { path: '/dashboard/resumes', element: <Lazy><MyResumesPage /></Lazy> },
       { path: '/dashboard/resumes/:resumeId', element: <Lazy><ResumeEditorPage /></Lazy> },
       { path: '/dashboard/resumes/:resumeId/job-analyzer', element: <Lazy><JobAnalyzerPage /></Lazy> },

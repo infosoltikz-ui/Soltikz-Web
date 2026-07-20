@@ -4,7 +4,7 @@ import { motion, AnimatePresence }  from 'framer-motion'
 import {
   FileText, LayoutDashboard, Files, Target, PenLine,
   User, CreditCard, Settings, ChevronLeft, ChevronRight,
-  Bell, Search, Sun, Moon, LogOut, Menu,
+  Bell, Search, Sun, Moon, LogOut, Menu, Database
 } from 'lucide-react'
 import { useThemeStore }  from '@store/useThemeStore'
 import { useUIStore }     from '@store/useUIStore'
@@ -16,6 +16,7 @@ import { ToastContainer } from '@components/ui/Overlay'
 
 const NAV_ITEMS = [
   { icon: LayoutDashboard, label: 'Dashboard',    href: ROUTES.DASHBOARD },
+  { icon: Database,        label: 'Master Profile', href: '/dashboard/master-profile' },
   { icon: Files,           label: 'My Resumes',   href: '/dashboard/resumes' },
   { icon: Target,          label: 'ATS Checker',  href: '/dashboard/ats' },
   { icon: PenLine,         label: 'Cover Letters', href: '/dashboard/cover-letters' },
