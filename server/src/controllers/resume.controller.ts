@@ -404,6 +404,20 @@ export const duplicateResume = async (req: Request, res: Response, next: NextFun
 
     const existingResume = await prisma.resume.findFirst({
       where: { id: id as string, userId, deletedAt: null },
+      include: {
+        personal: true,
+        summary: true,
+        experiences: true,
+        educations: true,
+        skills: true,
+        projects: true,
+        certifications: true,
+        languages: true,
+        achievements: true,
+        awards: true,
+        interests: true,
+        references: true,
+      }
     });
 
     if (!existingResume) {
@@ -422,6 +436,10 @@ export const duplicateResume = async (req: Request, res: Response, next: NextFun
     const randomString = crypto.randomBytes(3).toString('hex');
     const slug = `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${randomString}`;
 
+    // Helper to strip metadata from cloned rows
+    const stripMeta = (arr: any[] | undefined) => 
+      arr ? arr.map(({ id, resumeId, createdAt, updatedAt, ...rest }) => rest) : undefined;
+
     const newResume = await prisma.resume.create({
       data: {
         userId,
@@ -431,6 +449,24 @@ export const duplicateResume = async (req: Request, res: Response, next: NextFun
         status: existingResume.status,
         visibility: existingResume.visibility,
         content: existingResume.content || Prisma.JsonNull,
+        
+        // Deep Clone Relations
+        personal: existingResume.personal ? {
+          create: (({ id, resumeId, createdAt, updatedAt, ...rest }) => rest)(existingResume.personal)
+        } : undefined,
+        summary: existingResume.summary ? {
+          create: (({ id, resumeId, createdAt, updatedAt, ...rest }) => rest)(existingResume.summary)
+        } : undefined,
+        experiences: existingResume.experiences?.length ? { create: stripMeta(existingResume.experiences) } : undefined,
+        educations: existingResume.educations?.length ? { create: stripMeta(existingResume.educations) } : undefined,
+        skills: existingResume.skills?.length ? { create: stripMeta(existingResume.skills) } : undefined,
+        projects: existingResume.projects?.length ? { create: stripMeta(existingResume.projects) } : undefined,
+        certifications: existingResume.certifications?.length ? { create: stripMeta(existingResume.certifications) } : undefined,
+        languages: existingResume.languages?.length ? { create: stripMeta(existingResume.languages) } : undefined,
+        achievements: existingResume.achievements?.length ? { create: stripMeta(existingResume.achievements) } : undefined,
+        awards: existingResume.awards?.length ? { create: stripMeta(existingResume.awards) } : undefined,
+        interests: existingResume.interests?.length ? { create: stripMeta(existingResume.interests) } : undefined,
+        references: existingResume.references?.length ? { create: stripMeta(existingResume.references) } : undefined,
       },
       include: { template: true },
     });
