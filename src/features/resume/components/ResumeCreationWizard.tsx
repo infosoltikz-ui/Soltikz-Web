@@ -11,10 +11,7 @@ interface ResumeCreationWizardProps {
 
 const RESUME_TYPES = [
   { id: 'FULLTIME', label: 'Full-Time Role', icon: Briefcase, desc: 'Standard professional resume for full-time employment.' },
-  { id: 'C2C', label: 'Contract (C2C)', icon: Building2, desc: 'Optimized for B2B consulting and contracting roles.' },
-  { id: 'INTERNSHIP', label: 'Internship', icon: GraduationCap, desc: 'Highlights education, projects, and potential for students.' },
-  { id: 'FREELANCE', label: 'Freelance', icon: Code, desc: 'Showcases specific gig work and diverse client projects.' },
-  { id: 'GOVERNMENT', label: 'Government', icon: FileText, desc: 'Detailed, highly structured format for federal/state jobs.' }
+  { id: 'C2C', label: 'Contract (C2C)', icon: Building2, desc: 'Optimized for B2B consulting and contracting roles.' }
 ];
 
 export const ResumeCreationWizard: React.FC<ResumeCreationWizardProps> = ({ isOpen, onClose }) => {
