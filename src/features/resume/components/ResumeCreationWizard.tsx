@@ -48,7 +48,7 @@ export const ResumeCreationWizard: React.FC<ResumeCreationWizardProps> = ({ isOp
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
         
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-100">
@@ -66,31 +66,34 @@ export const ResumeCreationWizard: React.FC<ResumeCreationWizardProps> = ({ isOp
           {step === 1 ? (
             <div className="space-y-4">
               <p className="text-slate-700 font-medium mb-4">What type of role are you applying for?</p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 {RESUME_TYPES.map(type => (
                   <button
                     key={type.id}
                     onClick={() => setResumeType(type.id)}
-                    className={`flex flex-col text-left p-4 rounded-xl border-2 transition-all ${
+                    className={`flex items-start gap-4 text-left p-5 rounded-xl border-2 transition-all ${
                       resumeType === type.id 
-                        ? 'border-blue-600 bg-blue-50' 
-                        : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'
+                        ? 'border-emerald-600 bg-emerald-50/50 shadow-sm' 
+                        : 'border-slate-200 hover:border-emerald-300 hover:bg-slate-50'
                     }`}
                   >
-                    <div className={`p-2 w-fit rounded-lg mb-3 ${resumeType === type.id ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600'}`}>
+                    <div className={`p-2.5 rounded-lg shrink-0 ${resumeType === type.id ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-500'}`}>
                       <type.icon className="w-5 h-5" />
                     </div>
-                    <h3 className="font-semibold text-slate-900">{type.label}</h3>
-                    <p className="text-sm text-slate-500 mt-1 leading-relaxed">{type.desc}</p>
+                    <div>
+                      <h3 className={`font-semibold ${resumeType === type.id ? 'text-emerald-900' : 'text-slate-900'}`}>{type.label}</h3>
+                      <p className="text-sm text-slate-500 mt-1 leading-relaxed">{type.desc}</p>
+                    </div>
                   </button>
                 ))}
               </div>
             </div>
           ) : (
             <div className="space-y-6">
-              <div className="bg-blue-50 border border-blue-100 p-4 rounded-xl mb-6">
-                <p className="text-sm text-blue-800 font-medium">
-                  We will securely clone your Master Profile into a new Draft. Your Master Profile will remain completely unchanged when you edit this new Resume.
+              <div className="bg-emerald-50 border border-emerald-100 p-4 rounded-xl mb-6 flex gap-3 items-start">
+                <FileText className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p className="text-sm text-emerald-800 leading-relaxed">
+                  We will securely clone your <span className="font-semibold">Master Profile</span> into a new Draft. Your Master Profile remains completely unchanged.
                 </p>
               </div>
 
@@ -102,7 +105,7 @@ export const ResumeCreationWizard: React.FC<ResumeCreationWizardProps> = ({ isOp
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. Senior Frontend Engineer - Google"
-                  className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
+                  className="w-full px-4 py-3 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-600 focus:border-transparent outline-none transition-all"
                 />
                 <p className="text-xs text-slate-500 mt-2">Only you can see this name.</p>
               </div>
