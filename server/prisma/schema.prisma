@@ -80,6 +80,7 @@ model User {
   invoices          Invoice[]
   usage             Usage?
   auditLogs         AuditLog[]
+  masterProfile     MasterProfile?
 }
 
 model Session {
@@ -842,4 +843,196 @@ model FeatureFlag {
   description String?
   updatedBy   String?
   updatedAt   DateTime @updatedAt
+}
+
+// ---------------------------------------------------------
+// Phase 1: Master Profile Module
+// ---------------------------------------------------------
+
+model MasterProfile {
+  id                  String   @id @default(uuid())
+  userId              String   @unique
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Section 1: Personal Information
+  profilePhoto        String?
+  firstName           String
+  lastName            String
+  email               String
+  mobileNumber        String
+  currentLocation     String?
+  country             String?
+  linkedin            String?
+  github              String?
+  portfolio           String?
+  currentDesignation  String?
+  totalExperience     String?
+  noticePeriod        String?
+  currentCtc          String?
+  expectedCtc         String?
+  preferredLocation   String?
+  workAuthorization   String?
+  visaStatus          String?
+  careerObjective     String?  @db.Text
+
+  // Meta
+  completionPercentage Int     @default(0)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relationships (Sections 2-10)
+  educations          MasterEducation[]
+  certifications      MasterCertification[]
+  skills              MasterTechnicalSkill[]
+  employments         MasterEmployment[]
+  projects            MasterProject[]
+  languages           MasterLanguage[]
+  awards              MasterAward[]
+  achievements        MasterAchievement[]
+  socialLinks         MasterSocialLink[]
+}
+
+model MasterEducation {
+  id              String   @id @default(uuid())
+  masterProfileId String
+  masterProfile   MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
+  
+  degree          String
+  specialization  String?
+  university      String?
+  college         String?
+  percentageCgpa  String?
+  startYear       String?
+  endYear         String?
+  educationType   String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model MasterCertification {
+  id              String   @id @default(uuid())
+  masterProfileId String
+  masterProfile   MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
+  
+  name            String
+  organization    String?
+  completionDate  String?
+  credentialId    String?
+  credentialUrl   String?
+  skillsCovered   String?  @db.Text
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model MasterTechnicalSkill {
+  id              String   @id @default(uuid())
+  masterProfileId String
+  masterProfile   MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
+  
+  category        String   // Frontend, Backend, Database, Cloud, DevOps, Tools, Testing, Programming Languages, Operating Systems, Others
+  tags            String[] // Arrays are supported in PostgreSQL
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model MasterEmployment {
+  id              String   @id @default(uuid())
+  masterProfileId String
+  masterProfile   MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
+  
+  company         String
+  client          String?
+  designation     String?
+  employmentType  String?
+  startDate       String?
+  endDate         String?
+  currentCompany  Boolean  @default(false)
+  location        String?
+  responsibilities String? @db.Text
+  environment     String?
+  technologyStack String?
+  achievements    String?  @db.Text
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model MasterProject {
+  id              String   @id @default(uuid())
+  masterProfileId String
+  masterProfile   MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
+  
+  projectName     String
+  client          String?
+  role            String?
+  businessDomain  String?
+  description     String?  @db.Text
+  responsibilities String? @db.Text
+  technologyStack String?
+  environment     String?
+  duration        String?
+  teamSize        String?
+  methodology     String?
+  achievements    String?  @db.Text
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model MasterLanguage {
+  id              String   @id @default(uuid())
+  masterProfileId String
+  masterProfile   MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
+  
+  language        String
+  canRead         Boolean  @default(false)
+  canWrite        Boolean  @default(false)
+  canSpeak        Boolean  @default(false)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model MasterAward {
+  id              String   @id @default(uuid())
+  masterProfileId String
+  masterProfile   MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
+  
+  name            String
+  organization    String?
+  date            String?
+  description     String?  @db.Text
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model MasterAchievement {
+  id              String   @id @default(uuid())
+  masterProfileId String
+  masterProfile   MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
+  
+  description     String   @db.Text
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model MasterSocialLink {
+  id              String   @id @default(uuid())
+  masterProfileId String
+  masterProfile   MasterProfile @relation(fields: [masterProfileId], references: [id], onDelete: Cascade)
+  
+  linkedin        String?
+  github          String?
+  portfolio       String?
+  stackOverflow   String?
+  leetCode        String?
+  hackerRank      String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

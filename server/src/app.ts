@@ -16,6 +16,7 @@ import resumeRoutes from './routes/resume.route';
 import aiRoutes from './modules/ai/ai.routes';
 import exportRoutes from './routes/export.routes';
 import coverLetterRoutes from './routes/cover-letter.routes';
+import masterProfileRoutes from './routes/master-profile.route';
 
 import { errorHandler, notFoundHandler } from './middlewares/error.middleware';
 
@@ -93,6 +94,7 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/export', exportRoutes);
 app.use('/api/v1/cover-letter', coverLetterRoutes);
 app.use('/api/cover-letter', coverLetterRoutes); // alias without v1
+app.use('/api/master-profile', masterProfileRoutes);
 
 import billingRoutes from './modules/billing/routes/billing.routes';
 app.use('/api/v1', billingRoutes);
