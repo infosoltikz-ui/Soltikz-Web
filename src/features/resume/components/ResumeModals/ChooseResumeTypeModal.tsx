@@ -39,7 +39,7 @@ export const ChooseResumeTypeModal: React.FC<ChooseResumeTypeModalProps> = ({ is
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden"
+            className="relative z-10 w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden"
           >
             <div className="p-6 border-b border-slate-100">
               <h2 className="text-xl font-bold text-slate-900">Choose Resume Type</h2>
