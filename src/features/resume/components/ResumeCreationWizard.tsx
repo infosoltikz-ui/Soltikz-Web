@@ -124,8 +124,8 @@ export const ResumeCreationWizard: React.FC<ResumeCreationWizardProps> = ({ isOp
           )}
           
           {step === 1 ? (
-            <Button onClick={handleNext} className="gap-2">
-              Continue <ChevronRight className="w-4 h-4" />
+            <Button onClick={handleNext} rightIcon={<ChevronRight className="w-4 h-4" />}>
+              Continue
             </Button>
           ) : (
             <Button 
