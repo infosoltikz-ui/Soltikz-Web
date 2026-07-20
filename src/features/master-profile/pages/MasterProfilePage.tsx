@@ -1,18 +1,38 @@
-import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { useForm, FormProvider } from 'react-hook-form';
 import { useMasterProfile, useUpdateMasterProfile } from '../hooks/useMasterProfile';
 import { MasterProfile } from '../types/masterProfile';
+import { useUIStore } from '@store/useUIStore';
 
-// Simplified layout to start
+// Components
+import { StickyProgressSidebar } from '../components/StickyProgressSidebar';
+import { StickySaveBar } from '../components/StickySaveBar';
+
+// Sections
+import { PersonalInformationSection } from '../components/sections/PersonalInformationSection';
+import { EducationSection } from '../components/sections/EducationSection';
+import { CertificationsSection } from '../components/sections/CertificationsSection';
+import { TechnicalSkillsSection } from '../components/sections/TechnicalSkillsSection';
+import { EmploymentHistorySection } from '../components/sections/EmploymentHistorySection';
+import { ProjectsSection } from '../components/sections/ProjectsSection';
+import { LanguagesSection } from '../components/sections/LanguagesSection';
+import { AwardsSection } from '../components/sections/AwardsSection';
+import { AchievementsSection } from '../components/sections/AchievementsSection';
+import { SocialLinksSection } from '../components/sections/SocialLinksSection';
+
 export const MasterProfilePage: React.FC = () => {
   const { data: profile, isLoading } = useMasterProfile();
-  const { mutate: updateProfile, isPending } = useUpdateMasterProfile();
+  const { mutate: updateProfile } = useUpdateMasterProfile();
   
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [activeSection, setActiveSection] = useState('personal');
 
-  const { register, watch, reset } = useForm<MasterProfile>({
-    defaultValues: profile
+  const methods = useForm<MasterProfile>({
+    defaultValues: profile || {},
+    mode: 'onBlur',
   });
+
+  const { reset, watch, handleSubmit, formState: { isDirty } } = methods;
 
   useEffect(() => {
     if (profile) {
@@ -20,76 +40,123 @@ export const MasterProfilePage: React.FC = () => {
     }
   }, [profile, reset]);
 
-  // Phase 1.12: Debounced Auto-Save
+  // Handle intersection observer for scrolling updates
+  const observer = useRef<IntersectionObserver | null>(null);
   useEffect(() => {
-    const subscription = watch((value) => {
-      setSaveStatus('saving');
-      const timer = setTimeout(() => {
-        updateProfile(value as MasterProfile, {
-          onSuccess: () => setSaveStatus('saved')
-        });
-      }, 2000); // Debounce by 2s for demonstration, typically 30s as per req
-      return () => clearTimeout(timer);
+    observer.current = new IntersectionObserver(
+      (entries) => {
+        const visibleSections = entries.filter(entry => entry.isIntersecting);
+        if (visibleSections.length > 0) {
+          // Find the one that's most visible
+          visibleSections.sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+          setActiveSection(visibleSections[0].target.id);
+        }
+      },
+      { rootMargin: '-20% 0px -80% 0px' }
+    );
+
+    const sections = document.querySelectorAll('section[id]');
+    sections.forEach((section) => observer.current?.observe(section));
+
+    return () => observer.current?.disconnect();
+  }, [isLoading]);
+
+  // Scroll to section
+  const handleNavigate = useCallback((sectionId: string) => {
+    const el = document.getElementById(sectionId);
+    if (el) {
+      const y = el.getBoundingClientRect().top + window.scrollY - 100;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+      setActiveSection(sectionId);
+    }
+  }, []);
+
+  // Debounced Auto-Save for dirty fields only
+  useEffect(() => {
+    const subscription = watch((value, { type }) => {
+      if (type && isDirty) { // Only save on user interactions that dirty the form
+        setSaveStatus('saving');
+        const timer = setTimeout(() => {
+          handleSubmit((data) => {
+            updateProfile(data, {
+              onSuccess: () => {
+                setSaveStatus('saved');
+                reset(data, { keepValues: true, keepDirty: false });
+              }
+            });
+          })();
+        }, 5000); // 5s debounce for better UX, maximum 30s requested
+        return () => clearTimeout(timer);
+      }
     });
     return () => subscription.unsubscribe();
-  }, [watch, updateProfile]);
+  }, [watch, handleSubmit, updateProfile, isDirty, reset]);
 
-  if (isLoading) return <div className="p-8 text-center text-slate-500">Loading Master Profile...</div>;
+  // Page Unload / Save Draft / Cancel Handlers
+  const handleSaveProfile = handleSubmit((data) => {
+    setSaveStatus('saving');
+    updateProfile(data, {
+      onSuccess: () => {
+        setSaveStatus('saved');
+        reset(data, { keepValues: true, keepDirty: false });
+        useUIStore.getState().toast.success('Master Profile saved successfully');
+      }
+    });
+  });
+
+  const handleCancel = () => {
+    if (profile) {
+      reset(profile); // Revert to last backend state
+      setSaveStatus('idle');
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="max-w-6xl mx-auto p-6 flex gap-6">
+        <div className="w-1/4 h-64 bg-slate-100 animate-pulse rounded-xl" />
+        <div className="flex-1 space-y-6">
+          <div className="h-96 bg-slate-100 animate-pulse rounded-xl" />
+          <div className="h-64 bg-slate-100 animate-pulse rounded-xl" />
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-6xl mx-auto p-6 flex gap-6">
-      {/* Sidebar Progress */}
-      <div className="w-1/4 bg-white p-6 rounded-xl border border-slate-200 h-fit sticky top-6 shadow-sm">
-        <h2 className="font-semibold text-slate-900 mb-4">Profile Completeness</h2>
-        <div className="w-full bg-slate-100 rounded-full h-3 mb-2">
-          <div 
-            className="bg-blue-600 h-3 rounded-full transition-all duration-500"
-            style={{ width: `${profile?.completionPercentage || 0}%` }}
+    <FormProvider {...methods}>
+      <form onSubmit={(e) => e.preventDefault()} className="relative pb-24">
+        <div className="max-w-7xl mx-auto p-4 md:p-6 flex flex-col lg:flex-row gap-6 lg:gap-8">
+          
+          <StickyProgressSidebar 
+            profile={profile} 
+            activeSection={activeSection}
+            onNavigate={handleNavigate}
+            saveStatus={saveStatus}
           />
-        </div>
-        <p className="text-sm font-medium text-slate-600 mb-6">{profile?.completionPercentage || 0}% Complete</p>
-        
-        <div className="flex items-center gap-2 text-sm">
-          {saveStatus === 'saving' && <span className="text-blue-500 font-medium">Saving...</span>}
-          {saveStatus === 'saved' && <span className="text-green-500 font-medium">Saved Successfully</span>}
-          {saveStatus === 'idle' && <span className="text-slate-400">All changes saved</span>}
-        </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="flex-1 space-y-6">
-        {/* Section 1: Personal Information */}
-        <section className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-900 mb-4 pb-2 border-b">Personal Information</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">First Name</label>
-              <input {...register('firstName')} className="w-full border rounded-lg px-3 py-2" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Last Name</label>
-              <input {...register('lastName')} className="w-full border rounded-lg px-3 py-2" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
-              <input {...register('email')} className="w-full border rounded-lg px-3 py-2" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Mobile Number</label>
-              <input {...register('mobileNumber')} className="w-full border rounded-lg px-3 py-2" />
-            </div>
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-slate-700 mb-1">Career Objective</label>
-              <textarea {...register('careerObjective')} rows={4} className="w-full border rounded-lg px-3 py-2" />
-            </div>
+          {/* Main Form Content */}
+          <div className="flex-1 space-y-8 lg:min-w-0">
+            <PersonalInformationSection />
+            <EducationSection />
+            <CertificationsSection />
+            <TechnicalSkillsSection />
+            <EmploymentHistorySection />
+            <ProjectsSection />
+            <LanguagesSection />
+            <AwardsSection />
+            <AchievementsSection />
+            <SocialLinksSection />
           </div>
-        </section>
+        </div>
 
-        {/* Placeholders for other sections... */}
-        <section className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm text-slate-500 italic text-sm">
-          Other sections (Education, Certifications, Skills, Employment, Projects, Languages, Awards, Achievements, Social Links) will be rendered here following the same React Hook Form patterns.
-        </section>
-      </div>
-    </div>
+        <StickySaveBar 
+          saveStatus={saveStatus}
+          onSaveDraft={handleSaveProfile}
+          onSaveProfile={handleSaveProfile}
+          onCancel={handleCancel}
+        />
+      </form>
+    </FormProvider>
   );
 };

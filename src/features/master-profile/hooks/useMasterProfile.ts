@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { masterProfileApi } from '../api/masterProfile.api';
 import { MasterProfile } from '../types/masterProfile';
-import toast from 'react-hot-toast';
+import { useUIStore } from '@store/useUIStore';
 
 export const useMasterProfile = () => {
   return useQuery({
@@ -32,7 +32,7 @@ export const useUpdateMasterProfile = () => {
       if (context?.previousProfile) {
         queryClient.setQueryData(['master-profile'], context.previousProfile);
       }
-      toast.error('Failed to save Master Profile');
+      useUIStore.getState().toast.error('Failed to save Master Profile');
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['master-profile'] });
