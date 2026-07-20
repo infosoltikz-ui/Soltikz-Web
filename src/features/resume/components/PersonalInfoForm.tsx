@@ -7,7 +7,6 @@ import { useUpdatePersonal } from '../hooks/resume.queries';
 import { useResumeBuilderStore } from '../store/useResumeBuilderStore';
 import { Input } from '@/components/ui/Input';
 import { useDebounce } from '@/hooks';
-import { ImageUploader } from './ImageUploader';
 
 const personalInfoSchema = z.object({
   firstName: z.string().max(50, 'Max 50 characters').optional(),
@@ -124,18 +123,6 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ resume }) =>
       }
     }}>
       <div className="flex flex-col md:flex-row gap-6">
-        <Controller
-          control={control}
-          name="profileImage"
-          render={({ field }) => (
-            <ImageUploader 
-              value={field.value} 
-              onChange={field.onChange} 
-              className="shrink-0"
-            />
-          )}
-        />
-        
         <div className="flex-1 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
