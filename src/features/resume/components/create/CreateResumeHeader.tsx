@@ -11,7 +11,7 @@ export const CreateResumeHeader = () => {
       <div className="flex items-center gap-4">
         <button 
           onClick={() => navigate(-1)}
-          className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-500 hover:text-slate-900"
+          className="p-2 hover:bg-slate-100 rounded-full transition-colors text-primary hover:text-primary-700"
           aria-label="Go back"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -26,8 +26,9 @@ export const CreateResumeHeader = () => {
       <Button 
         variant="outline" 
         onClick={() => navigate('/dashboard/resumes')}
-        className="text-sm font-medium"
+        className="text-sm font-medium text-primary border-primary/30 hover:bg-primary-50 gap-2"
       >
+        <ArrowLeft className="w-4 h-4" />
         Back to Dashboard
       </Button>
     </div>

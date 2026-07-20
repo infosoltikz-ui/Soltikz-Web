@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMasterProfile } from '../../master-profile/hooks/useMasterProfile';
+import { useCreateResume } from '../hooks/resume.queries';
+import { useAnalyzeJobDescription } from '../hooks/jobDescription.queries';
+import { useGenerateOptimization } from '../hooks/resumeOptimization.queries';
 import { CreateResumeHeader } from '../components/create/CreateResumeHeader';
 import { ResumeTypeSection } from '../components/create/ResumeTypeSection';
 import { PersonalInformationSection } from '../components/create/PersonalInformationSection';
@@ -21,9 +24,14 @@ interface CreateResumeFormValues {
 
 export const CreateNewResumePage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { data: masterProfile, isLoading: isProfileLoading } = useMasterProfile();
   const [isGenerating, setIsGenerating] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+
+  const createResumeMutation = useCreateResume();
+  const analyzeJdMutation = useAnalyzeJobDescription();
+  const optimizeMutation = useGenerateOptimization();
 
   const {
     register,
@@ -33,7 +41,7 @@ export const CreateNewResumePage = () => {
     formState: { errors }
   } = useForm<CreateResumeFormValues>({
     defaultValues: {
-      resumeType: '',
+      resumeType: (searchParams.get('type') as 'FULLTIME' | 'C2C') || '',
       targetCompany: '',
       targetRole: '',
       expectedExperience: '',
@@ -57,21 +65,53 @@ export const CreateNewResumePage = () => {
 
   const onSubmit = async (data: CreateResumeFormValues) => {
     setIsGenerating(true);
-    setCurrentStep(4); // AI Optimization step
+    setCurrentStep(3);
     
-    // Simulate generation for now - this will be wired to the real API
     try {
-      // 1. Create a draft resume
-      // 2. Submit to Job Analysis
-      // 3. Submit to Resume Optimization
-      // 4. Update timeline steps
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      setCurrentStep(5);
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      setCurrentStep(6);
+      // 1. Generate Resume Name automatically
+      const companyPart = data.targetCompany ? ` - ${data.targetCompany}` : '';
+      const rolePart = data.targetRole || 'Resume';
+      const resumeName = `${rolePart}${companyPart}`;
+
+      // 2. Clone Master Profile / Create Resume Draft
+      const newResume = await createResumeMutation.mutateAsync({
+        title: resumeName,
+        targetRole: data.targetRole,
+        // Optional company mapping if your API supports it.
+      } as any); // Assuming mutateAsync returns the created resume object with an ID
+
+      const newResumeId = newResume?.id || (newResume as any)?.data?.id;
+
+      if (!newResumeId) {
+        throw new Error("Failed to create resume draft");
+      }
+
+      setCurrentStep(4); // AI Optimization step
       
-      // Navigate to the newly created workspace
-      // navigate(`/dashboard/resumes/${newResumeId}`);
+      // 3. Save JD & Run Analysis if provided
+      if (data.jobDescription) {
+        await analyzeJdMutation.mutateAsync({
+          resumeId: newResumeId,
+          jobDescription: data.jobDescription,
+          sourceType: 'Paste'
+        });
+      }
+
+      setCurrentStep(5); // ATS Analysis step (Simulated for now)
+      
+      // 4. Run AI Resume Optimization
+      await optimizeMutation.mutateAsync({
+        resumeId: newResumeId,
+      });
+      
+      // 5. ATS Analysis (Placeholder simulated delay as backend may not be fully wired)
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      setCurrentStep(6);
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // 6. Navigate to the newly created workspace
+      navigate(`/dashboard/resumes/${newResumeId}`);
     } catch (error) {
       console.error('Failed to generate resume', error);
       setCurrentStep(3); // Revert step on error

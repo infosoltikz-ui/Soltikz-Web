@@ -15,7 +15,7 @@ import {
   ArchiveResumeModal,
   RenameResumeModal
 } from '../components/ResumeModals';
-import { ResumeCreationWizard } from '../components/ResumeCreationWizard';
+import { ChooseResumeTypeModal } from '../components/ResumeModals/ChooseResumeTypeModal';
 import {
   Search,
   Grid,
@@ -219,7 +219,7 @@ export const MyResumesPage: React.FC = () => {
       </div>
 
       {/* ── Modals ──────────────────────────────────────── */}
-      <ResumeCreationWizard
+      <ChooseResumeTypeModal
         isOpen={modalState.type === 'create'}
         onClose={() => setModalState({ type: null, resumeId: null })}
       />

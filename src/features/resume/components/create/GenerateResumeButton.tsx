@@ -15,25 +15,21 @@ export const GenerateResumeButton: React.FC<GenerateResumeButtonProps> = ({ isLo
         disabled={isLoading || disabled}
         whileHover={{ scale: (isLoading || disabled) ? 1 : 1.01 }}
         whileTap={{ scale: (isLoading || disabled) ? 1 : 0.99 }}
-        className={`w-full relative group overflow-hidden rounded-xl p-0.5 transition-all duration-300 ${
-          isLoading || disabled ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-lg hover:shadow-primary/20'
+        className={`w-full bg-primary hover:bg-primary-hover text-white rounded-xl p-4 transition-all duration-200 ${
+          isLoading || disabled ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-md'
         }`}
       >
-        {/* Animated gradient border effect */}
-        <span className="absolute inset-0 bg-gradient-to-r from-primary via-blue-500 to-indigo-600 opacity-80 group-hover:opacity-100 transition-opacity"></span>
-        
-        {/* Button content */}
-        <div className="relative bg-white/10 backdrop-blur-sm px-6 py-4 rounded-[11px] flex flex-col items-center justify-center">
-          <div className="flex items-center gap-2 text-white font-semibold text-lg mb-1">
+        <div className="flex flex-col items-center justify-center">
+          <div className="flex items-center gap-2 font-semibold text-base mb-0.5">
             {isLoading ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
-              <Sparkles className="w-5 h-5 text-yellow-300" />
+              <Sparkles className="w-5 h-5" />
             )}
             {isLoading ? 'Generating ATS Resume...' : 'Generate Tailored Resume'}
           </div>
-          <p className="text-white/80 text-sm font-medium">
-            AI will analyze and create an ATS-optimized resume.
+          <p className="text-white/90 text-sm">
+            AI will analyze and create an ATS-optimized resume
           </p>
         </div>
       </motion.button>

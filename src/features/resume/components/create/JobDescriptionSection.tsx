@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Type, FileText, UploadCloud } from 'lucide-react';
+import { FileText, UploadCloud, Edit3 } from 'lucide-react';
 import { UseFormRegister, FieldErrors, UseFormWatch, UseFormSetValue } from 'react-hook-form';
 import { cn } from '@/utils/cn';
 
@@ -32,14 +32,22 @@ export const JobDescriptionSection: React.FC<JobDescriptionSectionProps> = ({ re
 
   return (
     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm mb-6">
-      <h2 className="text-lg font-semibold text-slate-900 mb-4">4. Job Description</h2>
+      <div className="mb-4">
+        <h2 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
+          <FileText className="w-5 h-5 text-primary" />
+          4. Job Description
+        </h2>
+        <p className="text-sm text-slate-500 mt-1 pl-7">
+          Paste the job description or upload a document.
+        </p>
+      </div>
       
-      <div className="flex items-center gap-2 mb-4 border-b border-slate-100 pb-2">
+      <div className="flex items-center gap-3 mb-4">
         <TabButton 
           active={activeTab === 'paste'} 
           onClick={() => setActiveTab('paste')} 
-          icon={Type} 
-          label="Paste Text" 
+          icon={Edit3} 
+          label="Paste Job Description" 
         />
         <TabButton 
           active={activeTab === 'pdf'} 
@@ -62,7 +70,7 @@ export const JobDescriptionSection: React.FC<JobDescriptionSectionProps> = ({ re
               required: 'Job description is required',
               maxLength: { value: 5000, message: 'Maximum 5000 characters allowed' }
             })}
-            placeholder="Paste the complete job description here..."
+            placeholder="Paste the full job description here (Responsibilities, Requirements, Skills, etc.)..."
             className={cn(
               "w-full min-h-[250px] p-4 bg-slate-50 border rounded-xl text-sm transition-all focus:outline-none focus:ring-2 focus:ring-opacity-20 resize-y",
               errors.jobDescription 
@@ -110,10 +118,10 @@ const TabButton = ({ active, onClick, icon: Icon, label }: { active: boolean, on
       type="button"
       onClick={onClick}
       className={cn(
-        "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all",
+        "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors border",
         active 
-          ? "bg-primary-50 text-primary-700" 
-          : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+          ? "bg-primary-50 text-primary border-primary/30" 
+          : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-slate-900"
       )}
     >
       <Icon className="w-4 h-4" />

@@ -26,7 +26,10 @@ export const ResumeTypeSection: React.FC<ResumeTypeSectionProps> = ({ value, onC
 
   return (
     <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm mb-6">
-      <h2 className="text-lg font-semibold text-slate-900 mb-4">1. Resume Type</h2>
+      <div className="mb-4">
+        <h2 className="text-lg font-semibold text-slate-900">1. Select Resume Type</h2>
+        <p className="text-sm text-slate-500 mt-1">Choose the type of resume you want to create.</p>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {options.map((option) => {
           const isSelected = value === option.id;
@@ -39,30 +42,30 @@ export const ResumeTypeSection: React.FC<ResumeTypeSectionProps> = ({ value, onC
               whileTap={{ scale: 0.98 }}
               onClick={() => onChange(option.id)}
               className={cn(
-                'relative p-5 rounded-lg border-2 cursor-pointer transition-all duration-200 shadow-sm flex items-start gap-4',
+                'relative p-6 rounded-xl border-2 cursor-pointer transition-all duration-200 shadow-sm flex flex-col items-center text-center gap-3',
                 isSelected 
-                  ? 'border-primary bg-primary-50/10' 
-                  : 'border-slate-100 hover:border-slate-300 bg-white'
+                  ? 'border-primary bg-primary-50/20' 
+                  : 'border-slate-200 hover:border-slate-300 bg-white'
               )}
             >
               <div className={cn(
-                'p-3 rounded-full',
-                isSelected ? 'bg-primary-100 text-primary-700' : 'bg-slate-100 text-slate-500'
+                'p-4 rounded-full mb-1',
+                isSelected ? 'bg-primary text-white' : 'bg-slate-100 text-slate-600'
               )}>
                 <Icon className="w-6 h-6" />
               </div>
-              <div className="flex-1">
+              <div>
                 <h3 className={cn(
-                  'font-medium text-base mb-1',
-                  isSelected ? 'text-primary-900' : 'text-slate-900'
+                  'font-semibold text-base mb-1',
+                  isSelected ? 'text-slate-900' : 'text-slate-900'
                 )}>
                   {option.title}
                 </h3>
-                <p className="text-sm text-slate-500">{option.description}</p>
+                <p className="text-xs text-slate-500">{option.description}</p>
               </div>
               
               {isSelected && (
-                <div className="absolute top-4 right-4 text-primary-600">
+                <div className="absolute top-3 right-3 text-primary">
                   <CheckCircle2 className="w-5 h-5 fill-current text-white" />
                 </div>
               )}
