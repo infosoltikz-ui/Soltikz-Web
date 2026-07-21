@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import { prisma } from '../prisma';
 import { generateTokens, setTokenCookies, clearTokenCookies } from '../utils/jwt.util';
 import { sendEmail } from '../lib/nodemailer';
+import axios from 'axios';
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -288,17 +289,37 @@ export const googleLogin = async (req: Request, res: Response, next: NextFunctio
       return res.status(400).json({ success: false, statusCode: 400, message: 'Google credential is required', data: null, errors: null, timestamp: new Date().toISOString(), requestId: (req as any).id || '' });
     }
 
-    const ticket = await client.verifyIdToken({
-      idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID || 'dummy-client-id',
-    });
+    // Check if the credential is an ID token (JWT) or an access token.
+    // ID tokens have 3 parts separated by dots. Access tokens usually do not.
+    let email, name, picture;
     
-    const payload = ticket.getPayload();
-    if (!payload || !payload.email) {
-      return res.status(400).json({ success: false, statusCode: 400, message: 'Invalid Google token payload', data: null, errors: null, timestamp: new Date().toISOString(), requestId: (req as any).id || '' });
+    if (credential.split('.').length === 3) {
+      // It's an ID Token (from the standard <GoogleLogin> component)
+      const ticket = await client.verifyIdToken({
+        idToken: credential,
+        audience: process.env.GOOGLE_CLIENT_ID || 'dummy-client-id',
+      });
+      
+      const payload = ticket.getPayload();
+      if (!payload || !payload.email) {
+        return res.status(400).json({ success: false, statusCode: 400, message: 'Invalid Google token payload', data: null, errors: null, timestamp: new Date().toISOString(), requestId: (req as any).id || '' });
+      }
+      email = payload.email;
+      name = payload.name;
+      picture = payload.picture;
+    } else {
+      // It's an Access Token (from useGoogleLogin implicit flow in Custom Button)
+      const googleResponse = await axios.get(`https://www.googleapis.com/oauth2/v3/userinfo`, {
+        headers: { Authorization: `Bearer ${credential}` }
+      });
+      
+      if (!googleResponse.data || !googleResponse.data.email) {
+        return res.status(400).json({ success: false, statusCode: 400, message: 'Invalid Google access token', data: null, errors: null, timestamp: new Date().toISOString(), requestId: (req as any).id || '' });
+      }
+      email = googleResponse.data.email;
+      name = googleResponse.data.name;
+      picture = googleResponse.data.picture;
     }
-
-    const { email, name, picture } = payload;
     let user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) {
