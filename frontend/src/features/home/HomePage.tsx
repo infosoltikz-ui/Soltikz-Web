@@ -1,557 +1,178 @@
-import { useRef } from 'react'
-import { Link }   from 'react-router-dom'
-import { motion, useInView, useMotionValue, useSpring, useTransform } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import {
-  ArrowRight, CheckCircle2, Star, Sparkles, Zap,
-  Target, Download, BarChart2, Layout, Play,
-  ChevronDown, Shield, Users, Award,
+  CheckCircle2, Play, Sparkles, Layout, Target, Download,
+  BarChart2, Shield, Clock, Cloud, Headphones, FileText,
+  User, Check, ChevronDown, Rocket, CheckCircle, Zap
 } from 'lucide-react'
-import { Button }                          from '@components/ui/Button'
-import { Badge }                           from '@components/ui/Badge'
-import { Accordion }                       from '@components/ui/Navigation'
-import { STATS, COMPANIES, FEATURES_LIST,
-         TESTIMONIALS, PRICING_PLANS, FAQ_ITEMS,
-         HOW_IT_WORKS, ROUTES }            from '@constants'
-import { cn }                              from '@utils/cn'
-import { stagger, fadeUp, staggerFast }   from '@utils/motion'
-
-// ── Viewport-triggered animation helper ──────────────────────
-function useReveal(threshold = 0.15) {
-  const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, { once: true, margin: '0px 0px -80px 0px', amount: threshold })
-  return { ref, inView }
-}
-
-// ── Animated counter ──────────────────────────────────────────
-function AnimatedCounter({ from = 0, to, suffix = '' }: { from?: number; to: number; suffix?: string }) {
-  const ref = useRef<HTMLSpanElement>(null)
-  const inView = useInView(ref, { once: true })
-  const count  = useMotionValue(from)
-  const spring = useSpring(count, { damping: 60, stiffness: 100 })
-  const display = useTransform(spring, (v) => {
-    if (suffix === '+')  return `${Math.round(v).toLocaleString()}+`
-    if (suffix === '%')  return `${Math.round(v)}%`
-    if (suffix === '★')  return `${v.toFixed(1)}★`
-    return `${Math.round(v).toLocaleString()}${suffix}`
-  })
-
-  useEffect(() => {
-    if (inView) count.set(to)
-  }, [inView, count, to])
-
-  return <motion.span ref={ref}>{display}</motion.span>
-}
+import { Button } from '@components/ui/Button'
+import { Badge } from '@components/ui/Badge'
+import { Accordion } from '@components/ui/Navigation'
+import { ROUTES } from '@constants'
 
 // ============================================================
 // SECTION COMPONENTS
 // ============================================================
 
-// ── Hero ──────────────────────────────────────────────────────
 function HeroSection() {
   return (
-    <section
-      className="relative min-h-screen flex items-center overflow-hidden mesh-bg"
-      aria-label="Hero"
-    >
-      {/* Decorative blobs */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
-        <motion.div
-          animate={{ scale: [1, 1.08, 1], opacity: [0.4, 0.6, 0.4] }}
-          transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute -top-40 -left-40 w-[600px] h-[600px] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(22,163,74,0.12) 0%, transparent 70%)' }}
-        />
-        <motion.div
-          animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
-          className="absolute -bottom-20 -right-20 w-[500px] h-[500px] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(249,115,22,0.10) 0%, transparent 70%)' }}
-        />
-        {/* Grid pattern */}
-        <div className="absolute inset-0 bg-grid-pattern opacity-30 dark:opacity-10" />
-      </div>
+    <section className="pt-32 pb-20 overflow-hidden bg-slate-50/50">
+      <div className="container mx-auto px-4 max-w-7xl">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+          
+          {/* Left Content */}
+          <div className="space-y-8">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-100/80 text-green-700 text-sm font-semibold">
+              <Rocket className="w-4 h-4" />
+              <span>AI-Powered • ATS-Optimized • Recruiter Approved</span>
+            </div>
 
-      <div className="container-app relative z-10 py-24 lg:py-32">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <h1 className="text-5xl lg:text-6xl font-extrabold text-slate-900 leading-[1.1] tracking-tight">
+              Build ATS-Optimized Resumes That <span className="text-primary">Get You</span> Hired Faster
+            </h1>
 
-          {/* Left — copy */}
-          <motion.div
-            variants={stagger}
-            initial="hidden"
-            animate="visible"
-            className="space-y-8"
-          >
-            {/* Eyebrow badge */}
-            <motion.div variants={fadeUp}>
-              <span className="badge-primary text-xs gap-2">
-                <Sparkles className="w-3.5 h-3.5" />
-                AI-Powered ATS Resume Builder
-              </span>
-            </motion.div>
+            <p className="text-lg text-slate-600 leading-relaxed max-w-xl">
+              Create professional resumes in minutes with AI-powered content optimization, smart suggestions, and ATS scoring that helps you stand out from the competition.
+            </p>
 
-            {/* Headline */}
-            <motion.h1 variants={fadeUp} className="heading-display text-balance">
-              Build Resumes That{' '}
-              <span className="gradient-text-warm">Beat ATS</span>{' '}
-              and Win Interviews
-            </motion.h1>
-
-            {/* Sub-copy */}
-            <motion.p variants={fadeUp} className="body-lg max-w-xl">
-              Our AI analyzes your experience, matches it to any job description,
-              and generates ATS-optimized content in seconds. Stop getting filtered
-              out — start getting hired.
-            </motion.p>
-
-            {/* Social proof strip */}
-            <motion.div variants={fadeUp} className="flex items-center gap-3">
-              <div className="flex -space-x-2">
-                {['SC', 'MJ', 'PP', 'AR', 'EW'].map((init, i) => (
-                  <div key={i}
-                    className="w-8 h-8 rounded-full border-2 border-surface-card dark:border-dark-card
-                               bg-gradient-to-br from-primary to-secondary
-                               flex items-center justify-center text-white text-[10px] font-bold">
-                    {init}
-                  </div>
-                ))}
-              </div>
-              <div>
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                  ))}
-                </div>
-                <p className="text-xs text-muted">Trusted by <strong className="text-heading dark:text-dark-text">2.4M+</strong> professionals</p>
-              </div>
-            </motion.div>
-
-            {/* CTAs */}
-            <motion.div variants={fadeUp} className="flex flex-wrap gap-3">
-              <Button as={Link} to={ROUTES.REGISTER} size="lg" rightIcon={<ArrowRight className="w-4 h-4" />}>
-                Build My Resume Free
+            <div className="flex flex-wrap items-center gap-4 pt-2">
+              <Button as={Link} to={ROUTES.REGISTER} size="lg" className="px-8 shadow-lg shadow-primary/30">
+                Create My Resume Free
               </Button>
-              <Button variant="outline" size="lg" leftIcon={<Play className="w-4 h-4" />}>
+              <Button variant="outline" size="lg" className="px-8 bg-white" leftIcon={<Play className="w-4 h-4" />}>
                 Watch Demo
               </Button>
-            </motion.div>
-
-            <motion.p variants={fadeUp} className="text-xs text-muted">
-              ✓ No credit card required &nbsp; ✓ Free plan forever &nbsp; ✓ Cancel anytime
-            </motion.p>
-          </motion.div>
-
-          {/* Right — illustration placeholder */}
-          <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="hidden lg:block"
-          >
-            <div className="relative">
-              {/* Main resume card */}
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-                className="card p-6 space-y-4 shadow-glow"
-              >
-                {/* Resume header */}
-                <div className="flex items-start gap-4">
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary to-primary-400 flex items-center justify-center text-white font-bold text-lg">
-                    JD
-                  </div>
-                  <div className="flex-1">
-                    <div className="h-4 w-32 bg-heading dark:bg-dark-text rounded-lg mb-2" />
-                    <div className="h-3 w-24 bg-surface-muted dark:bg-dark-muted rounded" />
-                    <div className="h-3 w-40 bg-surface-muted dark:bg-dark-muted rounded mt-1.5" />
-                  </div>
-                </div>
-
-                {/* Section */}
-                <div className="space-y-2">
-                  <div className="h-3 w-24 bg-primary/30 rounded" />
-                  {[100, 90, 95].map((w, i) => (
-                    <div key={i} className="h-2.5 rounded" style={{
-                      width: `${w}%`,
-                      background: 'var(--color-border)',
-                    }} />
-                  ))}
-                </div>
-
-                {/* ATS score badge */}
-                <div className="flex items-center justify-between pt-2 border-t border-surface-border dark:border-dark-border">
-                  <span className="text-xs text-muted font-medium">ATS Score</span>
-                  <div className="flex items-center gap-2">
-                    <div className="h-2 w-24 rounded-full overflow-hidden bg-surface-muted dark:bg-dark-muted">
-                      <motion.div
-                        className="h-full bg-primary rounded-full"
-                        initial={{ width: '0%' }}
-                        animate={{ width: '94%' }}
-                        transition={{ duration: 1.5, delay: 0.5, ease: 'easeOut' }}
-                      />
-                    </div>
-                    <span className="text-xs font-bold text-primary">94%</span>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Floating AI badge */}
-              <motion.div
-                animate={{ y: [0, 6, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-                className="absolute -top-4 -right-4 card px-4 py-3 flex items-center gap-2 shadow-glow-sm"
-              >
-                <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Sparkles className="w-3.5 h-3.5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-xs font-semibold" style={{ color: 'var(--color-heading)' }}>AI Optimized</p>
-                  <p className="text-[10px] text-muted">Content ready</p>
-                </div>
-              </motion.div>
-
-              {/* Floating interviews badge */}
-              <motion.div
-                animate={{ y: [0, -6, 0] }}
-                transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
-                className="absolute -bottom-4 -left-4 card px-4 py-3 flex items-center gap-2 shadow-glow-sm"
-              >
-                <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
-                <div>
-                  <p className="text-xs font-semibold" style={{ color: 'var(--color-heading)' }}>Interview Rate</p>
-                  <p className="text-[10px] text-muted">+340% increase</p>
-                </div>
-              </motion.div>
             </div>
-          </motion.div>
-        </div>
 
-        {/* Scroll hint */}
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 text-muted"
-        >
-          <ChevronDown className="w-6 h-6" />
-        </motion.div>
-      </div>
-    </section>
-  )
-}
+            <div className="flex flex-wrap gap-x-6 gap-y-3 pt-6 text-sm font-semibold text-slate-600">
+              <div className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-primary" /> ATS Optimized</div>
+              <div className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-primary" /> AI Powered</div>
+              <div className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-primary" /> 100% Secure</div>
+              <div className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-primary" /> Used by 50,000+</div>
+            </div>
+          </div>
 
-// ── Trusted Companies ─────────────────────────────────────────
-function TrustedSection() {
-  const { ref, inView } = useReveal()
-
-  return (
-    <section ref={ref} className="py-12 border-y border-surface-border dark:border-dark-border"
-      aria-label="Trusted by professionals at">
-      <div className="container-app">
-        <motion.p
-          initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}}
-          className="text-center text-xs font-semibold uppercase tracking-widest text-muted mb-8"
-        >
-          Trusted by professionals at
-        </motion.p>
-        <div className="overflow-hidden">
-          <motion.div
-            animate={{ x: ['0%', '-50%'] }}
-            transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-            className="flex gap-12 w-max"
-          >
-            {[...COMPANIES, ...COMPANIES].map((name, i) => (
-              <span key={`${name}-${i}`}
-                className="text-lg font-bold text-muted/50 hover:text-muted transition-colors whitespace-nowrap cursor-default select-none">
-                {name}
-              </span>
-            ))}
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-// ── Stats ─────────────────────────────────────────────────────
-function StatsSection() {
-  const { ref, inView } = useReveal()
-  const statValues = [2400000, 94, 680000, 4.9]
-  const statSuffixes = ['+', '%', '+', '★']
-
-  return (
-    <section ref={ref} className="section-y" aria-label="Statistics">
-      <div className="container-app">
-        <motion.div
-          variants={staggerFast}
-          initial="hidden"
-          animate={inView ? 'visible' : 'hidden'}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-8"
-        >
-          {STATS.map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              variants={fadeUp}
-              className="text-center space-y-2"
-            >
-              <div className="text-3xl sm:text-4xl font-black gradient-text">
-                <AnimatedCounter to={statValues[i]} suffix={statSuffixes[i]} />
+          {/* Right Content / Mockup */}
+          <div className="relative">
+            {/* The laptop/browser frame mockup */}
+            <div className="relative z-10 w-full aspect-[4/3] bg-slate-900 rounded-2xl shadow-2xl border-8 border-slate-900 overflow-hidden flex flex-col">
+              <div className="h-6 bg-slate-800 flex items-center gap-1.5 px-3 shrink-0">
+                <div className="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+                <div className="w-2.5 h-2.5 rounded-full bg-amber-400"></div>
+                <div className="w-2.5 h-2.5 rounded-full bg-green-400"></div>
               </div>
-              <p className="text-sm text-muted font-medium">{stat.label}</p>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  )
-}
-
-// ── How It Works ──────────────────────────────────────────────
-function HowItWorksSection() {
-  const { ref, inView } = useReveal()
-  return (
-    <section ref={ref} className="section-y bg-surface-muted dark:bg-dark-muted/30" aria-label="How it works">
-      <div className="container-app space-y-16">
-        <motion.div variants={stagger} initial="hidden" animate={inView ? 'visible' : 'hidden'}
-          className="text-center space-y-4 max-w-2xl mx-auto">
-          <motion.div variants={fadeUp}><Badge variant="primary" dot>How it works</Badge></motion.div>
-          <motion.h2 variants={fadeUp} className="heading-2">From zero to interview-ready in minutes</motion.h2>
-          <motion.p variants={fadeUp} className="body-lg">Three simple steps to a job-winning resume.</motion.p>
-        </motion.div>
-
-        <motion.div
-          variants={stagger}
-          initial="hidden"
-          animate={inView ? 'visible' : 'hidden'}
-          className="grid md:grid-cols-3 gap-8"
-        >
-          {HOW_IT_WORKS.map((step, i) => (
-            <motion.div key={step.step} variants={fadeUp}>
-              <div className="card-hover p-8 space-y-5 text-center relative overflow-hidden">
-                <div className="absolute top-4 right-4 text-6xl font-black text-surface-muted dark:text-dark-muted/50 select-none">
-                  {step.step}
+              <div className="flex-1 bg-slate-50 p-4 flex gap-4">
+                {/* Sidebar mock */}
+                <div className="w-1/4 bg-white rounded-lg border border-slate-100 flex flex-col gap-2 p-2">
+                  {[1,2,3,4,5,6,7].map(i => <div key={i} className="h-6 bg-slate-100 rounded"></div>)}
                 </div>
-                <div className="relative w-12 h-12 rounded-2xl bg-primary/10 dark:bg-primary-900/20
-                                flex items-center justify-center mx-auto">
-                  <span className="text-2xl font-black text-primary">{i + 1}</span>
-                </div>
-                <h3 className="heading-3">{step.title}</h3>
-                <p className="body-sm">{step.description}</p>
-                {i < HOW_IT_WORKS.length - 1 && (
-                  <div className="hidden md:block absolute -right-4 top-1/2 -translate-y-1/2 z-10">
-                    <ArrowRight className="w-6 h-6 text-muted" />
+                {/* Editor mock */}
+                <div className="flex-1 bg-white rounded-lg border border-slate-100 shadow-sm p-6 space-y-6">
+                  <div className="space-y-2">
+                    <div className="h-4 w-1/3 bg-slate-200 rounded"></div>
+                    <div className="h-2 w-full bg-slate-100 rounded"></div>
+                    <div className="h-2 w-5/6 bg-slate-100 rounded"></div>
+                    <div className="h-2 w-4/6 bg-slate-100 rounded"></div>
                   </div>
-                )}
+                  <div className="space-y-2">
+                    <div className="h-4 w-1/4 bg-slate-200 rounded"></div>
+                    <div className="h-2 w-full bg-slate-100 rounded"></div>
+                    <div className="h-2 w-full bg-slate-100 rounded"></div>
+                    <div className="h-2 w-2/3 bg-slate-100 rounded"></div>
+                  </div>
+                </div>
               </div>
+            </div>
+
+            {/* Floating ATS Score Badge */}
+            <motion.div 
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+              className="absolute -top-6 -right-6 z-20 bg-white rounded-2xl shadow-xl border border-slate-100 p-4 w-40 flex flex-col items-center gap-2"
+            >
+              <div className="absolute -top-3 -right-3 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+                <Check className="w-4 h-4 text-white" strokeWidth={3} />
+              </div>
+              <div className="relative w-20 h-20">
+                <svg className="w-full h-full" viewBox="0 0 36 36">
+                  <path className="text-slate-100" strokeWidth="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  <path className="text-primary" strokeDasharray="98, 100" strokeWidth="3" strokeLinecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-2xl font-black text-slate-800 leading-none">90+</span>
+                </div>
+              </div>
+              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">ATS Score</span>
+              <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Excellent</span>
             </motion.div>
-          ))}
-        </motion.div>
+          </div>
+
+        </div>
       </div>
     </section>
   )
 }
 
-// ── Features ──────────────────────────────────────────────────
-const FeatureIconMap: Record<string, React.ElementType> = {
-  Sparkles, Target, Layout, Zap, Download, BarChart2,
+function TrustedSection() {
+  const logos = [
+    { name: 'Google', color: '#4285F4' },
+    { name: 'Microsoft', color: '#00A4EF' },
+    { name: 'Amazon', color: '#FF9900' },
+    { name: 'Adobe', color: '#FF0000' },
+    { name: 'TCS', color: '#000000' },
+    { name: 'Infosys', color: '#007CC3' },
+    { name: 'Wipro', color: '#000000' },
+  ]
+  return (
+    <section className="py-10 border-b border-slate-100 bg-white">
+      <div className="container mx-auto px-4 text-center space-y-6">
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Trusted by job seekers and professionals at</p>
+        <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+          {logos.map(logo => (
+            <span key={logo.name} className="text-xl font-black text-slate-800">{logo.name}</span>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
 }
 
 function FeaturesSection() {
-  const { ref, inView } = useReveal()
+  const features = [
+    { icon: FileText, title: 'ATS Optimization', desc: 'Built-in ATS checker analyzes your resume and gives suggestions to improve your score.' },
+    { icon: Zap, title: 'AI-Powered Content', desc: 'Get AI suggestions for skills, achievements, bullet points & content that match your target role.' },
+    { icon: Layout, title: 'Professional Templates', desc: 'Choose from 25+ professionally designed templates that are ATS-friendly and recruiter-approved.' },
+    { icon: Sparkles, title: 'Smart Suggestions', desc: 'AI analyzes job descriptions and recommends relevant skills and keywords to include.' },
+    { icon: BarChart2, title: 'Real-time ATS Score', desc: 'Get real-time feedback and score while you build your resume with improvement tips.' },
+    { icon: Download, title: 'Multiple Export Options', desc: 'Download your resume in PDF, DOCX, or share directly with potential employers.' },
+    { icon: FileText, title: 'Cover Letter Builder', desc: 'Create a matching cover letter with AI assistance in minutes.' },
+    { icon: Target, title: 'Job Tracker', desc: 'Track your job applications, interviews, follow-ups and manage your job search efficiently.' },
+    { icon: Clock, title: 'Version History', desc: 'Access all your previous versions and track changes to your resume over time.' },
+    { icon: Cloud, title: 'Cloud Sync', desc: 'Access your resumes anywhere, anytime with secure cloud synchronization.' },
+    { icon: Shield, title: '100% Secure', desc: 'Your data is encrypted and secure. We never share your information with third parties.' },
+    { icon: Headphones, title: 'Expert Support', desc: 'Get help when you need it. Our support team is here to help you succeed.' },
+  ]
+
   return (
-    <section ref={ref} className="section-y" id="features" aria-label="Features">
-      <div className="container-app space-y-16">
-        <motion.div variants={stagger} initial="hidden" animate={inView ? 'visible' : 'hidden'}
-          className="text-center space-y-4 max-w-2xl mx-auto">
-          <motion.div variants={fadeUp}><Badge variant="secondary" dot>Powerful Features</Badge></motion.div>
-          <motion.h2 variants={fadeUp} className="heading-2">
-            Everything you need to land the job
-          </motion.h2>
-          <motion.p variants={fadeUp} className="body-lg">
-            One tool. Every feature you need to build, optimize, and track your job search.
-          </motion.p>
-        </motion.div>
-
-        <motion.div
-          variants={staggerFast}
-          initial="hidden"
-          animate={inView ? 'visible' : 'hidden'}
-          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          {FEATURES_LIST.map((feat, i) => {
-            const Icon = FeatureIconMap[feat.icon] ?? Sparkles
-            const isPrimary = feat.color === 'primary'
-            return (
-              <motion.div
-                key={feat.title}
-                variants={fadeUp}
-                whileHover={{ y: -4 }}
-                transition={{ duration: 0.2 }}
-                className="card p-6 space-y-4 group cursor-pointer"
-              >
-                <div className={cn(
-                  'w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-300',
-                  isPrimary
-                    ? 'bg-primary-light dark:bg-primary-900/30 group-hover:bg-primary group-hover:shadow-glow-sm'
-                    : 'bg-secondary-light dark:bg-secondary-900/30 group-hover:bg-secondary',
-                )}>
-                  <Icon className={cn(
-                    'w-6 h-6 transition-colors duration-300',
-                    isPrimary
-                      ? 'text-primary group-hover:text-white'
-                      : 'text-secondary group-hover:text-white',
-                  )} />
-                </div>
-                <h3 className="text-base font-bold" style={{ color: 'var(--color-heading)' }}>{feat.title}</h3>
-                <p className="text-sm text-muted leading-relaxed">{feat.description}</p>
-              </motion.div>
-            )
-          })}
-        </motion.div>
-      </div>
-    </section>
-  )
-}
-
-// ── ATS Why Section ───────────────────────────────────────────
-function ATSSection() {
-  const { ref, inView } = useReveal()
-  return (
-    <section ref={ref} className="section-y bg-surface-muted dark:bg-dark-muted/30" aria-label="Why ATS matters">
-      <div className="container-app">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* ATS Score Card */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.5 }}
-          >
-            <div className="card p-8 space-y-6">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold" style={{ color: 'var(--color-heading)' }}>ATS Analysis Report</span>
-                <Badge variant="success" dot>Live Score</Badge>
-              </div>
-
-              {[
-                { label: 'Keyword Match',      score: 94, color: 'primary' as const   },
-                { label: 'Format Compliance',  score: 100, color: 'success' as const  },
-                { label: 'Section Completeness', score: 88, color: 'primary' as const },
-                { label: 'Action Verbs',       score: 91, color: 'secondary' as const },
-              ].map((item) => (
-                <div key={item.label} className="space-y-1.5">
-                  <div className="flex justify-between text-xs">
-                    <span style={{ color: 'var(--color-body)' }}>{item.label}</span>
-                    <span className="font-bold" style={{ color: 'var(--color-heading)' }}>{item.score}%</span>
-                  </div>
-                  <div className="h-2 w-full rounded-full bg-surface-muted dark:bg-dark-muted overflow-hidden">
-                    <motion.div
-                      className={cn('h-full rounded-full', {
-                        'bg-primary': item.color === 'primary',
-                        'bg-green-500': item.color === 'success',
-                        'bg-secondary': item.color === 'secondary',
-                      })}
-                      initial={{ width: '0%' }}
-                      animate={inView ? { width: `${item.score}%` } : {}}
-                      transition={{ duration: 1, delay: 0.3, ease: 'easeOut' }}
-                    />
-                  </div>
-                </div>
-              ))}
-
-              <div className="flex items-center gap-3 p-4 rounded-xl bg-primary-light dark:bg-primary-900/20">
-                <Shield className="w-5 h-5 text-primary shrink-0" />
-                <p className="text-xs text-primary-700 dark:text-primary-300 font-medium">
-                  Your resume is highly ATS-compatible and ready to submit.
-                </p>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Copy */}
-          <motion.div
-            variants={stagger}
-            initial="hidden"
-            animate={inView ? 'visible' : 'hidden'}
-            className="space-y-8"
-          >
-            <motion.div variants={fadeUp}><Badge variant="danger" dot>Why it matters</Badge></motion.div>
-            <motion.h2 variants={fadeUp} className="heading-2">
-              75% of resumes never reach a human
-            </motion.h2>
-            <motion.p variants={fadeUp} className="body-lg">
-              ATS software automatically filters out resumes that don't match the right keywords,
-              format, and structure. Most candidates don't even know this is happening.
-            </motion.p>
-
-            <motion.div variants={fadeUp} className="space-y-4">
-              {[
-                { icon: Target, text: 'Match exact keywords from the job description' },
-                { icon: Shield, text: 'Use ATS-friendly formatting and structure'     },
-                { icon: Award,  text: 'Stand out to both machines and human recruiters' },
-              ].map(({ icon: Icon, text }) => (
-                <div key={text} className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-xl bg-primary-light dark:bg-primary-900/30 flex items-center justify-center shrink-0">
-                    <Icon className="w-4 h-4 text-primary" />
-                  </div>
-                  <p className="text-sm leading-relaxed" style={{ color: 'var(--color-body)' }}>{text}</p>
-                </div>
-              ))}
-            </motion.div>
-
-            <motion.div variants={fadeUp}>
-              <Button as={Link} to={ROUTES.REGISTER} rightIcon={<ArrowRight className="w-4 h-4" />}>
-                Check My ATS Score
-              </Button>
-            </motion.div>
-          </motion.div>
+    <section id="features" className="py-24 bg-white">
+      <div className="container mx-auto px-4 max-w-7xl space-y-16">
+        <div className="text-center space-y-4 max-w-2xl mx-auto">
+          <span className="text-xs font-bold text-primary tracking-widest uppercase">Features</span>
+          <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900">
+            Everything You Need to Build a <span className="text-primary">Winning Resume</span>
+          </h2>
+          <p className="text-slate-600">Powerful tools and AI features to help you create a resume that gets noticed by recruiters and ATS systems.</p>
         </div>
-      </div>
-    </section>
-  )
-}
 
-// ── Testimonials ──────────────────────────────────────────────
-function TestimonialsSection() {
-  const { ref, inView } = useReveal()
-  return (
-    <section ref={ref} className="section-y" aria-label="Testimonials">
-      <div className="container-app space-y-16">
-        <motion.div variants={stagger} initial="hidden" animate={inView ? 'visible' : 'hidden'}
-          className="text-center space-y-4 max-w-2xl mx-auto">
-          <motion.div variants={fadeUp}><Badge variant="primary" dot>Success Stories</Badge></motion.div>
-          <motion.h2 variants={fadeUp} className="heading-2">Thousands hired, every week</motion.h2>
-          <motion.p variants={fadeUp} className="body-lg">Real results from real professionals.</motion.p>
-        </motion.div>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {TESTIMONIALS.map((t, i) => (
-            <motion.div
-              key={t.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.4, delay: i * 0.07 }}
-              whileHover={{ y: -4 }}
-              className="card p-6 space-y-4 group cursor-default"
-            >
-              {/* Stars */}
-              <div className="flex gap-1">
-                {Array.from({ length: t.rating }).map((_, j) => (
-                  <Star key={j} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                ))}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {features.map((f, i) => (
+            <div key={i} className="p-6 rounded-2xl border border-slate-100 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all bg-white group cursor-default space-y-4">
+              <div className="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center group-hover:bg-primary transition-colors">
+                <f.icon className="w-6 h-6 text-primary group-hover:text-white transition-colors" />
               </div>
-              <p className="text-sm leading-relaxed text-muted line-clamp-3">
-                "{t.content}"
-              </p>
-              <div className="flex items-center gap-3 pt-2 border-t border-surface-border dark:border-dark-border">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-secondary
-                                text-white text-xs font-bold flex items-center justify-center shrink-0">
-                  {t.initials}
-                </div>
-                <div>
-                  <p className="text-sm font-semibold" style={{ color: 'var(--color-heading)' }}>{t.name}</p>
-                  <p className="text-xs text-muted">{t.role} · {t.company}</p>
-                </div>
-              </div>
-            </motion.div>
+              <h3 className="font-bold text-slate-900">{f.title}</h3>
+              <p className="text-sm text-slate-500 leading-relaxed">{f.desc}</p>
+            </div>
           ))}
         </div>
       </div>
@@ -559,171 +180,260 @@ function TestimonialsSection() {
   )
 }
 
-// ── Pricing Preview ───────────────────────────────────────────
-function PricingSection() {
-  const { ref, inView } = useReveal()
+function HowItWorksSection() {
+  const steps = [
+    { icon: User, title: 'Add Your Information', desc: 'Fill in your details or import from LinkedIn to save time.' },
+    { icon: Sparkles, title: 'AI Optimizes Your Content', desc: 'Our AI suggests the best content, skills & keywords for your target role.' },
+    { icon: Shield, title: 'Check ATS Score', desc: 'Get real-time ATS score and improvement suggestions.' },
+    { icon: FileText, title: 'Download & Apply', desc: 'Download your ATS-optimized resume and apply with confidence.' },
+  ]
   return (
-    <section ref={ref} className="section-y bg-surface-muted dark:bg-dark-muted/30" id="pricing" aria-label="Pricing">
-      <div className="container-app space-y-16">
-        <motion.div variants={stagger} initial="hidden" animate={inView ? 'visible' : 'hidden'}
-          className="text-center space-y-4 max-w-2xl mx-auto">
-          <motion.div variants={fadeUp}><Badge variant="secondary" dot>Pricing</Badge></motion.div>
-          <motion.h2 variants={fadeUp} className="heading-2">Simple, transparent pricing</motion.h2>
-          <motion.p variants={fadeUp} className="body-lg">
-            Start free. Upgrade when you're ready. No hidden fees.
-          </motion.p>
-        </motion.div>
+    <section id="how-it-works" className="py-24 bg-slate-50">
+      <div className="container mx-auto px-4 max-w-7xl space-y-16">
+        <div className="text-center space-y-4">
+          <span className="text-xs font-bold text-slate-500 tracking-widest uppercase">How It Works</span>
+          <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900">
+            Build Your Resume in <span className="text-primary">4 Simple Steps</span>
+          </h2>
+        </div>
 
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8 items-center">
-          {PRICING_PLANS.map((plan, i) => (
-            <motion.div
-              key={plan.id}
-              initial={{ opacity: 0, y: 24 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.45, delay: i * 0.1 }}
-              className={cn(
-                'card p-8 space-y-6',
-                plan.highlighted
-                  ? 'border-primary ring-1 ring-primary shadow-glow relative'
-                  : '',
-              )}
-            >
-              {plan.badge && (
-                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                  <Badge variant="primary" className="shadow-glow-sm">{plan.badge}</Badge>
+        <div className="relative grid md:grid-cols-4 gap-8 text-center pt-8">
+          {/* Dashed line connecting steps (hidden on mobile) */}
+          <div className="hidden md:block absolute top-10 left-[12%] right-[12%] h-[2px] border-t-2 border-dashed border-green-200" />
+          
+          {steps.map((step, i) => (
+            <div key={i} className="relative z-10 flex flex-col items-center space-y-4">
+              <div className="w-20 h-20 rounded-full bg-white shadow-xl shadow-green-100 border-4 border-white flex items-center justify-center">
+                <step.icon className="w-8 h-8 text-primary" />
+              </div>
+              <div className="text-sm font-black text-slate-300">0{i+1}</div>
+              <h3 className="font-bold text-slate-900 text-lg">{step.title}</h3>
+              <p className="text-sm text-slate-500 max-w-xs">{step.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function TemplatesSection() {
+  const templates = ['Modern Professional', 'Classic Clean', 'Executive', 'Creative', 'Minimal', 'Technical']
+  
+  return (
+    <section id="templates" className="py-24 bg-white border-y border-slate-100">
+      <div className="container mx-auto px-4 max-w-7xl space-y-12">
+        <div className="text-center space-y-4 max-w-2xl mx-auto">
+          <span className="text-xs font-bold text-slate-500 tracking-widest uppercase">Professional Templates</span>
+          <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900">
+            Choose from Beautiful, ATS-Friendly Templates
+          </h2>
+        </div>
+
+        <div className="flex flex-wrap justify-center gap-6">
+          {templates.map(t => (
+            <div key={t} className="flex flex-col items-center gap-3">
+              <div className="w-[180px] h-[240px] bg-white border border-slate-200 rounded shadow-sm hover:shadow-xl transition-all cursor-pointer flex flex-col p-2">
+                <div className="flex items-start gap-2 border-b border-slate-100 pb-2 mb-2">
+                  <div className="w-8 h-8 bg-slate-200 rounded-full shrink-0"></div>
+                  <div className="space-y-1 flex-1">
+                    <div className="h-2 w-3/4 bg-slate-300 rounded"></div>
+                    <div className="h-1.5 w-1/2 bg-slate-200 rounded"></div>
+                  </div>
                 </div>
-              )}
-
-              <div className="space-y-2">
-                <h3 className="font-bold text-lg" style={{ color: 'var(--color-heading)' }}>{plan.name}</h3>
-                <p className="text-xs text-muted">{plan.description}</p>
+                <div className="space-y-2 flex-1">
+                  <div className="h-1.5 w-full bg-slate-100 rounded"></div>
+                  <div className="h-1.5 w-full bg-slate-100 rounded"></div>
+                  <div className="h-1.5 w-5/6 bg-slate-100 rounded"></div>
+                </div>
               </div>
+              <span className="text-sm font-semibold text-slate-700">{t}</span>
+            </div>
+          ))}
+        </div>
 
-              <div className="flex items-end gap-1">
-                <span className="text-4xl font-black" style={{ color: 'var(--color-heading)' }}>
-                  {plan.price === 0 ? 'Free' : `$${plan.price}`}
-                </span>
-                {plan.price > 0 && (
-                  <span className="text-sm text-muted mb-1">/ {plan.period}</span>
-                )}
+        <div className="text-center">
+          <Button variant="outline" className="border-primary text-primary hover:bg-green-50">
+            View All Templates &rarr;
+          </Button>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function SplitSections() {
+  return (
+    <>
+      <section className="py-24 bg-white border-b border-slate-100">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            
+            {/* Why Choose Us */}
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <span className="text-xs font-bold text-slate-500 tracking-widest uppercase">Why Choose ATS Resume Builder?</span>
+                <h2 className="text-4xl font-extrabold text-slate-900">
+                  Stand Out. Get Noticed. <br/><span className="text-primary">Get Hired.</span>
+                </h2>
               </div>
-
-              <ul className="space-y-3">
-                {plan.features.map((feat) => (
-                  <li key={feat} className="flex items-start gap-2.5">
-                    <CheckCircle2 className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                    <span className="text-sm text-muted">{feat}</span>
+              
+              <ul className="space-y-4">
+                {[
+                  'Designed by HR experts and recruiters',
+                  'ATS-compliant templates and formatting',
+                  'AI-powered content optimization',
+                  'Increase interview calls by 3x',
+                  'Loved by 50,000+ job seekers worldwide'
+                ].map(item => (
+                  <li key={item} className="flex items-center gap-3 font-medium text-slate-700">
+                    <CheckCircle className="w-5 h-5 text-primary shrink-0" />
+                    {item}
                   </li>
                 ))}
               </ul>
-
-              <Button
-                as={Link}
-                to={plan.id === 'enterprise' ? '#' : ROUTES.REGISTER}
-                variant={plan.highlighted ? 'primary' : 'outline'}
-                fullWidth
-              >
-                {plan.cta}
-              </Button>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-// ── FAQ ───────────────────────────────────────────────────────
-function FAQSection() {
-  const { ref, inView } = useReveal()
-  const faqItems = FAQ_ITEMS.map((f, i) => ({
-    id:      String(i),
-    trigger: f.q,
-    content: f.a,
-  }))
-
-  return (
-    <section ref={ref} className="section-y" id="faq" aria-label="FAQ">
-      <div className="container-app space-y-12 max-w-3xl mx-auto">
-        <motion.div variants={stagger} initial="hidden" animate={inView ? 'visible' : 'hidden'}
-          className="text-center space-y-4">
-          <motion.div variants={fadeUp}><Badge variant="neutral" dot>FAQ</Badge></motion.div>
-          <motion.h2 variants={fadeUp} className="heading-2">Frequently asked questions</motion.h2>
-          <motion.p variants={fadeUp} className="body-lg">
-            Everything you need to know. Can't find the answer?{' '}
-            <a href="mailto:support@resumeai.io" className="text-primary hover:underline">Email us.</a>
-          </motion.p>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={inView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.4, delay: 0.2 }}
-        >
-          <Accordion items={faqItems} className="card px-8" />
-        </motion.div>
-      </div>
-    </section>
-  )
-}
-
-// ── Newsletter / CTA ──────────────────────────────────────────
-function CTASection() {
-  const { ref, inView } = useReveal()
-  return (
-    <section ref={ref} className="section-y" aria-label="Get started">
-      <div className="container-app">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5 }}
-          className="relative rounded-3xl overflow-hidden p-12 lg:p-20 text-center space-y-8"
-          style={{
-            background: 'linear-gradient(135deg, #14532d 0%, #16a34a 50%, #15803d 100%)',
-          }}
-        >
-          {/* Noise overlay */}
-          <div className="absolute inset-0 opacity-20"
-            style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\' opacity=\'0.4\'/%3E%3C/svg%3E")' }}
-          />
-
-          {/* Decorative circles */}
-          <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-white/5 pointer-events-none" />
-          <div className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-white/5 pointer-events-none" />
-
-          <div className="relative space-y-6">
-            <Users className="w-12 h-12 text-white/70 mx-auto" />
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white text-balance">
-              Ready to land your dream job?
-            </h2>
-            <p className="text-white/80 text-lg max-w-xl mx-auto">
-              Join 2.4M+ professionals who've used ResumeAI to get more interviews and better offers.
-            </p>
-
-            <div className="flex flex-wrap gap-4 justify-center">
-              <Button
-                as={Link}
-                to={ROUTES.REGISTER}
-                size="lg"
-                className="bg-white text-primary hover:bg-white/90 shadow-lg"
-                rightIcon={<ArrowRight className="w-4 h-4" />}
-              >
-                Build My Resume Free
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-white/40 text-white hover:bg-white/10"
-              >
-                View Templates
-              </Button>
             </div>
 
-            <p className="text-white/60 text-sm">
-              No credit card required · Free forever plan available
-            </p>
+            {/* Testimonials */}
+            <div className="bg-slate-50 p-10 rounded-3xl border border-slate-100 space-y-8">
+              <span className="text-xs font-bold text-slate-500 tracking-widest uppercase">Loved by Job Seekers</span>
+              <h3 className="text-3xl font-extrabold text-slate-900">What Our Users Say</h3>
+              
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4 relative">
+                <div className="absolute top-4 right-4 text-green-100">
+                  <svg className="w-12 h-12" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
+                </div>
+                <p className="relative z-10 text-slate-600 font-medium italic">
+                  "The ATS score feature really helped me optimize my resume. I started getting more interview calls within a week!"
+                </p>
+                <div className="flex items-center gap-3 pt-4 border-t border-slate-100">
+                  <div className="w-10 h-10 bg-slate-200 rounded-full"></div>
+                  <div>
+                    <div className="font-bold text-slate-900">Sarah Johnson</div>
+                    <div className="text-xs text-slate-500">Marketing Manager</div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-primary"></div>
+                <div className="w-2 h-2 rounded-full bg-slate-300"></div>
+                <div className="w-2 h-2 rounded-full bg-slate-300"></div>
+              </div>
+            </div>
+
           </div>
-        </motion.div>
+        </div>
+      </section>
+
+      {/* Pricing and FAQ Side by Side */}
+      <section id="pricing" className="py-24 bg-slate-50">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="grid lg:grid-cols-2 gap-16 items-start">
+            
+            {/* Pricing */}
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <span className="text-xs font-bold text-slate-500 tracking-widest uppercase">Simple Pricing</span>
+                <h2 className="text-3xl font-extrabold text-slate-900">Choose the Plan That's Right for You</h2>
+              </div>
+              
+              <div className="grid sm:grid-cols-3 gap-6">
+                {/* Free */}
+                <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-6">
+                  <div className="font-bold text-slate-900">Free Plan</div>
+                  <div className="flex items-baseline gap-1"><span className="text-3xl font-black text-slate-900">$0</span><span className="text-sm text-slate-500">/forever</span></div>
+                  <ul className="space-y-3 text-sm text-slate-600">
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-primary" /> 1 Resume</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-primary" /> Basic Templates</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-primary" /> ATS Score (Limited)</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-primary" /> Download in PDF</li>
+                  </ul>
+                  <Button variant="outline" className="w-full text-primary border-primary">Get Started Free</Button>
+                </div>
+                {/* Pro */}
+                <div className="bg-white p-6 rounded-2xl border-2 border-primary shadow-xl shadow-primary/10 space-y-6 relative">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full">
+                    Most Popular
+                  </div>
+                  <div className="font-bold text-slate-900">Pro Plan</div>
+                  <div className="flex items-baseline gap-1"><span className="text-3xl font-black text-slate-900">$9.99</span><span className="text-sm text-slate-500">/month</span></div>
+                  <ul className="space-y-3 text-sm text-slate-600">
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-primary" /> Unlimited Resumes</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-primary" /> 25+ Premium Templates</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-primary" /> AI Content Suggestions</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-primary" /> Full ATS Score & Analysis</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-primary" /> Cover Letter Builder</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-primary" /> Priority Support</li>
+                  </ul>
+                  <Button className="w-full shadow-lg">Start 7-Day Free Trial</Button>
+                </div>
+                {/* Business */}
+                <div className="bg-white p-6 rounded-2xl border border-slate-200 space-y-6">
+                  <div className="font-bold text-slate-900">Business Plan</div>
+                  <div className="flex items-baseline gap-1"><span className="text-3xl font-black text-slate-900">$19.99</span><span className="text-sm text-slate-500">/month</span></div>
+                  <ul className="space-y-3 text-sm text-slate-600">
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-primary" /> Everything in Pro</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-primary" /> Team Management</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-primary" /> Shared Templates</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-primary" /> Analytics & Reports</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-primary" /> Dedicated Support</li>
+                  </ul>
+                  <Button variant="outline" className="w-full text-primary border-primary">Start 7-Day Free Trial</Button>
+                </div>
+              </div>
+            </div>
+
+            {/* FAQ */}
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <span className="text-xs font-bold text-slate-500 tracking-widest uppercase">Frequently Asked Questions</span>
+                <h2 className="text-3xl font-extrabold text-slate-900">Got Questions? We've Got Answers.</h2>
+              </div>
+              
+              <div className="space-y-4">
+                {[
+                  'What is ATS and why is it important?',
+                  'How does the ATS score work?',
+                  'Can I import my existing resume?',
+                  'Is my data secure?',
+                  'Can I cancel my subscription anytime?'
+                ].map(q => (
+                  <div key={q} className="bg-white border border-slate-200 p-4 rounded-xl flex justify-between items-center font-bold text-slate-700 cursor-pointer hover:border-primary/50 transition-colors">
+                    {q}
+                    <ChevronDown className="w-5 h-5 text-slate-400" />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+    </>
+  )
+}
+
+function CTASection() {
+  return (
+    <section className="py-24 bg-slate-50 border-t border-slate-100">
+      <div className="container mx-auto px-4 max-w-5xl">
+        <div className="bg-primary rounded-3xl p-12 md:p-16 flex flex-col md:flex-row items-center justify-between gap-8 shadow-2xl shadow-primary/20">
+          <div className="flex items-center gap-6">
+            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center shrink-0">
+              <FileText className="w-8 h-8 text-white" />
+            </div>
+            <div>
+              <h2 className="text-3xl font-extrabold text-white mb-2">Ready to Build Your Dream Resume?</h2>
+              <p className="text-green-100 font-medium">Join thousands of successful job seekers and land your dream job.</p>
+            </div>
+          </div>
+          <div className="shrink-0 flex flex-col items-center gap-3">
+            <Button size="lg" className="bg-white text-primary hover:bg-slate-50 shadow-xl w-full">
+              Create My Resume Free
+            </Button>
+            <span className="text-xs font-medium text-green-200">No credit card required</span>
+          </div>
+        </div>
       </div>
     </section>
   )
@@ -735,13 +445,10 @@ export default function HomePage() {
     <div>
       <HeroSection />
       <TrustedSection />
-      <StatsSection />
-      <HowItWorksSection />
       <FeaturesSection />
-      <ATSSection />
-      <TestimonialsSection />
-      <PricingSection />
-      <FAQSection />
+      <HowItWorksSection />
+      <TemplatesSection />
+      <SplitSections />
       <CTASection />
     </div>
   )

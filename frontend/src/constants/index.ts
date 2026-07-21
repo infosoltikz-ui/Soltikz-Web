@@ -25,10 +25,9 @@ export const ROUTES = {
 
 // ── Navigation ───────────────────────────────────────────────
 export const NAV_LINKS = [
-  { label: 'Features',  href: ROUTES.FEATURES  },
-  { label: 'Templates', href: ROUTES.TEMPLATES },
-  { label: 'Pricing',   href: ROUTES.PRICING   },
   { label: 'About',     href: ROUTES.ABOUT     },
+  { label: 'Features',  href: ROUTES.FEATURES  },
+  { label: 'Pricing',   href: ROUTES.PRICING   },
 ] as const
 
 // ── Theme ─────────────────────────────────────────────────────
