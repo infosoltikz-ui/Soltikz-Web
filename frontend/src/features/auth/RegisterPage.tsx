@@ -30,11 +30,15 @@ export default function RegisterPage() {
 
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
+      clearError()
       const success = await googleLogin(tokenResponse.access_token)
       if (success) navigate(ROUTES.DASHBOARD || '/dashboard')
     },
-    onError: (error) => console.log('Login Failed', error)
+    onError: () => {
+      console.log('Google Login popup closed or failed')
+    },
   });
+
 
   return (
     <div className="w-full max-w-[440px] bg-white rounded-3xl p-6 md:p-8 shadow-2xl shadow-slate-200/50 border border-slate-100 flex flex-col">

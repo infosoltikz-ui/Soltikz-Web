@@ -27,12 +27,27 @@ app.use(helmet({
   crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' }, // Needed for Google OAuth popup
 }));
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://soltikz-web.vercel.app',
-    process.env.FRONTEND_URL || 'http://localhost:5173',
-  ],
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'http://localhost:3000',
+      'https://soltikz-web.vercel.app',
+      process.env.FRONTEND_URL,
+    ].filter(Boolean);
+
+    // Allow any *.vercel.app preview deployment OR an explicitly listed origin
+    if (
+      allowedOrigins.includes(origin) ||
+      /^https:\/\/.*\.vercel\.app$/.test(origin)
+    ) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS: Origin '${origin}' not allowed`));
+    }
+  },
   credentials: true,
 }));
 

@@ -28,30 +28,18 @@ export default function LoginPage() {
 
   const handleGoogleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
-      // For google auth library in backend, we need the id_token, but useGoogleLogin by default
-      // uses the implicit flow and returns an access_token. 
-      // If the backend expects an id_token, we either need to use <GoogleLogin> component or set flow: 'auth-code'
-      // Wait, @react-oauth/google has `useGoogleLogin` that can return implicit flow or auth-code.
-      // However, the easiest way to get an ID Token is the <GoogleLogin> component, 
-      // OR we fetch the user info here and send it. But backend expects `credential` (ID token).
-      // Let's use the standard `useGoogleLogin` but with `flow: 'implicit'` we might not get id_token directly unless requested.
-      // Actually, `@react-oauth/google` provides `useGoogleLogin` which only returns access_token. 
-      // To get `credential` (id_token) for the backend, we should use the native Google Identity Services rendered button, 
-      // or we can use the `useGoogleLogin` with `flow: 'auth-code'` and have backend exchange it.
-      // Wait, since we are mimicking the exact UI, we MUST use a custom button.
-      // If we use `useGoogleLogin` implicit flow, we get access_token. We can fetch profile from googleapis, 
-      // but backend expects an ID token. 
-      // Alternatively, we can just pass the access_token and let the backend verify it? 
-      // No, backend auth.controller.ts uses `client.verifyIdToken({ idToken: credential })`.
-      console.warn("For Custom Google Button, standard OAuth implicit flow returns access_token. Backend expects id_token. This may fail unless backend is adjusted or we use <GoogleLogin>.")
-      
-      // Let's try passing the access_token anyway, or we could change the backend to handle access_token.
-      // For now we will pass what we get.
+      clearError()
+      // useGoogleLogin returns an access_token. The backend now supports both
+      // id_token (from <GoogleLogin>) and access_token (from useGoogleLogin).
       const success = await googleLogin(tokenResponse.access_token)
       if (success) navigate(ROUTES.DASHBOARD || '/dashboard')
     },
-    onError: (error) => console.log('Login Failed', error)
+    onError: () => {
+      // Called when user closes the popup or Google returns an error
+      console.log('Google Login popup closed or failed')
+    },
   });
+
 
   return (
     <div className="w-full max-w-[440px] bg-white rounded-3xl p-6 md:p-8 shadow-2xl shadow-slate-200/50 border border-slate-100 flex flex-col">
