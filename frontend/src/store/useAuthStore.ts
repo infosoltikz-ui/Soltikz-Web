@@ -22,6 +22,8 @@ interface AuthState {
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
   clearError: () => void;
+  setUser: (user: User | null) => void;
+  setLoading: (isLoading: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -30,6 +32,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isLoading: false, 
   error: null,
 
+  setUser: (user) => set({ user, isAuthenticated: !!user }),
+  setLoading: (isLoading) => set({ isLoading }),
   clearError: () => set({ error: null }),
 
   login: async (credentials) => {
