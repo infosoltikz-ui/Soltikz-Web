@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && npx tsc --project server/tsconfig.json",
+    "build": "vite build && npx tsc --project ../backend/tsconfig.json",
     "lint": "oxlint",
     "preview": "vite preview",
-    "postinstall": "prisma generate --schema=server/prisma/schema.prisma"
+    "postinstall": "prisma generate --schema=../backend/prisma/schema.prisma"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.112.1",
