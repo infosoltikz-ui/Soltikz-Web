@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Mail, Lock, Eye, EyeOff, User, ShieldCheck, Loader2 } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, User, ShieldCheck, Loader2, ArrowLeft } from 'lucide-react'
 import { ROUTES } from '@constants'
 import { useAuthStore } from '@store/useAuthStore'
 import { useGoogleLogin } from '@react-oauth/google'
@@ -56,6 +56,14 @@ export default function LoginPage() {
   return (
     <div className="w-full max-w-[440px] bg-white rounded-3xl p-6 md:p-8 shadow-2xl shadow-slate-200/50 border border-slate-100 flex flex-col">
       
+      {/* Back to Home */}
+      <div className="mb-4">
+        <Link to={ROUTES.HOME} className="inline-flex items-center gap-1.5 text-sm font-bold text-slate-400 hover:text-slate-700 transition-colors">
+          <ArrowLeft className="w-4 h-4" />
+          Back to Home
+        </Link>
+      </div>
+
       {/* Header */}
       <div className="text-center mb-6">
         <h2 className="text-3xl font-extrabold text-slate-900 mb-2">Welcome Back! 👋</h2>
